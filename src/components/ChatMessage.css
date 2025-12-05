@@ -1,0 +1,164 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.chat-message {
+  display: flex;
+  max-width: 100%;
+}
+
+.message-bubble {
+  flex-grow: 1;
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  min-width: 0; /* Fix for flexbox overflow */
+}
+
+.chat-message:not(.is-editing):hover .message-bubble,
+.chat-message.is-editing .message-bubble {
+  border-color: var(--border-color);
+  background-color: var(--message-hover-bg);
+}
+
+.message-header {
+  margin-bottom: 0.5rem;
+  overflow: hidden; /* Align with floated actions menu */
+}
+
+.message-author {
+  font-size: 0.9rem;
+  font-weight: normal;
+  color: var(--text-secondary);
+}
+
+.message-actions {
+  position: sticky;
+  top: -4px;
+  float: right;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  margin-left: 1rem;
+  margin-right: -0.25rem;
+  padding: 4px;
+  border-radius: 12px;
+  margin-top: calc(-15px - 0.75rem);
+}
+
+.chat-message:not(.is-editing):hover .message-actions,
+.chat-message.is-editing .message-actions {
+  opacity: 1;
+  background-color: var(--message-actions-bg);
+}
+
+.message-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.message-actions button:hover {
+  color: var(--text-primary);
+}
+
+.message-actions button:disabled {
+  color: var(--border-color);
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.message-actions button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.message-actions button.confirm-delete {
+    background-color: transparent;
+    color: var(--delete-confirm-color);
+}
+.message-actions button.confirm-delete:hover {
+    background-color: transparent;
+}
+
+.message-body {
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+/* Attachments inside messages */
+.message-image-attachment,
+.message-video-attachment {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+.message-audio-attachment {
+    width: 100%;
+    margin-top: 8px;
+}
+.message-file-attachment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+}
+
+/* Message Editor */
+.message-editor-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font: inherit;
+  color: inherit;
+  line-height: 1.6;
+  overflow-y: hidden;
+  border-radius: 6px;
+  padding: 0;
+  margin: 0;
+}
+.message-editor-textarea:focus {
+    box-shadow: none;
+}
+
+.grounding-sources {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--background-tertiary);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.grounding-sources ol {
+  padding-left: 1.25rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.grounding-sources a {
+  color: var(--accent-secondary);
+  text-decoration: none;
+}
+.grounding-sources a:hover {
+  text-decoration: underline;
+}

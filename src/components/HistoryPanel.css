@@ -1,0 +1,207 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.history-panel {
+  background-color: var(--background-secondary);
+  border-right: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: border-width 0.3s ease-in-out;
+}
+
+.chat-app.history-collapsed .history-panel {
+  border-right-width: 0;
+}
+
+.history-panel .panel-content-wrapper {
+  width: 260px;
+  padding: 1rem;
+}
+
+.history-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+.history-header-left,
+.history-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.history-header-left {
+    min-width: 0; /* Fix flexbox overflow */
+}
+
+.trash-btn {
+    position: relative;
+}
+
+.new-chat-btn {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  flex-grow: 1; /* Take available space */
+}
+
+.new-chat-btn:hover {
+  background-color: #E3E3E3;
+  border-color: #E3E3E3;
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .new-chat-btn:hover {
+  background-color: var(--background-tertiary);
+  border-color: var(--background-tertiary);
+  color: var(--text-primary);
+}
+
+.history-panel nav {
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.2s;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.history-item[draggable="true"] {
+    cursor: pointer;
+}
+
+
+.history-item:hover {
+  background-color: var(--background-tertiary);
+}
+
+.history-item.active {
+  background-color: #E3E3E3;
+  color: #1c1e21;
+}
+
+html[data-theme='dark'] .history-item.active {
+  background-color: var(--background-tertiary);
+  color: var(--text-primary);
+}
+
+.history-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.history-item input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+.pin-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    padding: 0 4px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pin-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: none;
+  fill: var(--text-secondary);
+  transition: fill 0.2s, stroke 0.2s;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    flex-shrink: 0;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary);
+    transition: fill 0.2s;
+}
+
+.history-item:hover .pin-btn,
+.history-item:hover .delete-btn {
+    opacity: 0.6;
+}
+.history-item:hover .pin-btn:hover,
+.history-item:hover .delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.pin-btn.pinned {
+    opacity: 1;
+}
+
+.pin-btn.pinned svg {
+  fill: var(--accent-primary);
+}
+
+.history-item:hover .pin-btn.pinned svg {
+    fill: var(--accent-secondary);
+}
+
+.history-item.active .delete-btn svg,
+.history-item.active .pin-btn svg,
+.history-item.active .pin-btn.pinned svg {
+    fill: #1c1e21;
+}
+
+html[data-theme='dark'] .history-item.active .delete-btn svg,
+html[data-theme='dark'] .history-item.active .pin-btn svg,
+html[data-theme='dark'] .history-item.active .pin-btn.pinned svg {
+    fill: var(--text-primary);
+}

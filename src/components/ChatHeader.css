@@ -1,0 +1,83 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.chat-header {
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  flex-shrink: 0;
+  gap: 1rem;
+}
+
+.header-side-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 1rem;
+  min-width: 0; /* Fix for flexbox overflow */
+}
+
+.header-main-content h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.smart-consolidation-btn.active {
+    color: var(--accent-secondary);
+    background-color: var(--background-tertiary);
+}
+
+.panel-show-btn {
+    display: none;
+}
+.chat-app.history-collapsed .history-show-btn,
+.chat-app.config-collapsed .config-show-btn {
+    display: flex;
+}
+
+.token-count {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background-color: var(--background-tertiary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .chat-header {
+        grid-template-columns: auto 1fr auto;
+    }
+    .copy-chat-btn {
+        display: none;
+    }
+    .header-main-content h2 {
+        text-align: left;
+    }
+}

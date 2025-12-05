@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat</title>
+    <script>
+      // Prevents Flash of Unstyled Content (FOUC) for dark mode
+      (function() {
+        try {
+          const theme = localStorage.getItem('ai-chat-theme');
+          if (theme === 'light' || theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', theme);
+          } else { // 'system' or null
+            const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', isSystemDark ? 'dark' : 'light');
+          }
+        } catch (e) {
+          // Ignore errors, e.g., if localStorage is disabled
+        }
+      })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="index.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.21.0",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "@material/web/": "https://esm.run/@material/web/",
+    "jotai": "https://aistudiocdn.com/jotai@^2.15.0",
+    "jotai/": "https://aistudiocdn.com/jotai@^2.15.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

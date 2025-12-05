@@ -1,0 +1,98 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.chat-messages {
+  flex-grow: 1;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  position: relative; /* For welcome container positioning */
+  overflow-y: auto;
+  /* --- Auto-hiding Scrollbar --- */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s;
+}
+
+.chat-messages.is-scrolling {
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.chat-messages.is-scrolling::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
+
+.message-list-content {
+    padding-bottom: 1rem;
+}
+
+.message-list-item {
+    padding: 0 1.5rem;
+    padding-top: 1rem;
+}
+/* The last item doesn't need top padding because the parent has a gap. */
+.message-list-item:first-child {
+    padding-top: 1.5rem;
+}
+
+
+/* Welcome Screen for Empty Chat */
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  flex-grow: 1;
+  color: var(--text-secondary);
+  padding: 1rem;
+  user-select: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .message-list-item {
+        padding: 0 1rem;
+        padding-top: 1rem;
+    }
+    .message-list-item:first-child {
+        padding-top: 1rem;
+    }
+}
