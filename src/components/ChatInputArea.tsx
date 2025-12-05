@@ -63,12 +63,12 @@ export const ChatInputArea = () => {
                     ))}
                 </div>
             )}
-            <div className={`input-row${!userInput ? ' is-empty' : ''}`}>
+            <div className={`input-row${!userInput ? ' is-empty' : ''}`} style={{ position: 'relative' }}>
                 <textarea
                     ref={chatInputRef}
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
-                    placeholder={!isAIReady ? "API key not configured" : "Type your message..."}
+                    placeholder={!isAIReady ? "请先在设置中配置 API Key" : "Type your message..."}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             if ((isMac && e.metaKey) || (!isMac && e.ctrlKey)) {
