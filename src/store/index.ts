@@ -13,6 +13,7 @@ export * from './ui';
 
 // Level 1: Atoms that depend on Level 0
 export * from './tools';
+export * from './settings';
 
 // Level 2: Atoms that depend on Level 1
 export * from './chat';
@@ -25,7 +26,7 @@ export * from './log';
 export * from './message';
 
 // Level 5: Atoms that depend on Level 4
-export * from './agent';
+// (agent module removed)
 // FIX: This redundant export can cause circular dependency issues with module resolution.
 // It is already exported by `export * from './log'`.
 // export { handleClearActionLogAtom } from './log';

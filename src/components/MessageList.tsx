@@ -10,7 +10,7 @@ import './MessageList.css';
 import {
     currentChatAtom,
     isLoadingAtom,
-    aiAtom,
+    isAIReadyAtom,
     updateTokenCountAtom,
     chatMessagesRefAtom,
 } from '../store';
@@ -20,7 +20,7 @@ declare const marked: any;
 export const MessageList = () => {
     const currentChat = useAtomValue(currentChatAtom);
     const isLoading = useAtomValue(isLoadingAtom);
-    const ai = useAtomValue(aiAtom);
+    const isAIReady = useAtomValue(isAIReadyAtom);
     const updateTokenCount = useSetAtom(updateTokenCountAtom);
     const chatMessagesRef = useAtomValue(chatMessagesRefAtom);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -62,7 +62,7 @@ export const MessageList = () => {
         scrollTimer.current = window.setTimeout(() => {
             el.classList.remove('is-scrolling');
         }, 1500);
-        
+
         // Disable auto-scrolling if the user scrolls up.
         const isAtBottom = Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 10; // Increased tolerance
         autoScrollEnabled.current = isAtBottom;
@@ -90,24 +90,24 @@ export const MessageList = () => {
     useEffect(() => {
         const contentEl = contentRef.current;
         if (!contentEl) return;
-        
+
         const observer = new ResizeObserver(() => {
             if (autoScrollEnabled.current) {
                 scrollToBottom();
             }
         });
-        
+
         observer.observe(contentEl);
-        
+
         return () => observer.disconnect();
     }, [scrollToBottom]);
-    
+
     // --- End of Refactored Scroll Logic ---
 
     useEffect(() => {
         updateTokenCount();
     }, [currentChat?.messages, updateTokenCount]);
-    
+
     useEffect(() => {
         if (typeof marked !== 'undefined') {
             marked.setOptions({ breaks: true, gfm: true });
@@ -120,7 +120,7 @@ export const MessageList = () => {
                 <div className="welcome-container">
                     <h1 className="welcome-title">Chat Studio</h1>
                     <p className="welcome-subtitle">
-                        {!ai ? "The application is not configured with an API key." : "Hello! How can I help you today?"}
+                        {!isAIReady ? "The application is not configured with an API key." : "Hello! How can I help you today?"}
                     </p>
                 </div>
             ) : (

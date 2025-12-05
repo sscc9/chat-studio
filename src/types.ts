@@ -4,9 +4,9 @@
  */
 
 export interface AttachedFile {
-  name: string;
-  type: string;
-  data: string;
+    name: string;
+    type: string;
+    data: string;
 }
 
 export interface MessagePart {
@@ -37,7 +37,7 @@ export interface PresetPrompt {
 }
 
 export interface PresetGroup {
-    id:string;
+    id: string;
     name: string;
 }
 
@@ -59,19 +59,31 @@ export interface ChatConfig {
     model: string;
 }
 
+export interface ModelConfig {
+    id: string;
+    name?: string;
+}
+
+export interface ProviderConfig {
+    id: string;
+    name: string;
+    type: 'google' | 'openai-compatible';
+    apiKey: string;
+    baseUrl?: string;
+    models: ModelConfig[];
+}
+
 export type ActionLogEntryType =
-  | 'new_chat'
-  | 'rename_chat'
-  | 'fork_chat'
-  | 'edit_message'
-  | 'edit_and_regenerate'
-  | 'delete_message'
-  | 'regenerate_response'
-  | 'change_system_prompt'
-  | 'change_model'
-  | 'toggle_web_search'
-  | 'agent_edit_message'
-  | 'agent_edit_system_prompt';
+    | 'new_chat'
+    | 'rename_chat'
+    | 'fork_chat'
+    | 'edit_message'
+    | 'edit_and_regenerate'
+    | 'delete_message'
+    | 'regenerate_response'
+    | 'change_system_prompt'
+    | 'change_model'
+    | 'toggle_web_search';
 
 export interface ActionLogEntry {
     id: string;
@@ -84,7 +96,6 @@ export interface Chat {
     id: string;
     title: string;
     messages: Message[];
-    agentMessages?: Message[];
     isPinned: boolean;
     config: ChatConfig;
     actionLog: ActionLogEntry[];

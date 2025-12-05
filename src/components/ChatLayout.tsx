@@ -8,7 +8,7 @@ import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 
 import { ChatInputArea } from "./ChatInputArea";
 import { PresetPromptEditorModal } from "./PresetPromptEditorModal";
-import { ActionLogViewerModal } from "./AgentPanel";
+import { ActionLogViewerModal } from "./ActionLogViewerModal";
 import { HistoryPanel } from './HistoryPanel';
 import { ConfigPanel } from './ConfigPanel';
 import { ChatHeader } from './ChatHeader';
@@ -48,7 +48,7 @@ const PersistState = () => {
     // Persist chat metadata (title, config, etc.) to localStorage
     useEffect(() => {
         if (!isInitialized) return;
-        const chatsMetadata = chats.map(({ messages, agentMessages, actionLog, ...meta }) => meta);
+        const chatsMetadata = chats.map(({ messages, actionLog, ...meta }) => meta);
         try {
             localStorage.setItem('ai-chat-history', JSON.stringify(chatsMetadata));
         } catch (error) {
@@ -63,13 +63,12 @@ const PersistState = () => {
             saveMessages(
                 currentChat.id,
                 currentChat.messages,
-                currentChat.agentMessages || [],
                 currentChat.actionLog || []
             ).catch(err => {
                 console.error("Failed to save messages to DB", err);
             });
         }
-    }, [isInitialized, currentChat?.id, currentChat?.messages, currentChat?.agentMessages, currentChat?.actionLog]);
+    }, [isInitialized, currentChat?.id, currentChat?.messages, currentChat?.actionLog]);
 
     return null;
 };
@@ -145,7 +144,7 @@ export const ChatLayout = () => {
                 <ConfigPanel />
 
                 <div className={`toast ${toast.show ? 'show' : ''}`}>{toast.message}</div>
-                
+
                 <SystemPromptEditor />
                 <DocumentEditor />
 

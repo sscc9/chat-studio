@@ -23,7 +23,7 @@ const openDB = (): Promise<IDBDatabase> => {
   });
 };
 
-export const getMessages = async (id: string): Promise<{ messages: Message[], agentMessages: Message[], actionLog: ActionLogEntry[] }> => {
+export const getMessages = async (id: string): Promise<{ messages: Message[], actionLog: ActionLogEntry[] }> => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readonly");
@@ -31,31 +31,30 @@ export const getMessages = async (id: string): Promise<{ messages: Message[], ag
     const request = store.get(id);
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve({
-        messages: request.result?.messages || [],
-        agentMessages: request.result?.agentMessages || [],
-        actionLog: request.result?.actionLog || [],
+      messages: request.result?.messages || [],
+      actionLog: request.result?.actionLog || [],
     });
   });
 };
 
-export const saveMessages = async (id: string, messages: Message[], agentMessages: Message[], actionLog: ActionLogEntry[]): Promise<void> => {
+export const saveMessages = async (id: string, messages: Message[], actionLog: ActionLogEntry[]): Promise<void> => {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readwrite");
     const store = transaction.objectStore(STORE_NAME);
-    const request = store.put({ id, messages, agentMessages, actionLog });
+    const request = store.put({ id, messages, actionLog });
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve();
   });
 };
 
 export const deleteMessages = async (id: string): Promise<void> => {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, "readwrite");
-        const store = transaction.objectStore(STORE_NAME);
-        const request = store.delete(id);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve();
-    });
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.delete(id);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve();
+  });
 };

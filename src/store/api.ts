@@ -6,6 +6,8 @@
 import React from 'react';
 import { atom } from 'jotai';
 import { aiAtom } from './core';
+import { providersAtom } from './settings';
+import { streamGenerateContent, countTokens } from '../llm';
 import type { Message, Chat } from '../types';
 import { chatsAtom, currentChatAtom, handleAutoRenameChatAtom } from './chat';
 import { isLoadingAtom, regeneratingIndexAtom, tokenCountAtom } from './ui';
@@ -15,39 +17,42 @@ import { isLoadingAtom, regeneratingIndexAtom, tokenCountAtom } from './ui';
 // =================================================================
 export const activeRequestRefAtom = atom(React.createRef<number | null>());
 
+export const isAIReadyAtom = atom((get) => {
+    const providers = get(providersAtom);
+    return providers.some(p => p.apiKey && p.apiKey.length > 0);
+});
+
 // A complex atom that encapsulates the streaming logic and returns the final text
 export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, targetIndex, requestId }: { chat: Chat, contents: Message[], targetIndex: number, requestId: number }): Promise<string> => {
     return new Promise(async (resolve, reject) => {
-        const ai = get(aiAtom);
         const activeRequestRef = get(activeRequestRefAtom);
-        if (!ai) {
+
+        const providers = get(providersAtom);
+        const modelId = chat.config.model || 'gemini-2.5-flash';
+        let provider = providers.find(p => p.models.some(m => m.id === modelId));
+
+        // Fallback to first google provider if not found (legacy support)
+        if (!provider) {
+            provider = providers.find(p => p.type === 'google');
+        }
+
+        if (!provider) {
             set(isLoadingAtom, false);
             set(regeneratingIndexAtom, null);
-            return reject(new Error("API client is not initialized."));
+            return reject(new Error("No provider configured for this model. Please check Settings."));
         }
 
         try {
-            const model = chat.config.model || 'gemini-2.5-flash';
-            const config: { systemInstruction?: string, tools?: any[] } = {};
-            if (chat.config.systemInstruction) {
-                config.systemInstruction = chat.config.systemInstruction;
-            }
-            if (chat.config.useGoogleSearch) {
-                config.tools = [{ googleSearch: {} }];
-            }
-
             set(chatsAtom, prevChats => prevChats.map(c =>
                 c.id === chat.id
-                ? { ...c, messages: c.messages.map((msg: Message, idx: number) =>
-                        idx === targetIndex ? { ...msg, parts: [{ text: "" }], groundingChunks: [] } : msg
-                    )} : c
+                    ? {
+                        ...c, messages: c.messages.map((msg: Message, idx: number) =>
+                            idx === targetIndex ? { ...msg, parts: [{ text: "" }], groundingChunks: [] } : msg
+                        )
+                    } : c
             ));
 
-            const stream = await ai.models.generateContentStream({
-                model: model,
-                contents: contents,
-                config: Object.keys(config).length > 0 ? config : undefined,
-            });
+            const stream = streamGenerateContent(provider, modelId, contents, chat.config.systemInstruction);
 
             if (activeRequestRef.current !== requestId) return reject(new Error('Request cancelled'));
 
@@ -57,10 +62,10 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
             for await (const chunk of stream) {
                 if (activeRequestRef.current !== requestId) break;
 
-                text += chunk.text;
-                
-                if (chunk.candidates?.[0]?.groundingMetadata?.groundingChunks) {
-                    const newChunks = chunk.candidates[0].groundingMetadata.groundingChunks;
+                text += (chunk.text || "");
+
+                if (chunk.groundingChunks) {
+                    const newChunks = chunk.groundingChunks;
                     newChunks.forEach((newChunk: any) => {
                         if (newChunk.web?.uri && !allGroundingChunks.some(existing => existing.web?.uri === newChunk.web?.uri)) {
                             allGroundingChunks.push(newChunk);
@@ -79,7 +84,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                     }
                     return c;
                 }));
-                
+
                 // Trigger auto-rename after receiving the first bit of text.
                 if (!renameTriggered && text.trim()) {
                     set(handleAutoRenameChatAtom, chat.id);
@@ -125,11 +130,10 @@ export const handleStopGenerationAtom = atom(null, (get, set) => {
 });
 
 export const updateTokenCountAtom = atom(null, async (get, set) => {
-    const ai = get(aiAtom);
-    const currentChat = get(currentChatAtom);
     const isLoading = get(isLoadingAtom);
+    const currentChat = get(currentChatAtom);
 
-    if (!ai || !currentChat || currentChat.messages.length === 0 || isLoading) {
+    if (!currentChat || currentChat.messages.length === 0 || isLoading) {
         set(tokenCountAtom, 0);
         return;
     }
@@ -140,10 +144,17 @@ export const updateTokenCountAtom = atom(null, async (get, set) => {
             return;
         }
 
-        const { totalTokens } = await ai.models.countTokens({
-            model: currentChat.config.model || 'gemini-2.5-flash',
-            contents: messagesToCount
-        });
+        const providers = get(providersAtom);
+        const modelId = currentChat.config.model || 'gemini-2.5-flash';
+        let provider = providers.find(p => p.models.some(m => m.id === modelId));
+        if (!provider) provider = providers.find(p => p.type === 'google');
+
+        if (!provider) {
+            set(tokenCountAtom, 0);
+            return;
+        }
+
+        const totalTokens = await countTokens(provider, modelId, messagesToCount);
         set(tokenCountAtom, totalTokens);
     } catch (error) {
         console.error("Error counting tokens:", error);

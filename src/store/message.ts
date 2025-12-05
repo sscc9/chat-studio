@@ -9,7 +9,7 @@ import type { AttachedFile, Message, MessagePart, ActionLogEntry } from '../type
 import { streamAndGetResponseAtom, activeRequestRefAtom } from './api';
 import { currentChatIdAtom, currentChatAtom, chatsAtom, logActionAtom, editingMessageIndexAtom, editingMessageContentAtom } from './chat';
 import { showToastAtom, isLoadingAtom, regeneratingIndexAtom } from './ui';
-import { aiAtom } from './core';
+import { isAIReadyAtom } from './api';
 
 // =================================================================
 // HELPERS
@@ -85,7 +85,7 @@ export const handleSaveEditAtom = atom(null, (get, set) => {
         set(handleCancelEditAtom);
         return;
     }
-    
+
     const messageBeingEdited = chat.messages[index];
     const loggableMessage = createLoggableMessage(messageBeingEdited);
     set(logActionAtom, 'edit_message', { index, from: originalText, to: content, originalContent: loggableMessage });
@@ -101,7 +101,7 @@ export const handleSaveEditAtom = atom(null, (get, set) => {
             } else {
                 newParts.unshift({ text: content });
             }
-            
+
             newMessages[index] = { ...newMessages[index], parts: newParts };
             return { ...chat, messages: newMessages };
         }
@@ -120,9 +120,9 @@ export const handleDeleteMessageAtom = atom(null, (get, set, index: number) => {
     set(logActionAtom, 'delete_message', { index, content: loggableMessage });
 
     set(chatsAtom, prev => prev.map(chat =>
-      chat.id === id
-        ? { ...chat, messages: chat.messages.filter((_: Message, i: number) => i !== index) }
-        : chat
+        chat.id === id
+            ? { ...chat, messages: chat.messages.filter((_: Message, i: number) => i !== index) }
+            : chat
     ));
 });
 
@@ -151,13 +151,13 @@ export const handleSendUserMessageOnlyAtom = atom(null, (get, set, messageText?:
     });
 
     const userMessage: Message = { role: "user", parts: userParts };
-    
+
     set(chatsAtom, prev => prev.map((chat) =>
-      chat.id === currentChatId
-        ? { ...chat, messages: [...chat.messages, userMessage] }
-        : chat
+        chat.id === currentChatId
+            ? { ...chat, messages: [...chat.messages, userMessage] }
+            : chat
     ));
-    
+
     if (typeof messageText !== 'string') {
         set(userInputAtom, "");
         set(attachedFilesAtom, []);
@@ -173,7 +173,7 @@ export const handleSendMessageAtom = atom(null, async (get, set) => {
     const hasInput = userInput.trim() || attachedFiles.length > 0;
     const lastMessage = currentChat.messages[currentChat.messages.length - 1];
 
-    if (!get(aiAtom) || !get(currentChatIdAtom) || (!hasInput && lastMessage?.role !== 'user') || get(isLoadingAtom) || get(editingMessageIndexAtom) !== null) return;
+    if (!get(isAIReadyAtom) || !get(currentChatIdAtom) || (!hasInput && lastMessage?.role !== 'user') || get(isLoadingAtom) || get(editingMessageIndexAtom) !== null) return;
 
     set(isLoadingAtom, true);
 
@@ -182,7 +182,7 @@ export const handleSendMessageAtom = atom(null, async (get, set) => {
 
     let contentsForApi: Message[];
     let newLogEntry: ActionLogEntry | null = null;
-    
+
     if (hasInput) {
         const userParts: MessagePart[] = [];
         if (userInput.trim()) userParts.push({ text: userInput.trim() });
@@ -224,7 +224,7 @@ export const handleSendMessageAtom = atom(null, async (get, set) => {
 
     try {
         await set(streamAndGetResponseAtom, { chat: updatedCurrentChat, contents: contentsForApi, targetIndex, requestId });
-    } catch(e: any) {
+    } catch (e: any) {
         if (e?.message !== 'Request cancelled') {
             console.warn("Message generation failed.", e);
         }
@@ -237,23 +237,23 @@ export const handleSaveAndRegenerateAtom = atom(null, async (get, set) => {
     const editingMessageContent = get(editingMessageContentAtom);
     const currentChat = get(currentChatAtom);
 
-    if (editingMessageIndex === null || !editingMessageContent.trim() || get(isLoadingAtom) || !currentChat || !get(aiAtom)) return;
+    if (editingMessageIndex === null || !editingMessageContent.trim() || get(isLoadingAtom) || !currentChat || !get(isAIReadyAtom)) return;
 
     set(handleCancelEditAtom);
     set(isLoadingAtom, true);
 
     const requestId = Date.now();
     get(activeRequestRefAtom).current = requestId;
-    
+
     const index = editingMessageIndex;
-    
+
     const newLogEntry: ActionLogEntry = {
         id: `log-${Date.now()}`,
         timestamp: Date.now(),
         type: 'edit_and_regenerate',
         payload: { index },
     };
-    
+
     const savedMessages = currentChat.messages.map((msg: Message, i: number) => {
         if (i === index) {
             const newParts = [...msg.parts];
@@ -273,16 +273,16 @@ export const handleSaveAndRegenerateAtom = atom(null, async (get, set) => {
     let messagesForState;
 
     if (savedMessages[targetIndex]?.role === 'model') {
-        messagesForState = savedMessages; 
+        messagesForState = savedMessages;
     } else {
         const newModelMessage: Message = { role: "model", parts: [{ text: "" }], groundingChunks: [] };
-        messagesForState = [ ...savedMessages.slice(0, targetIndex), newModelMessage, ...savedMessages.slice(targetIndex) ];
+        messagesForState = [...savedMessages.slice(0, targetIndex), newModelMessage, ...savedMessages.slice(targetIndex)];
     }
-    
+
     set(chatsAtom, prev => prev.map(c => {
         if (c.id === currentChat.id) {
-            return { 
-                ...c, 
+            return {
+                ...c,
                 messages: messagesForState,
                 actionLog: [...(c.actionLog || []), newLogEntry]
             };
@@ -294,23 +294,23 @@ export const handleSaveAndRegenerateAtom = atom(null, async (get, set) => {
     set(regeneratingIndexAtom, targetIndex);
 
     try {
-      await set(streamAndGetResponseAtom, { chat: updatedChat, contents, targetIndex, requestId });
-    } catch(e: any) {
-      if (e?.message !== 'Request cancelled') {
-          console.warn("Message generation failed.", e);
-      }
+        await set(streamAndGetResponseAtom, { chat: updatedChat, contents, targetIndex, requestId });
+    } catch (e: any) {
+        if (e?.message !== 'Request cancelled') {
+            console.warn("Message generation failed.", e);
+        }
     }
 });
 
 export const handleRegenerateResponseAtom = atom(null, async (get, set, index: number) => {
     const currentChat = get(currentChatAtom);
-    if (get(isLoadingAtom) || !currentChat || !get(aiAtom)) return;
+    if (get(isLoadingAtom) || !currentChat || !get(isAIReadyAtom)) return;
 
     set(isLoadingAtom, true);
-    
+
     const requestId = Date.now();
     get(activeRequestRefAtom).current = requestId;
-    
+
     const messages = [...currentChat.messages];
     const messageToRegenFrom = messages[index];
 
@@ -321,18 +321,18 @@ export const handleRegenerateResponseAtom = atom(null, async (get, set, index: n
     if (messageToRegenFrom.role === 'model') {
         contents = messages.slice(0, index);
         targetIndex = index;
-        messagesForState = messages; 
+        messagesForState = messages;
     } else { // user
         contents = messages.slice(0, index + 1);
         targetIndex = index + 1;
         if (messages[targetIndex]?.role === 'model') {
-            messagesForState = messages; 
+            messagesForState = messages;
         } else {
             const newModelMessage: Message = { role: "model", parts: [{ text: "" }], groundingChunks: [] };
-            messagesForState = [ ...messages.slice(0, targetIndex), newModelMessage, ...messages.slice(targetIndex) ];
+            messagesForState = [...messages.slice(0, targetIndex), newModelMessage, ...messages.slice(targetIndex)];
         }
     }
-    
+
     const newLogEntry: ActionLogEntry = {
         id: `log-${Date.now()}`,
         timestamp: Date.now(),
@@ -350,15 +350,15 @@ export const handleRegenerateResponseAtom = atom(null, async (get, set, index: n
         }
         return c;
     }));
-    
+
     const updatedChat = get(currentChatAtom)!;
     set(regeneratingIndexAtom, targetIndex);
 
     try {
-      await set(streamAndGetResponseAtom, { chat: updatedChat, contents, targetIndex, requestId });
-    } catch(e: any) {
-      if (e?.message !== 'Request cancelled') {
-          console.warn("Message generation failed.", e);
-      }
+        await set(streamAndGetResponseAtom, { chat: updatedChat, contents, targetIndex, requestId });
+    } catch (e: any) {
+        if (e?.message !== 'Request cancelled') {
+            console.warn("Message generation failed.", e);
+        }
     }
 });

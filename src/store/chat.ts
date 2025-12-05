@@ -30,16 +30,16 @@ export const logActionAtom = atom(
         };
 
         set(chatsAtom, prev => prev.map(chat => {
-                if (chat.id === targetChatId) {
-                    const currentLog = chat.actionLog || [];
-                    let updatedLog = [...currentLog, newLogEntry];
-                    if (updatedLog.length > 1000) {
-                        updatedLog = updatedLog.slice(updatedLog.length - 1000);
-                    }
-                    return { ...chat, actionLog: updatedLog };
+            if (chat.id === targetChatId) {
+                const currentLog = chat.actionLog || [];
+                let updatedLog = [...currentLog, newLogEntry];
+                if (updatedLog.length > 1000) {
+                    updatedLog = updatedLog.slice(updatedLog.length - 1000);
                 }
-                return chat;
+                return { ...chat, actionLog: updatedLog };
             }
+            return chat;
+        }
         ));
     }
 );
@@ -67,10 +67,10 @@ export const syncConfigWithChatAtom = atom(null, (get, set, chat: Chat | undefin
 });
 
 
-export const handleConfigChangeAtom = atom(null, (get, set, newConfig: Partial<ChatConfig>, chatId?: string, isAgentAction = false) => {
+export const handleConfigChangeAtom = atom(null, (get, set, newConfig: Partial<ChatConfig>, chatId?: string) => {
     const id = chatId || get(currentChatIdAtom);
     if (!id) return;
-    
+
     const targetChat = get(chatsAtom).find(c => c.id === id);
     if (!targetChat) return;
 
@@ -83,8 +83,7 @@ export const handleConfigChangeAtom = atom(null, (get, set, newConfig: Partial<C
         if (id === get(currentChatIdAtom)) set(useGoogleSearchAtom, newConfig.useGoogleSearch);
     }
     if (newConfig.systemInstruction !== undefined && newConfig.systemInstruction !== targetChat.config.systemInstruction) {
-        const type = isAgentAction ? 'agent_edit_system_prompt' : 'change_system_prompt';
-        set(logActionAtom, type, { from: targetChat.config.systemInstruction, to: newConfig.systemInstruction }, id);
+        set(logActionAtom, 'change_system_prompt', { from: targetChat.config.systemInstruction, to: newConfig.systemInstruction }, id);
         if (id === get(currentChatIdAtom)) {
             set(systemInstructionAtom, newConfig.systemInstruction);
         }
@@ -143,7 +142,6 @@ export const handleNewChatAtom = atom(null, (get, set, title = 'New Chat') => {
         id: `chat-${Date.now()}`,
         title: title,
         messages: [],
-        agentMessages: [],
         isPinned: false,
         config: {
             systemInstruction: '',
@@ -190,13 +188,13 @@ export const initChatHistoryAtom = atom(
                 localStorage.setItem('ai-chat-history', JSON.stringify(chatMetadata));
             }
 
-            if (chatMetadata.length > 0 && (chatMetadata[0].messages || chatMetadata[0].agentMessages || chatMetadata[0].actionLog)) {
+            if (chatMetadata.length > 0 && (chatMetadata[0].messages || chatMetadata[0].actionLog)) {
                 console.log('Migrating chat history to IndexedDB...');
                 set(showToastAtom, 'Upgrading storage...');
                 const newMetadata = [];
                 for (const chat of chatMetadata) {
-                    await saveMessages(chat.id!, chat.messages || [], chat.agentMessages || [], chat.actionLog || []);
-                    const { messages, agentMessages, actionLog, ...meta } = chat;
+                    await saveMessages(chat.id!, chat.messages || [], chat.actionLog || []);
+                    const { messages, actionLog, ...meta } = chat;
                     newMetadata.push(meta);
                 }
                 localStorage.setItem('ai-chat-history', JSON.stringify(newMetadata));
@@ -217,12 +215,11 @@ export const initChatHistoryAtom = atom(
                     ...(chat.config || {}),
                     model: (existingModel && supportedModels.includes(existingModel)) ? existingModel : 'gemini-2.5-flash',
                 };
-                return { 
+                return {
                     id: chat.id!,
                     title: chat.title!,
                     messages: [],
-                    agentMessages: [],
-                    isPinned: chat.isPinned || false, 
+                    isPinned: chat.isPinned || false,
                     config: config,
                     actionLog: [],
                     autoTitled: chat.autoTitled || (chat.title !== 'New Chat'),
@@ -233,12 +230,12 @@ export const initChatHistoryAtom = atom(
             const finalCurrentId = savedCurrentId && chatsWithUpdates.some((c: Chat) => c.id === savedCurrentId)
                 ? savedCurrentId
                 : (chatsWithUpdates.length > 0 ? chatsWithUpdates[0].id : null);
-            
+
             if (finalCurrentId) {
-                const { messages, agentMessages, actionLog } = await getMessages(finalCurrentId);
-                const finalChatsState = chatsWithUpdates.map((chat: Chat) => 
-                    chat.id === finalCurrentId 
-                        ? { ...chat, messages: messages || [], agentMessages: agentMessages || [], actionLog: actionLog || [] } 
+                const { messages, actionLog } = await getMessages(finalCurrentId);
+                const finalChatsState = chatsWithUpdates.map((chat: Chat) =>
+                    chat.id === finalCurrentId
+                        ? { ...chat, messages: messages || [], actionLog: actionLog || [] }
                         : chat
                 );
                 set(chatsAtom, finalChatsState);
@@ -268,8 +265,8 @@ export const handleSelectChatAtom = atom(
         const chatInState = chats.find(c => c.id === id);
 
         if (chatInState && chatInState.messages.length === 0) {
-            const { messages, agentMessages, actionLog } = await getMessages(id);
-            set(chatsAtom, prev => prev.map(c => c.id === id ? { ...c, messages: messages || [], agentMessages: agentMessages || [], actionLog: actionLog || [] } : c));
+            const { messages, actionLog } = await getMessages(id);
+            set(chatsAtom, prev => prev.map(c => c.id === id ? { ...c, messages: messages || [], actionLog: actionLog || [] } : c));
         }
 
         set(currentChatIdAtom, id);
@@ -319,7 +316,7 @@ export const handleEmptyTrashAtom = atom(null, async (get, set) => {
     await Promise.all(
         trashedChats.map(chat => deleteMessages(chat.id))
     ).catch(err => console.error("Failed to empty trash from DB", err));
-    
+
     set(chatsAtom, prev => prev.filter(chat => !chat.deletedTimestamp));
     set(showToastAtom, "Trash emptied.");
 });
@@ -332,8 +329,8 @@ export const handleForkChatAtom = atom(null, async (get, set, index: number) => 
     if (!originalChat) return;
 
     if (originalChat.messages.length === 0) {
-        const { messages, agentMessages, actionLog } = await getMessages(originalChat.id);
-        originalChat = { ...originalChat, messages: messages || [], agentMessages: agentMessages || [], actionLog: actionLog || [] };
+        const { messages, actionLog } = await getMessages(originalChat.id);
+        originalChat = { ...originalChat, messages: messages || [], actionLog: actionLog || [] };
     }
 
     if (index >= originalChat.messages.length) return;
@@ -345,7 +342,6 @@ export const handleForkChatAtom = atom(null, async (get, set, index: number) => 
         id: `chat-${Date.now()}`,
         title: `Branch of ${originalChat.title}`,
         messages: forkedMessages,
-        agentMessages: originalChat.agentMessages ? [...originalChat.agentMessages] : [],
         isPinned: false,
         actionLog: [],
         autoTitled: true,
@@ -394,15 +390,15 @@ export const handleDropAtom = atom(null, (get, set, droppedOnChat: Chat) => {
     if (!draggedChat || draggedChat.id === droppedOnChat.id || draggedChat.isPinned !== droppedOnChat.isPinned) {
         return;
     }
-    
+
     set(chatsAtom, prevChats => {
         const updatedChats = [...prevChats];
         const draggedIndex = updatedChats.findIndex(c => c.id === draggedChat.id);
         const droppedOnIndex = updatedChats.findIndex(c => c.id === droppedOnChat.id);
-        
+
         const [removed] = updatedChats.splice(draggedIndex, 1);
         updatedChats.splice(droppedOnIndex, 0, removed);
-        
+
         return updatedChats;
     });
 });
@@ -417,16 +413,16 @@ export const handleDragEndAtom = atom(null, (get, set) => {
 export const handleExportChatsAtom = atom(null, async (get, set) => {
     try {
         set(showToastAtom, "Exporting data...");
-        
+
         const chats = get(chatsAtom);
         const fullChats = await Promise.all(chats.map(async (chat) => {
             if (chat.messages.length === 0) {
-                const { messages, agentMessages, actionLog } = await getMessages(chat.id);
-                return { ...chat, messages: messages || [], agentMessages: agentMessages || [], actionLog: actionLog || [] };
+                const { messages, actionLog } = await getMessages(chat.id);
+                return { ...chat, messages: messages || [], actionLog: actionLog || [] };
             }
             return chat;
         }));
-        
+
         const exportData = {
             version: 2,
             chats: fullChats,
@@ -440,15 +436,15 @@ export const handleExportChatsAtom = atom(null, async (get, set) => {
         const jsonString = JSON.stringify(exportData, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-        
+
         const a = document.createElement("a");
         a.href = url;
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         a.download = `ai-chat-studio-backup-${timestamp}.json`;
         a.click();
-        
+
         URL.revokeObjectURL(url);
-        
+
         set(showToastAtom, "Full app data exported successfully!");
     } catch (error) {
         console.error("Failed to export data:", error);
@@ -479,9 +475,9 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
 
             let chatsToImport = (importedJson && Array.isArray(importedJson.chats)) ? importedJson.chats : Array.isArray(importedJson) ? importedJson : [];
             const writingDataToImport = importedJson?.writingModeData;
-            
+
             const validChats: Partial<Chat>[] = chatsToImport.filter((c: Partial<Chat>) => c?.id && c.title);
-            
+
             if (validChats.length > 0) {
                 const existingChatIds = new Set(get(chatsAtom).map(c => c.id));
                 const resolvedChats: Chat[] = validChats.map((chat, i) => {
@@ -501,19 +497,18 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
 
                     return {
                         id: existingChatIds.has(chat.id!) ? `chat-${Date.now()}-${i}` : chat.id!,
-                        title: existingChatIds.has(chat.id!) ? `${chat.title} (Imported)`: chat.title!,
+                        title: existingChatIds.has(chat.id!) ? `${chat.title} (Imported)` : chat.title!,
                         messages: chat.messages || [],
-                        agentMessages: chat.agentMessages || [],
                         isPinned: chat.isPinned || false,
                         config: config,
                         actionLog: chat.actionLog || [],
                         autoTitled: chat.autoTitled ?? (chat.title !== 'New Chat'),
                     };
                 });
-                await Promise.all(resolvedChats.map(chat => saveMessages(chat.id, chat.messages || [], chat.agentMessages || [], chat.actionLog || [])));
+                await Promise.all(resolvedChats.map(chat => saveMessages(chat.id, chat.messages || [], chat.actionLog || [])));
                 set(chatsAtom, prevChats => {
                     const chatMap = new Map(prevChats.map(c => [c.id, c]));
-                    resolvedChats.forEach(importedChat => chatMap.set(importedChat.id, { ...importedChat, messages: [], agentMessages: [], actionLog: [] }));
+                    resolvedChats.forEach(importedChat => chatMap.set(importedChat.id, { ...importedChat, messages: [], actionLog: [] }));
                     return Array.from(chatMap.values());
                 });
             }
@@ -523,7 +518,7 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
                 if (Array.isArray(writingDataToImport.presetPrompts)) set(presetPromptsAtom, writingDataToImport.presetPrompts);
                 if (Array.isArray(writingDataToImport.presetGroups)) set(presetGroupsAtom, writingDataToImport.presetGroups);
             }
-            
+
             set(showToastAtom, "Import finished successfully.");
 
         } catch (error: any) {
@@ -541,7 +536,7 @@ export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: stri
     if (!ai) return;
 
     const chat = get(chatsAtom).find(c => c.id === chatId);
-    
+
     if (!chat || chat.title.trim() !== 'New Chat' || chat.autoTitled) {
         return;
     }
@@ -558,11 +553,11 @@ export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: stri
             firstModelMessage = chat.messages[modelMessageIndex];
         }
     }
-    
+
     if (!firstUserMessage || !firstModelMessage) {
         return; // Not enough context yet.
     }
-    
+
     const userText = firstUserMessage.parts.find(p => p.text)?.text || '';
     const modelText = firstModelMessage.parts.find(p => p.text)?.text || '';
 
@@ -584,7 +579,7 @@ export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: stri
         });
 
         let newTitle = response.text?.trim();
-        
+
         if (newTitle) {
             newTitle = newTitle.replace(/^["']|["']$/g, ''); // Clean up quotes
             set(logActionAtom, 'rename_chat', { from: 'New Chat', to: newTitle }, chatId);
