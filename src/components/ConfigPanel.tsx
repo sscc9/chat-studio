@@ -113,25 +113,25 @@ export const ConfigPanel = () => {
                 <div className="panel-content-wrapper">
                     <div className="config-panel-tabs">
                         <button className={`config-tab ${activeConfigTab === 'configuration' ? 'active' : ''}`} onClick={() => setActiveConfigTab('configuration')}>
-                            Configuration
+                            通用配置
                         </button>
                         <button className={`config-tab ${activeConfigTab === 'writing' ? 'active' : ''}`} onClick={() => setActiveConfigTab('writing')}>
-                            Writing
+                            辅助创作
                         </button>
 
                         <div className="config-panel-header-actions">
                             <button
                                 className="panel-toggle-btn"
                                 onClick={() => setIsConfigPanelVisible(false)}
-                                aria-label="Hide configuration panel"
-                                title="Hide configuration panel"
+                                aria-label="隐藏配置面板"
+                                title="隐藏配置面板"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" /></svg>
                             </button>
                             <button
                                 className="mobile-close-btn"
                                 onClick={() => setIsConfigPanelOpen(false)}
-                                aria-label="Close configuration panel"
+                                aria-label="关闭配置面板"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L7.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" /></svg>
                             </button>
@@ -141,12 +141,12 @@ export const ConfigPanel = () => {
                         {activeConfigTab === 'configuration' && (
                             <>
                                 <div className="config-item">
-                                    <label>Theme</label>
+                                    <label>主题</label>
                                     <div className="theme-toggle">
                                         <button
                                             className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
                                             onClick={() => setTheme('light')}
-                                            title="Light Mode"
+                                            title="亮色模式"
                                             aria-pressed={theme === 'light'}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -156,7 +156,7 @@ export const ConfigPanel = () => {
                                         <button
                                             className={`theme-btn ${theme === 'dark' ? 'active' : ''}`}
                                             onClick={() => setTheme('dark')}
-                                            title="Dark Mode"
+                                            title="暗色模式"
                                             aria-pressed={theme === 'dark'}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -166,7 +166,7 @@ export const ConfigPanel = () => {
                                         <button
                                             className={`theme-btn ${theme === 'system' ? 'active' : ''}`}
                                             onClick={() => setTheme('system')}
-                                            title="System Default"
+                                            title="跟随系统"
                                             aria-pressed={theme === 'system'}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -177,14 +177,14 @@ export const ConfigPanel = () => {
                                 </div>
                                 <div className="config-item">
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                        <label style={{ marginBottom: 0 }}>Model</label>
+                                        <label style={{ marginBottom: 0 }}>模型</label>
                                         <button
                                             className="icon-btn"
                                             onClick={() => setIsSettingsModalOpen(true)}
-                                            title="Manage Models"
+                                            title="管理模型"
                                             style={{ fontSize: '0.8rem', padding: '2px 6px', height: 'auto', width: 'auto', borderRadius: '4px', border: '1px solid var(--border-color)' }}
                                         >
-                                            Manage
+                                            管理
                                         </button>
                                     </div>
                                     <div className="custom-select-container" ref={modelDropdownRef}>
@@ -218,7 +218,7 @@ export const ConfigPanel = () => {
                                     </div>
                                 </div>
                                 <div className="config-item">
-                                    <label htmlFor="system-instruction">System Prompt</label>
+                                    <label htmlFor="system-instruction">系统提示词</label>
                                     <div
                                         id="system-instruction"
                                         className={`system-prompt-preview ${!systemInstruction ? 'placeholder' : ''}`}
@@ -226,11 +226,11 @@ export const ConfigPanel = () => {
                                         role="button"
                                         tabIndex={0}
                                     >
-                                        {systemInstruction || "e.g., You are a helpful assistant who speaks like a pirate."}
+                                        {systemInstruction || "例如：你是一个乐于助人的助手，说话像个海盗。"}
                                     </div>
                                 </div>
                                 <div className="config-item">
-                                    <label htmlFor="google-search">Web Search</label>
+                                    <label htmlFor="google-search">网页搜索</label>
                                     <label className="switch">
                                         <input
                                             id="google-search"
@@ -247,13 +247,13 @@ export const ConfigPanel = () => {
                             <>
                                 <div className="config-item">
                                     <div className="local-document-header">
-                                        <label>Local Document</label>
+                                        <label>本地参考文档</label>
                                         <div className="local-document-actions">
                                             <input type="file" ref={documentFileInputRef} onChange={handleDocumentFileChange} accept=".txt,.md,text/*" style={{ display: 'none' }} />
-                                            <button className="icon-btn" onClick={handleDocumentUploadClick} title="Upload Document">
+                                            <button className="icon-btn" onClick={handleDocumentUploadClick} title="上传文档">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" /></svg>
                                             </button>
-                                            <button className="icon-btn" onClick={handleClearDocument} disabled={!documentContent} title="Clear Document">
+                                            <button className="icon-btn" onClick={handleClearDocument} disabled={!documentContent} title="清除文档">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
                                             </button>
                                         </div>
@@ -265,14 +265,14 @@ export const ConfigPanel = () => {
                                         role="button"
                                         tabIndex={0}
                                     >
-                                        {documentContent || "Upload or paste a document for local context..."}
+                                        {documentContent || "上传或粘贴文档作为本地上下文..."}
                                     </div>
-                                    <p className="local-document-help">This document is stored locally and is not sent to the AI.</p>
+                                    <p className="local-document-help">此文档仅存储在本地，不会发送给 AI。</p>
                                 </div>
                                 <div className="config-item preset-prompts-manager">
                                     <div className="preset-prompts-header">
-                                        <label>Preset Meta Prompts</label>
-                                        <button className="icon-btn" onClick={(e) => handleStartAddPreset(e)} title="Add new meta prompt">
+                                        <label>预设 Prompt</label>
+                                        <button className="icon-btn" onClick={(e) => handleStartAddPreset(e)} title="添加新 Prompt">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
                                             </svg>
@@ -285,7 +285,7 @@ export const ConfigPanel = () => {
                                             role="button"
                                             tabIndex={0}
                                         >
-                                            Ungrouped
+                                            未分组
                                         </div>
                                         {presetGroups.map(group => (
                                             editingGroupId === group.id ? (
@@ -299,7 +299,7 @@ export const ConfigPanel = () => {
                                                     onBlur={handleUpdateGroupName}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') { e.preventDefault(); handleUpdateGroupName(); }
-                                                        if (e.key === 'Escape') setEditingGroupId(null);
+                                                        if (e.key === 'Escape') (setEditingGroupId as any)(() => null);
                                                     }}
                                                 />
                                             ) : (
@@ -312,7 +312,11 @@ export const ConfigPanel = () => {
                                                     tabIndex={0}
                                                 >
                                                     <span className="preset-group-tag-name" title={group.name}>{group.name}</span>
-                                                    <button className="preset-group-tag-delete" title="Delete group" onClick={(e) => { e.stopPropagation(); handleDeletePresetGroup(group.id); }}>&times;</button>
+                                                    <button className="preset-group-tag-delete" title="删除分组" onClick={(e) => { e.stopPropagation(); handleDeletePresetGroup(group.id); }}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             )
                                         ))}
@@ -321,7 +325,7 @@ export const ConfigPanel = () => {
                                                 type="text"
                                                 ref={creatingInputRef}
                                                 className="preset-group-tag-input"
-                                                placeholder="New Group"
+                                                placeholder="新分组"
                                                 value={newGroupName}
                                                 onChange={(e) => setNewGroupName(e.target.value)}
                                                 onBlur={() => { handleAddPresetGroup(newGroupName); setNewGroupName(''); }}
@@ -331,29 +335,29 @@ export const ConfigPanel = () => {
                                                 }}
                                             />
                                         ) : (
-                                            <button className="icon-btn" title="Add new group" onClick={() => setIsCreatingGroup(true)}>
+                                            <button className="icon-btn" title="添加新分组" onClick={() => setIsCreatingGroup(true)}>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
                                                 </svg>
                                             </button>
                                         )}
                                     </div>
-                                    <p className="preset-prompts-help">Click to insert into the active input.</p>
+                                    <p className="preset-prompts-help">点击插入到当前输入框。</p>
                                     <div className="preset-prompts-list">
                                         {filteredPrompts.map(p => (
-                                            <div key={p.id} className="preset-prompt-item" onClick={() => handlePresetClick(p.text)} title="Click to insert">
+                                            <div key={p.id} className="preset-prompt-item" onClick={() => handlePresetClick(p.text)} title="点击插入">
                                                 <span className="preset-prompt-text">{p.text}</span>
                                                 <div className="preset-prompt-actions">
-                                                    <button title="Edit" onClick={(e) => { e.stopPropagation(); handleStartEditPreset(p, e); }}>
+                                                    <button title="编辑" onClick={(e) => { e.stopPropagation(); handleStartEditPreset(p, e); }}>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V12h2.293z" /></svg>
                                                     </button>
-                                                    <button title="Delete" className="delete-preset-btn" onClick={(e) => { e.stopPropagation(); handleDeletePresetPrompt(p.id); }}>
+                                                    <button title="删除" className="delete-preset-btn" onClick={(e) => { e.stopPropagation(); handleDeletePresetPrompt(p.id); }}>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
                                                     </button>
                                                 </div>
                                             </div>
                                         ))}
-                                        {filteredPrompts.length === 0 && <div className="no-presets-message">No prompts yet.</div>}
+                                        {filteredPrompts.length === 0 && <div className="no-presets-message">暂无预设。</div>}
                                     </div>
                                 </div>
                             </>

@@ -82,7 +82,7 @@ export const PresetPromptEditorModal = () => {
                     if (newTop !== currentTop) {
                         return { ...prevStyle, top: `${newTop}px` };
                     }
-                    
+
                     return prevStyle;
                 });
             }
@@ -99,7 +99,7 @@ export const PresetPromptEditorModal = () => {
             }
         };
         if (isOpen) {
-          document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keydown', handleKeyDown);
         }
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose]);
@@ -119,41 +119,41 @@ export const PresetPromptEditorModal = () => {
     }
 
     return (
-        <div 
+        <div
             className={`preset-prompt-editor-overlay ${isOpen ? 'visible' : ''}`}
         >
-            <div 
-                className="preset-prompt-editor" 
-                ref={modalRef} 
+            <div
+                className="preset-prompt-editor"
+                ref={modalRef}
                 style={style}
             >
                 <div className="preset-prompt-editor-header">
                     <div className="preset-prompt-editor-header-main">
-                        <h3>{isEditing ? "Edit Meta Prompt" : "New Meta Prompt"}</h3>
-                         <div className="group-selector-wrapper" ref={groupDropdownRef}>
+                        <h3>{isEditing ? "编辑预设 Prompt" : "新建预设 Prompt"}</h3>
+                        <div className="group-selector-wrapper" ref={groupDropdownRef}>
                             <button className={`group-selector-trigger ${isGroupDropdownOpen ? 'is-open' : ''}`} onClick={() => setIsGroupDropdownOpen(o => !o)}>
-                                <span>{groups.find(g => g.id === currentGroupId)?.name || 'Ungrouped'}</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708 .708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
+                                <span>{groups.find(g => g.id === currentGroupId)?.name || '未分组'}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708 .708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" /></svg>
                             </button>
                             {isGroupDropdownOpen && (
                                 <div className="group-selector-options">
-                                    <div className="group-selector-option" onClick={() => { setCurrentGroupId(null); setIsGroupDropdownOpen(false); }}>Ungrouped</div>
+                                    <div className="group-selector-option" onClick={() => { (setCurrentGroupId as any)(() => null); setIsGroupDropdownOpen(false); }}>未分组</div>
                                     {groups.map(g => (
-                                        <div key={g.id} className="group-selector-option" onClick={() => { setCurrentGroupId(g.id); setIsGroupDropdownOpen(false); }}>{g.name}</div>
+                                        <div key={g.id} className="group-selector-option" onClick={() => { (setCurrentGroupId as any)(g.id); setIsGroupDropdownOpen(false); }}>{g.name}</div>
                                     ))}
                                 </div>
                             )}
                         </div>
                     </div>
                     <div className="preset-prompt-editor-header-actions">
-                        <button onClick={() => onSave()} disabled={!text.trim()} title={`Save (${isMac ? 'Cmd' : 'Ctrl'}+Enter)`}>
+                        <button onClick={() => onSave()} disabled={!text.trim()} title={`保存 (${isMac ? 'Cmd' : 'Ctrl'}+Enter)`}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                             </svg>
                         </button>
-                        <button onClick={() => onClose()} title="Cancel (Esc)">
+                        <button onClick={() => onClose()} title="取消 (Esc)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
                             </svg>
                         </button>
                     </div>
@@ -161,7 +161,7 @@ export const PresetPromptEditorModal = () => {
                 <div className="preset-prompt-editor-body">
                     <textarea
                         ref={textareaRef}
-                        placeholder="Enter your preset meta prompt..."
+                        placeholder="输入预设 Prompt..."
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         onKeyDown={(e) => {

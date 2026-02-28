@@ -21,7 +21,7 @@ export const ActionLogViewerModal = () => {
     const getRolePrefix = (payload: Record<string, any>): string => {
         const message = payload.content || payload.originalContent;
         if (message && message.role) {
-            return message.role === 'user' ? 'User' : 'AI';
+            return message.role === 'user' ? '用户' : 'AI';
         }
         return '';
     };
@@ -29,17 +29,17 @@ export const ActionLogViewerModal = () => {
     const formatLogSummary = (log: ActionLogEntry) => {
         const role = getRolePrefix(log.payload);
         switch (log.type) {
-            case 'new_chat': return `Created new chat`;
-            case 'rename_chat': return `Renamed chat`;
-            case 'fork_chat': return `Branched chat`;
-            case 'edit_message': return `Edited ${role} message`;
-            case 'edit_and_regenerate': return `Edited & regenerated ${role} message`;
-            case 'delete_message': return `Deleted ${role} message`;
-            case 'regenerate_response': return `Regenerated response`;
-            case 'change_system_prompt': return `Changed system prompt`;
-            case 'change_model': return `Switched model to <strong>${log.payload.to}</strong>`;
-            case 'toggle_web_search': return `Web search ${log.payload.value ? 'enabled' : 'disabled'}`;
-            default: return `Action: ${log.type}`;
+            case 'new_chat': return `创建了新对话`;
+            case 'rename_chat': return `重命名了对话`;
+            case 'fork_chat': return `派生了对话`;
+            case 'edit_message': return `编辑了 ${role} 消息`;
+            case 'edit_and_regenerate': return `编辑并重新生成了 ${role} 消息`;
+            case 'delete_message': return `删除了 ${role} 消息`;
+            case 'regenerate_response': return `重新生成了回答`;
+            case 'change_system_prompt': return `修改了系统提示词`;
+            case 'change_model': return `将模型切换为 <strong>${log.payload.to}</strong>`;
+            case 'toggle_web_search': return `网页搜索已${log.payload.value ? '开启' : '关闭'}`;
+            default: return `操作: ${log.type}`;
         }
     };
 
@@ -49,15 +49,19 @@ export const ActionLogViewerModal = () => {
         <div className={`action-log-viewer-overlay ${isOpen ? "visible" : ""}`} onMouseDown={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}>
             <div className="action-log-viewer">
                 <div className="action-log-viewer-header">
-                    <h3>Action Log for "{currentChat?.title}"</h3>
+                    <h3>"{currentChat?.title}" 的操作日志</h3>
                     <div className="action-log-header-actions">
-                        <button onClick={() => handleClearLog()} title="Clear entire log">
+                        <button onClick={() => handleClearLog()} title="清空所有日志">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
                                 <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                             </svg>
                         </button>
-                        <button onClick={() => setIsOpen(false)} aria-label="Close action log viewer">&times;</button>
+                        <button onClick={() => setIsOpen(false)} aria-label="关闭操作日志查看器" title="关闭">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div className="action-log-viewer-content">
@@ -75,7 +79,7 @@ export const ActionLogViewerModal = () => {
                         </details>
                     ))}
                     {(!currentChat?.actionLog || currentChat.actionLog.length === 0) && (
-                        <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '2rem' }}>No actions logged for this chat yet.</p>
+                        <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '2rem' }}>此对话暂无操作记录。</p>
                     )}
                 </div>
             </div>

@@ -120,7 +120,7 @@ export const MessageList = () => {
                 <div className="welcome-container">
                     <h1 className="welcome-title">Chat Studio</h1>
                     <p className="welcome-subtitle">
-                        {!isAIReady ? "The application is not configured with an API key." : "Hello! How can I help you today?"}
+                        {!isAIReady ? "由于未配置 API Key，应用暂时无法提供服务。" : "您好！今天我能为您做些什么？"}
                     </p>
                 </div>
             ) : (

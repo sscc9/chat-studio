@@ -102,8 +102,12 @@ export const SettingsModal = () => {
         <div className="settings-modal-overlay" onClick={() => setIsOpen(false)}>
             <div className="settings-modal" onClick={e => e.stopPropagation()}>
                 <div className="settings-modal-header">
-                    <h3>Settings</h3>
-                    <button className="settings-modal-close-btn" onClick={() => setIsOpen(false)}>&times;</button>
+                    <h3>设置</h3>
+                    <button className="settings-modal-close-btn" onClick={() => setIsOpen(false)} title="关闭">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                        </svg>
+                    </button>
                 </div>
                 <div className="settings-modal-body">
                     <div className="settings-sidebar">
@@ -123,14 +127,14 @@ export const SettingsModal = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
                                 </svg>
-                                Add Provider
+                                添加模型商
                             </button>
                         </div>
                     </div>
                     <div className="settings-content">
                         {isAddingProvider ? (
                             <div>
-                                <h4>Select Provider Type</h4>
+                                <h4>选择模型商类型</h4>
                                 <div className="provider-type-selection">
                                     <div className="provider-type-card" onClick={() => handleAddProvider('google')}>
                                         Google Gemini
@@ -143,7 +147,7 @@ export const SettingsModal = () => {
                         ) : selectedProvider ? (
                             <>
                                 <div className="settings-form-group">
-                                    <label>Name</label>
+                                    <label>名称</label>
                                     <input
                                         type="text"
                                         className="settings-input"
@@ -158,12 +162,12 @@ export const SettingsModal = () => {
                                         className="settings-input"
                                         value={selectedProvider.apiKey}
                                         onChange={(e) => updateProvider(selectedProvider.id, { apiKey: e.target.value })}
-                                        placeholder="Enter API Key"
+                                        placeholder="输入 API Key"
                                     />
                                 </div>
                                 {selectedProvider.type === 'openai-compatible' && (
                                     <div className="settings-form-group">
-                                        <label>Base URL (Optional)</label>
+                                        <label>接口地址 (选填)</label>
                                         <input
                                             type="text"
                                             className="settings-input"
@@ -174,45 +178,50 @@ export const SettingsModal = () => {
                                     </div>
                                 )}
                                 <div className="settings-form-group">
-                                    <label>Models</label>
+                                    <label>模型列表</label>
                                     <div className="models-list">
                                         {selectedProvider.models.map(m => (
                                             <div key={m.id} className={`model-item ${editingModelId === m.id ? 'editing' : ''}`}>
                                                 <span className="model-item-name">{m.name || m.id} <small style={{ opacity: 0.7 }}>({m.id})</small></span>
                                                 <div className="model-item-actions">
-                                                    <button className="model-edit-btn" onClick={() => startEditModel(m)} title="Edit">
+                                                    <button className="model-edit-btn" onClick={() => startEditModel(m)} title="编辑">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V12h2.293z" /></svg>
                                                     </button>
-                                                    <button className="model-delete-btn" onClick={() => removeModel(selectedProvider.id, m.id)} title="Delete">&times;</button>
+                                                    <button className="model-delete-btn" onClick={() => removeModel(selectedProvider.id, m.id)} title="删除">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                            <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}
                                         {selectedProvider.models.length === 0 && (
-                                            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No models added</div>
+                                            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>暂无已添加的模型</div>
                                         )}
                                     </div>
                                     <div className="add-model-row">
                                         <input
                                             type="text"
                                             className="settings-input add-model-input"
-                                            placeholder="Model ID (e.g. gpt-4)"
+                                            placeholder="模型 ID (例如: gpt-4)"
                                             value={newModelId}
                                             onChange={(e) => setNewModelId(e.target.value)}
                                         />
                                         <input
                                             type="text"
                                             className="settings-input add-model-input"
-                                            placeholder="Display Name (Optional)"
+                                            placeholder="显示名称 (选填)"
                                             value={newModelName}
                                             onChange={(e) => setNewModelName(e.target.value)}
                                         />
                                         <div style={{ display: 'flex', gap: '0.25rem' }}>
                                             {editingModelId && (
-                                                <button className="icon-btn" onClick={cancelEditModel} title="Cancel Edit">
+                                                <button className="icon-btn" onClick={cancelEditModel} title="取消编辑">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" /></svg>
                                                 </button>
                                             )}
-                                            <button className="icon-btn" onClick={() => addModel(selectedProvider.id)} disabled={!newModelId} title={editingModelId ? "Update Model" : "Add Model"}>
+                                            <button className="icon-btn" onClick={() => addModel(selectedProvider.id)} disabled={!newModelId} title={editingModelId ? "更新模型" : "添加模型"}>
                                                 {editingModelId ? (
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" /></svg>
                                                 ) : (
@@ -225,12 +234,12 @@ export const SettingsModal = () => {
                                     </div>
                                 </div>
                                 <button className="delete-provider-btn" onClick={() => deleteProvider(selectedProvider.id)}>
-                                    Delete Provider
+                                    删除模型商
                                 </button>
                             </>
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-secondary)' }}>
-                                Select a provider or add a new one
+                                请选择一个模型商或添加新模型商
                             </div>
                         )}
                     </div>

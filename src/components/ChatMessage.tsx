@@ -130,17 +130,17 @@ export const ChatMessage = React.memo(({
                     <div className="message-actions">
                         {isEditing ? (
                             <>
-                                <button title="Save" onClick={() => handleSaveEdit()} disabled={!editingMessageContent.trim()}>
+                                <button title="保存" onClick={() => handleSaveEdit()} disabled={!editingMessageContent.trim()}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="1 1 14 14">
                                         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                                     </svg>
                                 </button>
                                 {msg.role === 'user' && (
-                                    <button title="Save & Regenerate" onClick={() => handleSaveAndRegenerate()} disabled={!editingMessageContent.trim() || isLoading || !isAIReady}>
+                                    <button title="保存并重新生成" onClick={() => handleSaveAndRegenerate()} disabled={!editingMessageContent.trim() || isLoading || !isAIReady}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="1 1 14 14"><path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" /><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" /></svg>
                                     </button>
                                 )}
-                                <button title="Cancel" onClick={() => handleCancelEdit()}>
+                                <button title="取消" onClick={() => handleCancelEdit()}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="1 1 14 14">
                                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
                                     </svg>
@@ -148,16 +148,16 @@ export const ChatMessage = React.memo(({
                             </>
                         ) : (
                             <>
-                                <button title="Edit" onClick={startEditAndCaptureScroll} disabled={!hasEditableText || isLoading || disableActions}>
+                                <button title="编辑" onClick={startEditAndCaptureScroll} disabled={!hasEditableText || isLoading || disableActions}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="-0.5 -0.5 17 17"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V12h2.293z" /></svg>
                                 </button>
-                                <button title="Copy" onClick={() => handleCopyMessage(msg.parts)} disabled={!hasTextContent || isLoading || disableActions}>
+                                <button title="复制" onClick={() => handleCopyMessage(msg.parts)} disabled={!hasTextContent || isLoading || disableActions}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" /></svg>
                                 </button>
-                                <button title="Regenerate" onClick={() => handleRegenerateResponse(index)} disabled={!canRegenerate || isLoading || disableActions || !isAIReady}>
+                                <button title="重新生成" onClick={() => handleRegenerateResponse(index)} disabled={!canRegenerate || isLoading || disableActions || !isAIReady}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="1 1 14 14"><path fillRule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" /><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" /></svg>
                                 </button>
-                                <button title="Branch from here" onClick={() => handleForkChat(index)} disabled={isLoading || disableActions}>
+                                <button title="从此处派生对话" onClick={() => handleForkChat(index)} disabled={isLoading || disableActions}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <circle cx="12" cy="18" r="3" />
                                         <circle cx="6" cy="6" r="3" />
@@ -167,7 +167,7 @@ export const ChatMessage = React.memo(({
                                     </svg>
                                 </button>
                                 <button
-                                    title={confirmingDelete ? "Confirm Delete" : "Delete"}
+                                    title={confirmingDelete ? "确认删除" : "删除"}
                                     onClick={() => confirmingDelete ? handleDeleteMessage(index) : setConfirmingDelete(true)}
                                     className={confirmingDelete ? 'confirm-delete' : ''}
                                     disabled={isLoading || disableActions}
@@ -182,7 +182,7 @@ export const ChatMessage = React.memo(({
                     </div>
                 )}
                 <div className="message-header">
-                    <span className="message-author">{msg.role === 'user' ? 'User' : 'Ai'}</span>
+                    <span className="message-author">{msg.role === 'user' ? '用户' : 'AI'}</span>
                 </div>
                 <div className="message-body">
                     {isRegenerating && !hasTextContent && <div className="loading-indicator"><span></span><span></span><span></span></div>}
@@ -219,7 +219,7 @@ export const ChatMessage = React.memo(({
                 </div>
                 {!isEditing && msg.role === 'model' && msg.groundingChunks && msg.groundingChunks.length > 0 && (
                     <div className="grounding-sources">
-                        <strong>Sources:</strong>
+                        <strong>引用来源:</strong>
                         <ol>
                             {msg.groundingChunks.map((chunk, chunkIndex) => (
                                 chunk.web?.uri && (
