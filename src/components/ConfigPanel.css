@@ -10,19 +10,17 @@
 }
 
 .config-panel .panel-content-wrapper {
-    width: 280px;
+    width: 300px;
 }
 
 .config-panel-tabs {
     display: flex;
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
-    padding: 0 1.5rem;
-    padding-top: 0.75rem;
-    gap: 0.5rem;
-    align-items: center;
+    padding: 1.25rem 1rem 0 1rem;
+    align-items: flex-end;
     /* Ensure items are centered if they don't fill height */
-    min-height: 60px;
+    min-height: 64px;
     /* Match others */
     box-sizing: border-box;
 }
@@ -31,7 +29,7 @@
     flex-grow: 1;
     background: none;
     border: none;
-    padding: 0.75rem 0.5rem;
+    padding: 0 0.5rem 0.75rem 0.5rem;
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -52,7 +50,8 @@
 .config-panel-header-actions {
     display: flex;
     align-items: center;
-    margin-left: auto;
+    align-self: center;
+    margin-bottom: 0.5rem;
 }
 
 .config-content {

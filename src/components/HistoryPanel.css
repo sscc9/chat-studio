@@ -15,7 +15,7 @@
 }
 
 .history-panel .panel-content-wrapper {
-  width: 260px;
+  width: 300px;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -26,11 +26,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem;
+  padding: 1.25rem 1rem 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
   gap: 0.5rem;
-  min-height: 60px;
+  min-height: 64px;
   /* Force minimum height to match ChatHeader potentially */
   box-sizing: border-box;
 }
@@ -59,7 +59,7 @@
   background-color: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 0.4rem 0.75rem;
+  padding: 0 1rem;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
@@ -71,7 +71,7 @@
   align-items: center;
   justify-content: center;
   height: 32px;
-  /* Enforce height to ensure alignment */
+  white-space: nowrap;
 }
 
 .new-chat-btn:hover {
