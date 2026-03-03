@@ -182,9 +182,11 @@ export const ConfigPanel = () => {
                                             className="icon-btn"
                                             onClick={() => setIsSettingsModalOpen(true)}
                                             title="管理模型"
-                                            style={{ fontSize: '0.8rem', padding: '2px 6px', height: 'auto', width: 'auto', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                                            style={{ padding: '4px', borderRadius: '6px' }}
                                         >
-                                            管理
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                                            </svg>
                                         </button>
                                     </div>
                                     <div className="custom-select-container" ref={modelDropdownRef}>
@@ -202,17 +204,23 @@ export const ConfigPanel = () => {
                                         </div>
                                         {isModelDropdownOpen && (
                                             <div className="custom-select-options" role="listbox">
-                                                {allModels.map(m => (
-                                                    <div
-                                                        key={m.id}
-                                                        className={`custom-select-option ${model === m.id ? 'selected' : ''}`}
-                                                        onClick={() => { handleConfigChange({ model: m.id }); setIsModelDropdownOpen(false); }}
-                                                        role="option"
-                                                        aria-selected={model === m.id}
-                                                    >
-                                                        {m.name || m.id}
+                                                {allModels.length > 0 ? (
+                                                    allModels.map(m => (
+                                                        <div
+                                                            key={m.id}
+                                                            className={`custom-select-option ${model === m.id ? 'selected' : ''}`}
+                                                            onClick={() => { handleConfigChange({ model: m.id }); setIsModelDropdownOpen(false); }}
+                                                            role="option"
+                                                            aria-selected={model === m.id}
+                                                        >
+                                                            {m.name || m.id}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="no-models-message" style={{ padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                                                        无可用模型，请点管理添加。
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                         )}
                                     </div>

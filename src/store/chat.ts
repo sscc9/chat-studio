@@ -11,6 +11,7 @@ import type { Chat, ChatConfig, Message, ActionLogEntry, ActionLogEntryType, Sys
 
 import { showToastAtom, isHistoryPanelOpenAtom, importFileRefAtom } from './ui';
 import { documentContentAtom, presetPromptsAtom, presetGroupsAtom } from './tools';
+import { allModelsAtom } from './settings';
 import { isInitializedAtom, aiAtom } from './core';
 
 // =================================================================
@@ -48,7 +49,7 @@ export const logActionAtom = atom(
 // CONFIGURATION ATOMS (Active Config)
 // =================================================================
 // Global Config State (also used by tools)
-export const modelAtom = atomWithStorage("ai-chat-default-model", "gemini-2.5-flash");
+export const modelAtom = atomWithStorage("ai-chat-default-model", "");
 export const useGoogleSearchAtom = atomWithStorage("ai-chat-default-search", false);
 export const systemInstructionAtom = atom("");
 
@@ -57,7 +58,7 @@ export const syncConfigWithChatAtom = atom(null, (get, set, chat: Chat | undefin
     if (chat?.config) {
         set(systemInstructionAtom, chat.config.systemInstruction || '');
         set(useGoogleSearchAtom, chat.config.useGoogleSearch || false);
-        set(modelAtom, chat.config.model || "gemini-2.5-flash");
+        set(modelAtom, chat.config.model || "");
     } else {
         // Reset to defaults if no chat is active
         set(systemInstructionAtom, "");
@@ -138,6 +139,9 @@ export const trashedChatsAtom = atom(get =>
 // --- ACTIONS ---
 
 export const handleNewChatAtom = atom(null, (get, set, title = 'New Chat') => {
+    const allModels = get(allModelsAtom);
+    const defaultModel = (get(modelAtom) || (allModels.length > 0 ? allModels[0].id : '')) as string;
+
     const newChat: Chat = {
         id: `chat-${Date.now()}`,
         title: title,
@@ -146,7 +150,7 @@ export const handleNewChatAtom = atom(null, (get, set, title = 'New Chat') => {
         config: {
             systemInstruction: '',
             useGoogleSearch: get(useGoogleSearchAtom),
-            model: get(modelAtom),
+            model: defaultModel,
         },
         actionLog: [],
         autoTitled: false,
@@ -202,18 +206,21 @@ export const initChatHistoryAtom = atom(
                 set(showToastAtom, 'Storage upgraded successfully!');
             }
 
-            const supportedModels = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-3-pro-preview'];
+            const allModels = get(allModelsAtom);
+            const availableModelIds = allModels.map(m => m.id);
+            const fallbackModel = availableModelIds.length > 0 ? availableModelIds[0] : '';
+
             const chatsWithUpdates: Chat[] = chatMetadata.map((chat: Partial<Chat>) => {
                 const newChatDefaults: ChatConfig = {
                     systemInstruction: '',
                     useGoogleSearch: false,
-                    model: 'gemini-2.5-flash',
+                    model: fallbackModel,
                 };
                 const existingModel = chat.config?.model;
                 const config: ChatConfig = {
                     ...newChatDefaults,
                     ...(chat.config || {}),
-                    model: (existingModel && supportedModels.includes(existingModel)) ? existingModel : 'gemini-2.5-flash',
+                    model: (existingModel && availableModelIds.includes(existingModel)) ? existingModel : fallbackModel,
                 };
                 return {
                     id: chat.id!,
@@ -479,20 +486,22 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
             const validChats: Partial<Chat>[] = chatsToImport.filter((c: Partial<Chat>) => c?.id && c.title);
 
             if (validChats.length > 0) {
+                const allModels = get(allModelsAtom);
+                const availableModelIds = allModels.map(m => m.id);
+                const fallbackModel = availableModelIds.length > 0 ? availableModelIds[0] : '';
                 const existingChatIds = new Set(get(chatsAtom).map(c => c.id));
+
                 const resolvedChats: Chat[] = validChats.map((chat, i) => {
                     const newChatDefaults: ChatConfig = {
                         systemInstruction: '',
                         useGoogleSearch: false,
-                        model: 'gemini-2.5-flash',
+                        model: fallbackModel,
                     };
                     const existingModel = chat.config?.model;
-                    const supportedModels = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-3-pro-preview'];
-                    // FIX: Explicitly type the config object to ensure it matches the ChatConfig interface.
                     const config: ChatConfig = {
                         ...newChatDefaults,
                         ...(chat.config || {}),
-                        model: (existingModel && supportedModels.includes(existingModel)) ? existingModel : 'gemini-2.5-flash',
+                        model: (existingModel && availableModelIds.includes(existingModel)) ? existingModel : fallbackModel,
                     };
 
                     return {
@@ -573,8 +582,11 @@ export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: stri
     const prompt = `Based on the following conversation, create a short, descriptive title (5 words or less) for the chat session. Do not include quotes or any introductory text in your response. Just provide the title text itself.\n\nUser: ${userText.substring(0, 200)}\nAI: ${modelText.substring(0, 200)}`;
 
     try {
+        const generatingModel = chat.config.model || (get(allModelsAtom)[0]?.id) || '';
+        if (!generatingModel) return;
+
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: generatingModel,
             contents: prompt,
         });
 

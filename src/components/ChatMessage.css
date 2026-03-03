@@ -12,10 +12,11 @@
   flex-grow: 1;
   position: relative;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 0.75rem 1rem;
   transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  min-width: 0; /* Fix for flexbox overflow */
+  min-width: 0;
+  /* Fix for flexbox overflow */
 }
 
 .chat-message:not(.is-editing):hover .message-bubble,
@@ -26,7 +27,8 @@
 
 .message-header {
   margin-bottom: 0.5rem;
-  overflow: hidden; /* Align with floated actions menu */
+  overflow: hidden;
+  /* Align with floated actions menu */
 }
 
 .message-author {
@@ -48,7 +50,7 @@
   margin-left: 1rem;
   margin-right: -0.25rem;
   padding: 4px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   margin-top: calc(-15px - 0.75rem);
 }
 
@@ -87,11 +89,12 @@
 }
 
 .message-actions button.confirm-delete {
-    background-color: transparent;
-    color: var(--delete-confirm-color);
+  background-color: transparent;
+  color: var(--delete-confirm-color);
 }
+
 .message-actions button.confirm-delete:hover {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .message-body {
@@ -102,24 +105,26 @@
 /* Attachments inside messages */
 .message-image-attachment,
 .message-video-attachment {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 8px;
-    margin-top: 8px;
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: var(--radius-md);
+  margin-top: 8px;
 }
+
 .message-audio-attachment {
-    width: 100%;
-    margin-top: 8px;
+  width: 100%;
+  margin-top: 8px;
 }
+
 .message-file-attachment {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background-color: var(--background-secondary);
-    border-radius: 6px;
-    margin-top: 8px;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+  font-size: 0.9rem;
 }
 
 /* Message Editor */
@@ -133,12 +138,13 @@
   color: inherit;
   line-height: 1.6;
   overflow-y: hidden;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 0;
   margin: 0;
 }
+
 .message-editor-textarea:focus {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .grounding-sources {
@@ -148,6 +154,7 @@
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
+
 .grounding-sources ol {
   padding-left: 1.25rem;
   margin-top: 0.25rem;
@@ -155,10 +162,12 @@
   flex-direction: column;
   gap: 0.25rem;
 }
+
 .grounding-sources a {
   color: var(--accent-secondary);
   text-decoration: none;
 }
+
 .grounding-sources a:hover {
   text-decoration: underline;
 }

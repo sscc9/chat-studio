@@ -9,21 +9,6 @@ import { ProviderConfig } from '../types';
 
 const defaultProviders: ProviderConfig[] = [];
 
-// Initialize with default Gemini provider if API key is available in env
-if (process.env.API_KEY) {
-    defaultProviders.push({
-        id: 'google-default',
-        name: 'Google Gemini',
-        type: 'google',
-        apiKey: process.env.API_KEY,
-        models: [
-            { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-            { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
-            { id: 'gemini-2.0-flash-thinking-exp-01-21', name: 'Gemini 2.0 Flash Thinking' },
-        ]
-    });
-}
-
 export const providersAtom = atomWithStorage<ProviderConfig[]>('chat-studio-providers', defaultProviders);
 
 export const allModelsAtom = atom((get) => {

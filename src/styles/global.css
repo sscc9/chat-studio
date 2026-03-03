@@ -29,6 +29,12 @@
   --shadow-color-strong: rgba(0, 0, 0, 0.2);
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
+
+  /* Border Radius System */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 }
 
 html[data-theme='dark'] {
@@ -86,8 +92,8 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s, background-color 0.2s;
-  border-radius: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-sm);
 }
 
 .icon-btn:hover,
@@ -111,7 +117,7 @@ body,
   background-color: var(--prose-pre-bg);
   border: 1px solid var(--border-color);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow-x: auto;
   font-family: 'Courier New', Courier, monospace;
 }
@@ -120,7 +126,7 @@ body,
   font-family: 'Courier New', Courier, monospace;
   background-color: var(--background-tertiary);
   padding: 0.1em 0.3em;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .prose pre code {
@@ -204,9 +210,9 @@ body,
   transform: translate(-50%, -100px);
   background-color: var(--toast-bg);
   color: var(--toast-color);
-  padding: 10px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px var(--shadow-color-strong);
+  padding: 12px 24px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 16px var(--shadow-color-strong);
   z-index: 1000;
   opacity: 0;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;

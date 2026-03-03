@@ -24,7 +24,7 @@
 
 .action-log-viewer {
     background-color: var(--background-secondary);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px var(--shadow-color-strong);
     width: 60vw;
     max-width: 800px;
@@ -72,7 +72,7 @@
     cursor: pointer;
     color: var(--text-secondary);
     padding: 4px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -109,7 +109,7 @@
 
 .action-log-item summary {
     padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -156,7 +156,7 @@
     padding: 0.5rem 0.75rem;
     margin: 4px;
     background-color: var(--message-hover-bg);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     border-top: 1px solid var(--border-color);
 }
 

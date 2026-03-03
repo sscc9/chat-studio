@@ -28,13 +28,8 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
         const activeRequestRef = get(activeRequestRefAtom);
 
         const providers = get(providersAtom);
-        const modelId = chat.config.model || 'gemini-2.5-flash';
+        const modelId = chat.config.model;
         let provider = providers.find(p => p.models.some(m => m.id === modelId));
-
-        // Fallback to first google provider if not found (legacy support)
-        if (!provider) {
-            provider = providers.find(p => p.type === 'google');
-        }
 
         if (!provider) {
             set(isLoadingAtom, false);
@@ -145,9 +140,8 @@ export const updateTokenCountAtom = atom(null, async (get, set) => {
         }
 
         const providers = get(providersAtom);
-        const modelId = currentChat.config.model || 'gemini-2.5-flash';
+        const modelId = currentChat.config.model;
         let provider = providers.find(p => p.models.some(m => m.id === modelId));
-        if (!provider) provider = providers.find(p => p.type === 'google');
 
         if (!provider) {
             set(tokenCountAtom, 0);
