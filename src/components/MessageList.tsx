@@ -116,6 +116,7 @@ export const MessageList = () => {
 
     return (
         <div className="chat-messages" ref={chatMessagesRef}>
+            <div className="scroll-fog top-scroll-fog"></div>
             {currentChat?.messages.length === 0 && !isLoading ? (
                 <div className="welcome-container">
                     <h1 className="welcome-title">Chat Studio</h1>
@@ -135,6 +136,7 @@ export const MessageList = () => {
                     ))}
                 </div>
             )}
+            <div className="scroll-fog bottom-scroll-fog"></div>
         </div>
     );
 };

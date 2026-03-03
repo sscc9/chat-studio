@@ -9,12 +9,37 @@
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  position: relative; /* For welcome container positioning */
+  position: relative;
+  /* For welcome container positioning */
   overflow-y: auto;
   /* --- Auto-hiding Scrollbar --- */
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   transition: scrollbar-color 0.3s;
+}
+
+.scroll-fog {
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.top-scroll-fog {
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(to bottom, var(--background-primary), transparent);
+  margin-bottom: -40px;
+}
+
+.bottom-scroll-fog {
+  bottom: 0;
+  z-index: 2;
+  background: linear-gradient(to top, var(--background-primary), transparent);
+  margin-top: -40px;
 }
 
 .chat-messages.is-scrolling {
@@ -33,6 +58,7 @@
   background-color: transparent;
   border-radius: 10px;
   transition: background-color 0.3s;
+  z-index: 10;
 }
 
 .chat-messages.is-scrolling::-webkit-scrollbar-thumb {
@@ -44,16 +70,17 @@
 }
 
 .message-list-content {
-    padding-bottom: 1rem;
+  padding-bottom: 0;
 }
 
 .message-list-item {
-    padding: 0 1.5rem;
-    padding-top: 1rem;
+  padding: 0 1.5rem;
+  padding-top: 1rem;
 }
+
 /* The last item doesn't need top padding because the parent has a gap. */
 .message-list-item:first-child {
-    padding-top: 1.5rem;
+  padding-top: 1.5rem;
 }
 
 
@@ -88,11 +115,12 @@
 }
 
 @media (max-width: 768px) {
-    .message-list-item {
-        padding: 0 1rem;
-        padding-top: 1rem;
-    }
-    .message-list-item:first-child {
-        padding-top: 1rem;
-    }
+  .message-list-item {
+    padding: 0 1rem;
+    padding-top: 1rem;
+  }
+
+  .message-list-item:first-child {
+    padding-top: 1rem;
+  }
 }

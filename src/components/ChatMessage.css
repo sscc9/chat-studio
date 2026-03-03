@@ -39,9 +39,10 @@
 
 .message-actions {
   position: sticky;
-  top: -4px;
+  top: 0.75rem;
   float: right;
-  z-index: 1;
+  z-index: 100;
+  /* Extremely high to beat the fog (z-index 2) */
   display: flex;
   align-items: center;
   gap: 4px;
