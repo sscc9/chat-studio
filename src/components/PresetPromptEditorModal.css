@@ -12,6 +12,7 @@
     pointer-events: none;
     transition: opacity 0.2s ease-in-out;
 }
+
 .preset-prompt-editor-overlay.visible {
     opacity: 1;
 }
@@ -20,7 +21,7 @@
     pointer-events: auto;
     position: fixed;
     background-color: var(--background-secondary);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px var(--shadow-color-medium);
     width: 320px;
     min-height: 250px;
@@ -40,41 +41,49 @@
     border-bottom: 1px solid var(--border-color);
     gap: 0.5rem;
 }
+
 .preset-prompt-editor-header-main {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    min-width: 0; /* for flex ellipsis */
+    min-width: 0;
+    /* for flex ellipsis */
 }
+
 .preset-prompt-editor-header h3 {
     font-size: 0.9rem;
     font-weight: 600;
     white-space: nowrap;
 }
+
 .preset-prompt-editor-header-actions {
     display: flex;
     gap: 0.5rem;
     flex-shrink: 0;
 }
+
 .preset-prompt-editor-header-actions button {
     background: none;
     border: none;
     cursor: pointer;
     color: var(--text-secondary);
     padding: 4px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
+
 .preset-prompt-editor-header-actions button:hover:not(:disabled) {
     color: var(--text-primary);
 }
+
 .preset-prompt-editor-header-actions button svg {
     width: 18px;
     height: 18px;
 }
+
 .preset-prompt-editor-header-actions button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -86,6 +95,7 @@
     flex-grow: 1;
     display: flex;
 }
+
 .preset-prompt-editor-body textarea {
     width: 100%;
     border: none;
@@ -97,7 +107,7 @@
     background-color: var(--background-primary);
     color: var(--text-primary);
     line-height: 1.6;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     overflow-y: hidden;
 }
 
@@ -106,10 +116,11 @@
     flex-shrink: 1;
     min-width: 0;
 }
+
 .group-selector-trigger {
     background-color: transparent;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     padding: 4px 8px;
     font-size: 0.8rem;
     color: var(--text-secondary);
@@ -120,27 +131,31 @@
     width: 100%;
     transition: background-color 0.2s;
 }
+
 .group-selector-trigger:hover,
 .group-selector-trigger.is-open {
     background-color: var(--background-tertiary);
 }
+
 .group-selector-trigger span {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .group-selector-trigger svg {
     width: 12px;
     height: 12px;
     flex-shrink: 0;
 }
+
 .group-selector-options {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
     background-color: var(--background-primary);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     z-index: 1010;
     max-height: 150px;
     overflow-y: auto;
@@ -148,15 +163,17 @@
     box-shadow: 0 2px 8px var(--shadow-color-light);
     width: 150px;
 }
+
 .group-selector-option {
     padding: 6px 8px;
     font-size: 0.85rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .group-selector-option:hover {
     background-color: var(--background-tertiary);
 }

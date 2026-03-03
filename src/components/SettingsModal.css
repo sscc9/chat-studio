@@ -108,13 +108,13 @@
 }
 
 .settings-provider-item.active {
-    background-color: var(--accent-primary);
-    color: white;
+    background-color: var(--text-primary);
+    color: var(--background-primary);
     font-weight: 500;
 }
 
 .settings-provider-item.active svg {
-    color: white !important;
+    color: var(--background-primary) !important;
 }
 
 .settings-sidebar-footer {
@@ -138,7 +138,8 @@
 }
 
 .add-provider-btn:hover {
-    background-color: var(--message-hover-bg);
+    border-color: var(--text-primary);
+    background-color: transparent;
 }
 
 .settings-content {
@@ -251,6 +252,7 @@
     display: flex;
     gap: 0.5rem;
     margin-top: 0.5rem;
+    align-items: center;
 }
 
 .add-model-input {
@@ -269,6 +271,29 @@
 
 .icon-btn:hover {
     color: var(--text-primary);
+}
+
+.add-model-submit-btn {
+    width: 40px;
+    height: 40px;
+    background-color: var(--text-primary) !important;
+    color: var(--background-primary) !important;
+    border: none;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-model-submit-btn:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+.add-model-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .delete-provider-btn {
