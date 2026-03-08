@@ -127,4 +127,9 @@
   .message-list-item:first-child {
     padding-top: 1rem;
   }
+
+  .message-list-content {
+    /* Keep space below the last message to clear the fog */
+    padding-bottom: 24px;
+  }
 }
