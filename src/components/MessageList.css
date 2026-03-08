@@ -16,6 +16,9 @@
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   transition: scrollbar-color 0.3s;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .scroll-fog {
@@ -70,7 +73,8 @@
 }
 
 .message-list-content {
-  padding-bottom: 0;
+  flex: 1 0 auto;
+  padding-bottom: 40px;
 }
 
 .message-list-item {
