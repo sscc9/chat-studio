@@ -78,8 +78,8 @@
 
 .message-actions button:hover {
   color: var(--text-primary);
-  background-color: var(--background-secondary);
-  /* Add subtle background on hover */
+  background-color: var(--message-actions-button-hover-bg);
+  /* Use specific variable for better contrast */
 }
 
 .message-actions button:disabled {
