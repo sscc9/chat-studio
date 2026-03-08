@@ -47,7 +47,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                     } : c
             ));
 
-            const stream = streamGenerateContent(provider, modelId, contents, chat.config.systemInstruction, chat.config.useGoogleSearch);
+            const stream = streamGenerateContent(provider, modelId, contents, chat.config.systemInstruction);
 
             if (activeRequestRef.current !== requestId) return reject(new Error('Request cancelled'));
 
