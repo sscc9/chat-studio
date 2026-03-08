@@ -15,7 +15,8 @@ export async function* streamGenerateContent(
     provider: ProviderConfig,
     modelId: string,
     messages: Message[],
-    systemInstruction?: string
+    systemInstruction?: string,
+    useWebSearch?: boolean
 ): AsyncGenerator<GenerationChunk, void, unknown> {
     if (provider.type === 'google') {
         const ai = new GoogleGenAI({ apiKey: provider.apiKey });
@@ -29,9 +30,15 @@ export async function* streamGenerateContent(
         // Assuming messages are already in a compatible format or close to it.
         // api.ts passes `contents` directly, so we assume `Message[]` is compatible.
 
+        if (useWebSearch) {
+            (config as any).tools = [{ googleSearchRetrieval: {} }];
+            // Enable Gemini 3 Deep Reasoning & Planning
+            (config as any).thinkingLevel = "HIGH";
+        }
+
         const stream = await ai.models.generateContentStream({
             model: modelId,
-            contents: messages as any, // Cast to any to avoid strict type checks against SDK types for now
+            contents: messages as any,
             config: config,
         });
 
@@ -56,17 +63,41 @@ export async function* streamGenerateContent(
             openAIMessages.push({ role, content });
         }
 
+        const body: any = {
+            model: modelId,
+            messages: openAIMessages,
+            stream: true
+        };
+
+        if (useWebSearch) {
+            if (baseUrl.includes('anthropic.com')) {
+                // Claude 4.6 Advanced Web Search + Adaptive Thinking
+                body.tools = [{
+                    name: "anthropic:web_search",
+                    type: "server"
+                }];
+                body.thinking = {
+                    type: "enabled",
+                    budget_tokens: 4000
+                };
+            } else if (baseUrl.includes('volces.com')) {
+                // Doubao (Volcengine) Reasoning Web Search Tool
+                body.tools = [{
+                    type: "web_search",
+                    feature: {
+                        reasoning_search: { type: "enabled" }
+                    }
+                }];
+            }
+        }
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${provider.apiKey}`
             },
-            body: JSON.stringify({
-                model: modelId,
-                messages: openAIMessages,
-                stream: true
-            })
+            body: JSON.stringify(body)
         });
 
         if (!response.ok) {
