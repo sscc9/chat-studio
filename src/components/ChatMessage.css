@@ -66,8 +66,10 @@
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
-  padding: 4px;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,17 +78,19 @@
 
 .message-actions button:hover {
   color: var(--text-primary);
+  background-color: var(--background-secondary);
+  /* Add subtle background on hover */
 }
 
 .message-actions button:disabled {
   color: var(--border-color);
   cursor: not-allowed;
-  background-color: transparent;
+  background-color: transparent !important;
 }
 
 .message-actions button svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 .message-actions button.confirm-delete {
