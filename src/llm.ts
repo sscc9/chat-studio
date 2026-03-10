@@ -15,14 +15,19 @@ export async function* streamGenerateContent(
     provider: ProviderConfig,
     modelId: string,
     messages: Message[],
-    systemInstruction?: string
+    systemInstruction?: string,
+    useWebSearch?: boolean
 ): AsyncGenerator<GenerationChunk, void, unknown> {
     if (provider.type === 'google') {
         const ai = new GoogleGenAI({ apiKey: provider.apiKey });
 
-        const config: { systemInstruction?: string } = {};
+        const config: any = {};
         if (systemInstruction) {
             config.systemInstruction = systemInstruction;
+        }
+        if (useWebSearch) {
+            // @google/genai syntax for enabling Google Search tool
+            config.tools = [{ googleSearch: {} }];
         }
 
         // The @google/genai SDK expects contents in a specific format.
@@ -56,17 +61,37 @@ export async function* streamGenerateContent(
             openAIMessages.push({ role, content });
         }
 
+        const bodyPayload: any = {
+            model: modelId,
+            messages: openAIMessages,
+            stream: true
+        };
+
+        if (useWebSearch) {
+            const isDoubao = modelId.toLowerCase().includes('doubao') || modelId.toLowerCase().includes('ep-');
+            if (isDoubao) {
+                // Use Doubao 2.0's reasoning/thought search exclusively
+                // as requested by user to fix it to "search while thinking"
+                bodyPayload.tools = [
+                    {
+                        type: "function",
+                        function: {
+                            name: "reasoning_search",
+                            description: "深度思考下的推理搜索/边想边搜"
+                        }
+                    }
+                ];
+            }
+            // Skipping Claude logic as requested by user
+        }
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${provider.apiKey}`
             },
-            body: JSON.stringify({
-                model: modelId,
-                messages: openAIMessages,
-                stream: true
-            })
+            body: JSON.stringify(bodyPayload)
         });
 
         if (!response.ok) {
