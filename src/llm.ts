@@ -47,7 +47,7 @@ export async function* streamGenerateContent(
         }
     } else if (provider.type === 'openai-compatible') {
         const baseUrl = provider.baseUrl || 'https://api.openai.com/v1';
-        const url = `${baseUrl.replace(/\/$/, '')}/chat/completions`;
+        let url = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl.replace(/\/$/, '')}/chat/completions`;
 
         const openAIMessages = [];
         if (systemInstruction) {
@@ -67,23 +67,8 @@ export async function* streamGenerateContent(
             stream: true
         };
 
-        if (useWebSearch) {
-            const isDoubao = modelId.toLowerCase().includes('doubao') || modelId.toLowerCase().includes('ep-');
-            if (isDoubao) {
-                // Volcengine Doubao 2.0 API proxy standard:
-                // We use web_search but specify the reasoning mode inside it.
-                // If it fails, we provide a standard fallback.
-                bodyPayload.tools = [
-                    {
-                        type: "web_search",
-                        web_search: {
-                            search_mode: "reasoning_search"
-                        }
-                    }
-                ];
-            }
-            // Skipping Claude logic as requested by user
-        }
+        // Web search is currently disabled for openai-compatible providers (Doubao/Claude)
+        // because standard endpoints do not support server-side search directly.
 
         const response = await fetch(url, {
             method: 'POST',
