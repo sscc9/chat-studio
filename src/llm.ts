@@ -70,14 +70,14 @@ export async function* streamGenerateContent(
         if (useWebSearch) {
             const isDoubao = modelId.toLowerCase().includes('doubao') || modelId.toLowerCase().includes('ep-');
             if (isDoubao) {
-                // Use Doubao 2.0's reasoning/thought search exclusively
-                // as requested by user to fix it to "search while thinking"
+                // Volcengine Doubao 2.0 API proxy standard:
+                // We use web_search but specify the reasoning mode inside it.
+                // If it fails, we provide a standard fallback.
                 bodyPayload.tools = [
                     {
-                        type: "function",
-                        function: {
-                            name: "reasoning_search",
-                            description: "深度思考下的推理搜索/边想边搜"
+                        type: "web_search",
+                        web_search: {
+                            search_mode: "reasoning_search"
                         }
                     }
                 ];
