@@ -11,8 +11,9 @@ import type { Chat, ChatConfig, Message, ActionLogEntry, ActionLogEntryType, Sys
 
 import { showToastAtom, isHistoryPanelOpenAtom, importFileRefAtom } from './ui';
 import { documentContentAtom, presetPromptsAtom, presetGroupsAtom } from './tools';
-import { allModelsAtom } from './settings';
-import { isInitializedAtom, aiAtom } from './core';
+import { allModelsAtom, providersAtom, titleModelIdAtom } from './settings';
+import { isInitializedAtom } from './core';
+import { streamGenerateContent } from '../llm';
 
 // =================================================================
 // ACTION LOG ATOM (Moved here to break circular dependency)
@@ -289,7 +290,7 @@ export const handleDeleteChatAtom = atom(null, (get, set, id: string) => {
     set(chatsAtom, prev => prev.map(chat =>
         chat.id === id ? { ...chat, isPinned: false, deletedTimestamp: Date.now() } : chat
     ));
-    set(showToastAtom, "Chat moved to trash.");
+    set(showToastAtom, "对话已移至回收站。");
 
     if (get(currentChatIdAtom) === id) {
         const availableChats = get(sortedChatsAtom);
@@ -307,13 +308,13 @@ export const handleRestoreChatAtom = atom(null, (get, set, id: string) => {
     set(chatsAtom, prev => prev.map(chat =>
         chat.id === id ? { ...chat, deletedTimestamp: undefined } : chat
     ));
-    set(showToastAtom, "Chat restored.");
+    set(showToastAtom, "对话已恢复。");
 });
 
 export const handleDeletePermanentlyAtom = atom(null, (get, set, id: string) => {
     deleteMessages(id).catch(err => console.error("Failed to delete from DB", err));
     set(chatsAtom, prev => prev.filter(chat => chat.id !== id));
-    set(showToastAtom, "Chat permanently deleted.");
+    set(showToastAtom, "对话已永久删除。");
 });
 
 export const handleEmptyTrashAtom = atom(null, async (get, set) => {
@@ -325,7 +326,7 @@ export const handleEmptyTrashAtom = atom(null, async (get, set) => {
     ).catch(err => console.error("Failed to empty trash from DB", err));
 
     set(chatsAtom, prev => prev.filter(chat => !chat.deletedTimestamp));
-    set(showToastAtom, "Trash emptied.");
+    set(showToastAtom, "回收站已清空。");
 });
 
 export const handleForkChatAtom = atom(null, async (get, set, index: number) => {
@@ -347,7 +348,7 @@ export const handleForkChatAtom = atom(null, async (get, set, index: number) => 
     const newChat: Chat = {
         ...originalChat,
         id: `chat-${Date.now()}`,
-        title: `Branch of ${originalChat.title}`,
+        title: `${originalChat.title} 的分支`,
         messages: forkedMessages,
         isPinned: false,
         actionLog: [],
@@ -358,7 +359,7 @@ export const handleForkChatAtom = atom(null, async (get, set, index: number) => 
     set(logActionAtom, 'fork_chat', { from: originalChat.title, to: newChat.title, atMessage: index, content: messageAtFork });
     set(chatsAtom, prev => [newChat, ...prev]);
     set(currentChatIdAtom, newChat.id);
-    set(showToastAtom, `Chat branched from "${originalChat.title}"`);
+    set(showToastAtom, `已从 "${originalChat.title}" 创建分支`);
 });
 
 export const handleTogglePinAtom = atom(null, (get, set, id: string) => {
@@ -419,7 +420,7 @@ export const handleDragEndAtom = atom(null, (get, set) => {
 
 export const handleExportChatsAtom = atom(null, async (get, set) => {
     try {
-        set(showToastAtom, "Exporting data...");
+        set(showToastAtom, "正在导出数据...");
 
         const chats = get(chatsAtom);
         const fullChats = await Promise.all(chats.map(async (chat) => {
@@ -452,10 +453,10 @@ export const handleExportChatsAtom = atom(null, async (get, set) => {
 
         URL.revokeObjectURL(url);
 
-        set(showToastAtom, "Full app data exported successfully!");
+        set(showToastAtom, "应用数据导出成功！");
     } catch (error) {
         console.error("Failed to export data:", error);
-        set(showToastAtom, "Error exporting data.");
+        set(showToastAtom, "导出数据出错。");
     }
 });
 
@@ -477,7 +478,7 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
             const text = e.target?.result;
             if (typeof text !== 'string') throw new Error("Failed to read file contents.");
 
-            set(showToastAtom, "Importing... Please wait.");
+            set(showToastAtom, "正在导入，请稍候...");
             const importedJson = JSON.parse(text);
 
             let chatsToImport = (importedJson && Array.isArray(importedJson.chats)) ? importedJson.chats : Array.isArray(importedJson) ? importedJson : [];
@@ -506,7 +507,7 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
 
                     return {
                         id: existingChatIds.has(chat.id!) ? `chat-${Date.now()}-${i}` : chat.id!,
-                        title: existingChatIds.has(chat.id!) ? `${chat.title} (Imported)` : chat.title!,
+                        title: existingChatIds.has(chat.id!) ? `${chat.title} (已导入)` : chat.title!,
                         messages: chat.messages || [],
                         isPinned: chat.isPinned || false,
                         config: config,
@@ -528,22 +529,19 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
                 if (Array.isArray(writingDataToImport.presetGroups)) set(presetGroupsAtom, writingDataToImport.presetGroups);
             }
 
-            set(showToastAtom, "Import finished successfully.");
+            set(showToastAtom, "导入成功。");
 
         } catch (error: any) {
             console.error("Failed to import data:", error);
-            set(showToastAtom, error.message || "Import failed.");
+            set(showToastAtom, error.message || "导入失败。");
         }
     };
-    reader.onerror = () => { set(showToastAtom, "Error reading the selected file."); if (event.target) event.target.value = ''; };
+    reader.onerror = () => { set(showToastAtom, "读取内容时出错。"); if (event.target) event.target.value = ''; };
     reader.readAsText(file);
 });
 
 
 export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: string) => {
-    const ai = get(aiAtom);
-    if (!ai) return;
-
     const chat = get(chatsAtom).find(c => c.id === chatId);
 
     if (!chat || chat.title.trim() !== 'New Chat' || chat.autoTitled) {
@@ -579,18 +577,32 @@ export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: stri
         return; // Not enough text context, but we've marked it so we don't try again.
     }
 
-    const prompt = `Based on the following conversation, create a short, descriptive title (5 words or less) for the chat session. Do not include quotes or any introductory text in your response. Just provide the title text itself.\n\nUser: ${userText.substring(0, 200)}\nAI: ${modelText.substring(0, 200)}`;
+    const prompt = `Based on the following conversation, create a short, descriptive title (5 words or less) for the chat session. The title must be in the same language as the conversation (e.g., if the user speaks Chinese, the title should be Chinese). Do not include quotes or any introductory text in your response. Just provide the title text itself.\n\nUser: ${userText.substring(0, 200)}\nAI: ${modelText.substring(0, 200)}`;
 
     try {
-        const generatingModel = chat.config.model || (get(allModelsAtom)[0]?.id) || '';
+        const titleModel = get(titleModelIdAtom);
+        const generatingModel = titleModel || 'gemini-flash-lite-latest';
         if (!generatingModel) return;
 
-        const response = await ai.models.generateContent({
-            model: generatingModel,
-            contents: prompt,
-        });
+        const providers = get(providersAtom);
+        const provider = providers.find(p => p.models.some(m => m.id === generatingModel));
 
-        let newTitle = response.text?.trim();
+        if (!provider) return;
+
+        const stream = streamGenerateContent(
+            provider, 
+            generatingModel, 
+            [{ role: 'user', parts: [{ text: prompt }] } as Message],
+            undefined, // No system instruction
+            false      // No web search
+        );
+
+        let newTitle = "";
+        for await (const chunk of stream) {
+             newTitle += (chunk.text || "");
+        }
+
+        newTitle = newTitle.trim();
 
         if (newTitle) {
             newTitle = newTitle.replace(/^["']|["']$/g, ''); // Clean up quotes

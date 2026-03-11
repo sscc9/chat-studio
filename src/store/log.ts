@@ -18,7 +18,7 @@ export const handleClearActionLogAtom = atom(null, (get, set) => {
     set(chatsAtom, prev => prev.map(chat =>
         chat.id === currentChatId ? { ...chat, actionLog: [] } : chat
     ));
-    set(showToastAtom, "Action log cleared.");
+    set(showToastAtom, "操作日志已清空。");
 });
 
 export const handleDeleteLogEntryAtom = atom(null, (get, set, logId: string) => {

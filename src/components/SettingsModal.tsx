@@ -3,16 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { providersAtom, isSettingsModalOpenAtom } from '../store';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+import { providersAtom, isSettingsModalOpenAtom, allModelsAtom, titleModelIdAtom } from '../store';
 import { ProviderConfig, ModelConfig } from '../types';
 import './SettingsModal.css';
 
 export const SettingsModal = () => {
     const [isOpen, setIsOpen] = useAtom(isSettingsModalOpenAtom);
     const [providers, setProviders] = useAtom(providersAtom);
-    const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
+    const allModels = useAtomValue(allModelsAtom);
+    const [titleModelId, setTitleModelId] = useAtom(titleModelIdAtom);
+    const [selectedProviderId, setSelectedProviderId] = useState<string | 'general' | null>(null);
     const [isAddingProvider, setIsAddingProvider] = useState(false);
 
     // Form states
@@ -20,11 +22,29 @@ export const SettingsModal = () => {
     const [newModelName, setNewModelName] = useState('');
     const [editingModelId, setEditingModelId] = useState<string | null>(null);
 
+    // Custom dropdown for title generation model
+    const [isTitleDropdownOpen, setIsTitleDropdownOpen] = useState(false);
+    const titleDropdownRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        if (isOpen && providers.length > 0 && !selectedProviderId && !isAddingProvider) {
-            setSelectedProviderId(providers[0].id);
+        if (isOpen && !selectedProviderId && !isAddingProvider) {
+            if (providers.length > 0) {
+                setSelectedProviderId(providers[0].id);
+            } else {
+                setSelectedProviderId('general');
+            }
         }
     }, [isOpen, providers, selectedProviderId, isAddingProvider]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (titleDropdownRef.current && !titleDropdownRef.current.contains(event.target as Node)) {
+                setIsTitleDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     if (!isOpen) return null;
 
@@ -112,6 +132,14 @@ export const SettingsModal = () => {
                 <div className="settings-modal-body">
                     <div className="settings-sidebar">
                         <div className="settings-sidebar-list">
+                            <div
+                                className={`settings-provider-item ${selectedProviderId === 'general' ? 'active' : ''}`}
+                                onClick={() => { setSelectedProviderId('general'); setIsAddingProvider(false); }}
+                            >
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.13,5.91,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.85,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12c0,0.31,0.02,0.65,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" /></svg>
+                                <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>通用配置</span>
+                            </div>
+                            <div className="settings-sidebar-divider"></div>
                             {providers.map(p => (
                                 <div
                                     key={p.id}
@@ -148,6 +176,48 @@ export const SettingsModal = () => {
                                     <div className="provider-type-card" onClick={() => handleAddProvider('openai-compatible')}>
                                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
                                         <span className="provider-type-name">OpenAI Compatible</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : selectedProviderId === 'general' ? (
+                            <div className="general-settings">
+                                <div className="settings-form-group">
+                                    <label>标题生成模型</label>
+                                    <div className="settings-hint">请选择一个专门用于自动生成对话标题的模型。</div>
+                                    <div className="custom-select-container" ref={titleDropdownRef}>
+                                        <div
+                                            className="custom-select-trigger"
+                                            onClick={() => setIsTitleDropdownOpen(prev => !prev)}
+                                            role="button"
+                                            aria-haspopup="listbox"
+                                            aria-expanded={isTitleDropdownOpen}
+                                            tabIndex={0}
+                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsTitleDropdownOpen(prev => !prev); }}
+                                        >
+                                            <span>{allModels.find(m => m.id === titleModelId)?.name || titleModelId || '未选择'}</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708 .708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" /></svg>
+                                        </div>
+                                        {isTitleDropdownOpen && (
+                                            <div className="custom-select-options" role="listbox">
+                                                {allModels.length > 0 ? (
+                                                    allModels.map(m => (
+                                                        <div
+                                                            key={m.id}
+                                                            className={`custom-select-option ${titleModelId === m.id ? 'selected' : ''}`}
+                                                            onClick={() => { setTitleModelId(m.id); setIsTitleDropdownOpen(false); }}
+                                                            role="option"
+                                                            aria-selected={titleModelId === m.id}
+                                                        >
+                                                            {m.providerName}: {m.name || m.id}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="no-models-message" style={{ padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                                                        无可用模型，请点管理添加。
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

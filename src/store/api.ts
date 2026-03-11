@@ -34,7 +34,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
         if (!provider) {
             set(isLoadingAtom, false);
             set(regeneratingIndexAtom, null);
-            return reject(new Error("No provider configured for this model. Please check Settings."));
+            return reject(new Error("此模型未配置供应商。请检查设置。"));
         }
 
         try {
@@ -100,7 +100,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                 set(chatsAtom, (prevChats) => prevChats.map((c) => {
                     if (c.id === chat.id) {
                         const newMessages = [...c.messages];
-                        newMessages[targetIndex] = { ...newMessages[targetIndex], parts: [{ text: `**Error:** ${error.message}` }] };
+                        newMessages[targetIndex] = { ...newMessages[targetIndex], parts: [{ text: `**错误:** ${error.message}` }] };
                         return { ...c, messages: newMessages };
                     }
                     return c;

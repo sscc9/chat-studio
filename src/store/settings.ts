@@ -17,3 +17,9 @@ export const allModelsAtom = atom((get) => {
 });
 
 export const isSettingsModalOpenAtom = atom(false);
+
+/**
+ * Atom for the preferred ID of the model used to generate chat titles.
+ * Defaults to 'gemini-flash-lite-latest' or a suitable active model.
+ */
+export const titleModelIdAtom = atomWithStorage<string>('ai-chat-title-model-id', 'gemini-flash-lite-latest');

@@ -96,7 +96,7 @@ export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => 
           return (
             <div key={partIndex} className="message-file-attachment">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z" /></svg>
-              <span>{part.inlineData.name || 'file'}</span>
+              <span>{part.inlineData.name || '文件'}</span>
             </div>
           );
         }

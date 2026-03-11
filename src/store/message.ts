@@ -129,7 +129,7 @@ export const handleDeleteMessageAtom = atom(null, (get, set, index: number) => {
 export const handleCopyMessageAtom = atom(null, (get, set, parts: MessagePart[]) => {
     const textToCopy = parts.filter(p => 'text' in p).map(p => p.text).join('\n\n');
     navigator.clipboard.writeText(textToCopy).then(() => {
-        set(showToastAtom, "Copied to clipboard!");
+        set(showToastAtom, "已复制到剪贴板！");
     });
 });
 
