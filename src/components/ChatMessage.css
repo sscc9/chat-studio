@@ -88,9 +88,11 @@
   background-color: transparent !important;
 }
 
-.message-actions button svg {
-  width: 16px;
-  height: 16px;
+
+
+.message-actions button.cancel-edit-btn {
+  /* Only keeping this to allow different padding if needed, but revert to match original if possible */
+  padding: 0; 
 }
 
 .message-actions button.confirm-delete {

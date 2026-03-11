@@ -219,9 +219,4 @@ html[data-theme='dark'] .history-item.active {
 .history-item.active .pin-btn.pinned svg {
   fill: #1c1e21;
 }
-
-html[data-theme='dark'] .history-item.active .delete-btn svg,
-html[data-theme='dark'] .history-item.active .pin-btn svg,
-html[data-theme='dark'] .history-item.active .pin-btn.pinned svg {
-  fill: var(--text-primary);
-}
+

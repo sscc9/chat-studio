@@ -87,10 +87,6 @@
     background-color: transparent;
 }
 
-.trash-header-actions button svg {
-    width: 16px;
-    height: 16px;
-}
 
 .trash-modal-content {
     flex-grow: 1;
