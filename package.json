@@ -11,6 +11,8 @@
   "dependencies": {
     "@google/genai": "^1.21.0",
     "@material/web": "latest",
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.6.1",
     "jotai": "^2.15.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
