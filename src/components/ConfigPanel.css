@@ -309,7 +309,8 @@
 .preset-group-tag {
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    /* 确保水平居中 */
     padding: 6px 10px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
@@ -335,6 +336,8 @@
     text-overflow: ellipsis;
     display: block;
     max-width: 120px;
+    line-height: 1.2;
+    /* 确保垂直居中不被外层继承影响 */
 }
 
 .preset-group-tag.is-active {
@@ -355,18 +358,42 @@ html[data-theme='dark'] .preset-group-tag.is-active {
     opacity: 0;
     font-size: 1.2rem;
     line-height: 1;
-    padding: 0 0 2px 2px;
-    margin: 0 -4px 0 0;
-    transition: opacity 0.2s;
+    /* Hide it completely and take no space by default */
+    width: 0;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    transition: width 0.2s, margin 0.2s, opacity 0.2s, background-color 0.2s, color 0.2s;
 }
 
-/* The only allowed hover effect is the appearance of the delete button */
-.preset-group-tag:hover .preset-group-tag-delete {
+/* Only make it visible when the group list has .delete-mode */
+.delete-mode .preset-group-tag-delete {
+    width: 20px;
+    margin: 0 -4px 0 4px;
+    /* 左边距作为之前的 gap 替代方案 */
     opacity: 0.6;
 }
 
-.preset-group-tag-delete:hover {
-    opacity: 1;
+/* Make it red and very clear when hovering specifically over the delete button */
+.delete-mode .preset-group-tag-delete:hover {
+    opacity: 1 !important;
+    background-color: #d17a7a;
+    /* A softer, Morandi-style red */
+    color: white;
+}
+
+/* Active state for the trash mode toggle button */
+.icon-btn.destructive-active {
+    color: #d17a7a;
+}
+
+.icon-btn.destructive-active:hover {
+    color: #c06969;
 }
 
 .preset-group-tag-input {

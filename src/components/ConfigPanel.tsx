@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import './ConfigPanel.css';
 import {
@@ -47,8 +47,28 @@ import {
     documentFileInputRefAtom,
     isSettingsModalOpenAtom,
     allModelsAtom,
+
+    // System Presets
+    activeSystemPresetGroupIdAtom,
+    systemPresetGroupsAtom,
+    editingSystemGroupIdAtom,
+    editingSystemGroupNameAtom,
+    isCreatingSystemGroupAtom,
+    newSystemGroupNameAtom,
+    filteredSystemPromptsAtom,
+    renamingSystemInputRefAtom,
+    creatingSystemInputRefAtom,
+
+    handleAddSystemPresetGroupAtom,
+    handleStartRenameSystemGroupAtom,
+    handleUpdateSystemGroupNameAtom,
+    handleDeleteSystemPresetGroupAtom,
+    handleStartAddSystemPresetAtom,
+    handleStartEditSystemPresetAtom,
+    handleDeleteSystemPresetPromptAtom,
 } from '../store';
 import { SettingsModal } from './SettingsModal';
+import { SystemPresetEditorModal } from './SystemPresetEditorModal';
 
 
 export const ConfigPanel = () => {
@@ -65,6 +85,15 @@ export const ConfigPanel = () => {
     const [editingGroupName, setEditingGroupName] = useAtom(editingGroupNameAtom);
     const [isCreatingGroup, setIsCreatingGroup] = useAtom(isCreatingGroupAtom);
     const [newGroupName, setNewGroupName] = useAtom(newGroupNameAtom);
+    const [isDeletingPresetGroup, setIsDeletingPresetGroup] = useState(false);
+
+    // Read/Write State (System Presets)
+    const [activeSystemPresetGroupId, setActiveSystemPresetGroupId] = useAtom(activeSystemPresetGroupIdAtom);
+    const [editingSystemGroupId, setEditingSystemGroupId] = useAtom(editingSystemGroupIdAtom);
+    const [editingSystemGroupName, setEditingSystemGroupName] = useAtom(editingSystemGroupNameAtom);
+    const [isCreatingSystemGroup, setIsCreatingSystemGroup] = useAtom(isCreatingSystemGroupAtom);
+    const [newSystemGroupName, setNewSystemGroupName] = useAtom(newSystemGroupNameAtom);
+    const [isDeletingSystemGroup, setIsDeletingSystemGroup] = useState(false);
 
     // Read-Only State
     const model = useAtomValue(modelAtom);
@@ -74,6 +103,10 @@ export const ConfigPanel = () => {
     const presetGroups = useAtomValue(presetGroupsAtom);
     const filteredPrompts = useAtomValue(filteredPromptsAtom);
     const allModels = useAtomValue(allModelsAtom);
+
+    // Read-Only State (System Presets)
+    const systemPresetGroups = useAtomValue(systemPresetGroupsAtom);
+    const filteredSystemPrompts = useAtomValue(filteredSystemPromptsAtom);
 
     // Write-Only Functions (Actions)
     const handleConfigChange = useSetAtom(handleConfigChangeAtom);
@@ -91,11 +124,24 @@ export const ConfigPanel = () => {
     const handleDeletePresetPrompt = useSetAtom(handleDeletePresetPromptAtom);
     const setIsSettingsModalOpen = useSetAtom(isSettingsModalOpenAtom);
 
+    // Write-Only Functions (System Presets)
+    const handleAddSystemPresetGroup = useSetAtom(handleAddSystemPresetGroupAtom);
+    const handleStartRenameSystemGroup = useSetAtom(handleStartRenameSystemGroupAtom);
+    const handleUpdateSystemGroupName = useSetAtom(handleUpdateSystemGroupNameAtom);
+    const handleDeleteSystemPresetGroup = useSetAtom(handleDeleteSystemPresetGroupAtom);
+    const handleStartAddSystemPreset = useSetAtom(handleStartAddSystemPresetAtom);
+    const handleStartEditSystemPreset = useSetAtom(handleStartEditSystemPresetAtom);
+    const handleDeleteSystemPresetPrompt = useSetAtom(handleDeleteSystemPresetPromptAtom);
+
     // Refs
     const modelDropdownRef = useAtomValue(modelDropdownRefAtom);
     const renamingInputRef = useAtomValue(renamingInputRefAtom);
     const creatingInputRef = useAtomValue(creatingInputRefAtom);
     const documentFileInputRef = useAtomValue(documentFileInputRefAtom);
+
+    // Refs (System Presets)
+    const renamingSystemInputRef = useAtomValue(renamingSystemInputRefAtom);
+    const creatingSystemInputRef = useAtomValue(creatingSystemInputRefAtom);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -106,6 +152,34 @@ export const ConfigPanel = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [modelDropdownRef, setIsModelDropdownOpen]);
+
+    // Auto-focus logic for normal presets
+    useEffect(() => {
+        if (isCreatingGroup && creatingInputRef.current) {
+            creatingInputRef.current.focus();
+        }
+    }, [isCreatingGroup, creatingInputRef]);
+
+    useEffect(() => {
+        if (editingGroupId && renamingInputRef.current) {
+            renamingInputRef.current.focus();
+            renamingInputRef.current.select();
+        }
+    }, [editingGroupId, renamingInputRef]);
+
+    // Auto-focus logic for system presets
+    useEffect(() => {
+        if (isCreatingSystemGroup && creatingSystemInputRef.current) {
+            creatingSystemInputRef.current.focus();
+        }
+    }, [isCreatingSystemGroup, creatingSystemInputRef]);
+
+    useEffect(() => {
+        if (editingSystemGroupId && renamingSystemInputRef.current) {
+            renamingSystemInputRef.current.focus();
+            renamingSystemInputRef.current.select();
+        }
+    }, [editingSystemGroupId, renamingSystemInputRef]);
 
     return (
         <>
@@ -237,6 +311,7 @@ export const ConfigPanel = () => {
                                         {systemInstruction || "例如：你是一个乐于助人的助手，说话像个海盗。"}
                                     </div>
                                 </div>
+
                                 <div className="config-item">
                                     <label htmlFor="google-search">网页搜索</label>
                                     <label className="switch">
@@ -248,6 +323,107 @@ export const ConfigPanel = () => {
                                         />
                                         <span className="slider round"></span>
                                     </label>
+                                </div>
+
+                                <div className="config-item preset-prompts-manager">
+                                    <div className="preset-prompts-header">
+                                        <label>管理系统提示词</label>
+                                        <button className="icon-btn" onClick={(e) => handleStartAddSystemPreset(e)} title="添加新系统提示词">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div className={`preset-group-tag-list ${isDeletingSystemGroup ? 'delete-mode' : ''}`}>
+                                        <div
+                                            className={`preset-group-tag ${activeSystemPresetGroupId === 'all' ? 'is-active' : ''}`}
+                                            onClick={() => setActiveSystemPresetGroupId('all')}
+                                            role="button"
+                                            tabIndex={0}
+                                        >
+                                            未分组
+                                        </div>
+                                        {systemPresetGroups.map(group => (
+                                            editingSystemGroupId === group.id ? (
+                                                <input
+                                                    type="text"
+                                                    ref={renamingSystemInputRef}
+                                                    key={group.id}
+                                                    className="preset-group-tag-input"
+                                                    value={editingSystemGroupName}
+                                                    onChange={(e) => setEditingSystemGroupName(e.target.value)}
+                                                    onBlur={handleUpdateSystemGroupName}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') { e.preventDefault(); handleUpdateSystemGroupName(); }
+                                                        if (e.key === 'Escape') (setEditingSystemGroupId as any)(() => null);
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div
+                                                    key={group.id}
+                                                    className={`preset-group-tag ${activeSystemPresetGroupId === group.id ? 'is-active' : ''}`}
+                                                    onClick={() => setActiveSystemPresetGroupId(group.id)}
+                                                    onDoubleClick={() => handleStartRenameSystemGroup(group)}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                >
+                                                    <span className="preset-group-tag-name" title={group.name}>{group.name}</span>
+                                                    <button className="preset-group-tag-delete" title="删除分组" onClick={(e) => { e.stopPropagation(); handleDeleteSystemPresetGroup(group.id); }}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            )
+                                        ))}
+                                        {isCreatingSystemGroup ? (
+                                            <input
+                                                type="text"
+                                                ref={creatingSystemInputRef}
+                                                className="preset-group-tag-input"
+                                                placeholder="新分组"
+                                                value={newSystemGroupName}
+                                                onChange={(e) => setNewSystemGroupName(e.target.value)}
+                                                onBlur={() => { handleAddSystemPresetGroup(newSystemGroupName); setNewSystemGroupName(''); }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') { e.preventDefault(); handleAddSystemPresetGroup(newSystemGroupName); setNewSystemGroupName(''); }
+                                                    if (e.key === 'Escape') { setIsCreatingSystemGroup(false); setNewSystemGroupName(''); }
+                                                }}
+                                            />
+                                        ) : (
+                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                                <button className="icon-btn" title="添加新分组" onClick={() => setIsCreatingSystemGroup(true)}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    className={`icon-btn ${isDeletingSystemGroup ? 'destructive-active' : ''}`}
+                                                    onClick={() => setIsDeletingSystemGroup(!isDeletingSystemGroup)}
+                                                    title="删除模式"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="preset-prompts-help">点击替换当前系统提示词。</p>
+                                    <div className="preset-prompts-list">
+                                        {filteredSystemPrompts.map(p => (
+                                            <div key={p.id} className="preset-prompt-item" onClick={() => handleConfigChange({ systemInstruction: p.text })} title="点击替换">
+                                                <span className="preset-prompt-text">{p.text}</span>
+                                                <div className="preset-prompt-actions">
+                                                    <button title="编辑" onClick={(e) => { e.stopPropagation(); handleStartEditSystemPreset(p, e); }}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V12h2.293z" /></svg>
+                                                    </button>
+                                                    <button title="删除" className="delete-preset-btn" onClick={(e) => { e.stopPropagation(); handleDeleteSystemPresetPrompt(p.id); }}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {filteredSystemPrompts.length === 0 && <div className="no-presets-message">暂无预设。</div>}
+                                    </div>
                                 </div>
                             </>
                         )}
@@ -286,7 +462,7 @@ export const ConfigPanel = () => {
                                             </svg>
                                         </button>
                                     </div>
-                                    <div className="preset-group-tag-list">
+                                    <div className={`preset-group-tag-list ${isDeletingPresetGroup ? 'delete-mode' : ''}`}>
                                         <div
                                             className={`preset-group-tag ${activePresetGroupId === 'all' ? 'is-active' : ''}`}
                                             onClick={() => setActivePresetGroupId('all')}
@@ -343,11 +519,20 @@ export const ConfigPanel = () => {
                                                 }}
                                             />
                                         ) : (
-                                            <button className="icon-btn" title="添加新分组" onClick={() => setIsCreatingGroup(true)}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                    <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
-                                                </svg>
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
+                                                <button className="icon-btn" title="添加新分组" onClick={() => setIsCreatingGroup(true)}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    className={`icon-btn ${isDeletingPresetGroup ? 'destructive-active' : ''}`}
+                                                    onClick={() => setIsDeletingPresetGroup(!isDeletingPresetGroup)}
+                                                    title="删除模式"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
                                     <p className="preset-prompts-help">点击插入到当前输入框。</p>
@@ -375,6 +560,7 @@ export const ConfigPanel = () => {
                 </div>
             </aside>
             <SettingsModal />
+            <SystemPresetEditorModal />
         </>
     );
 };
