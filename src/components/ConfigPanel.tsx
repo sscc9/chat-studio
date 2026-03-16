@@ -407,10 +407,10 @@ export const ConfigPanel = () => {
                                             </div>
                                         )}
                                     </div>
-                                    <p className="preset-prompts-help">点击替换当前系统提示词。</p>
+                                    <p className="preset-prompts-help">双击替换当前系统提示词。</p>
                                     <div className="preset-prompts-list">
                                         {filteredSystemPrompts.map(p => (
-                                            <div key={p.id} className="preset-prompt-item" onClick={() => handleConfigChange({ systemInstruction: p.text })} title="点击替换">
+                                            <div key={p.id} className="preset-prompt-item" onDoubleClick={() => handleConfigChange({ systemInstruction: p.text })} title="双击替换">
                                                 <span className="preset-prompt-text">{p.text}</span>
                                                 <div className="preset-prompt-actions">
                                                     <button title="编辑" onClick={(e) => { e.stopPropagation(); handleStartEditSystemPreset(p, e); }}>
@@ -453,106 +453,7 @@ export const ConfigPanel = () => {
                                     </div>
                                     <p className="local-document-help">此文档仅存储在本地，不会发送给 AI。</p>
                                 </div>
-                                <div className="config-item preset-prompts-manager">
-                                    <div className="preset-prompts-header">
-                                        <label>预设 Prompt</label>
-                                        <button className="icon-btn" onClick={(e) => handleStartAddPreset(e)} title="添加新 Prompt">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div className={`preset-group-tag-list ${isDeletingPresetGroup ? 'delete-mode' : ''}`}>
-                                        <div
-                                            className={`preset-group-tag ${activePresetGroupId === 'all' ? 'is-active' : ''}`}
-                                            onClick={() => setActivePresetGroupId('all')}
-                                            role="button"
-                                            tabIndex={0}
-                                        >
-                                            未分组
-                                        </div>
-                                        {presetGroups.map(group => (
-                                            editingGroupId === group.id ? (
-                                                <input
-                                                    type="text"
-                                                    ref={renamingInputRef}
-                                                    key={group.id}
-                                                    className="preset-group-tag-input"
-                                                    value={editingGroupName}
-                                                    onChange={(e) => setEditingGroupName(e.target.value)}
-                                                    onBlur={handleUpdateGroupName}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') { e.preventDefault(); handleUpdateGroupName(); }
-                                                        if (e.key === 'Escape') (setEditingGroupId as any)(() => null);
-                                                    }}
-                                                />
-                                            ) : (
-                                                <div
-                                                    key={group.id}
-                                                    className={`preset-group-tag ${activePresetGroupId === group.id ? 'is-active' : ''}`}
-                                                    onClick={() => setActivePresetGroupId(group.id)}
-                                                    onDoubleClick={() => handleStartRenameGroup(group)}
-                                                    role="button"
-                                                    tabIndex={0}
-                                                >
-                                                    <span className="preset-group-tag-name" title={group.name}>{group.name}</span>
-                                                    <button className="preset-group-tag-delete" title="删除分组" onClick={(e) => { e.stopPropagation(); handleDeletePresetGroup(group.id); }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-                                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            )
-                                        ))}
-                                        {isCreatingGroup ? (
-                                            <input
-                                                type="text"
-                                                ref={creatingInputRef}
-                                                className="preset-group-tag-input"
-                                                placeholder="新分组"
-                                                value={newGroupName}
-                                                onChange={(e) => setNewGroupName(e.target.value)}
-                                                onBlur={() => { handleAddPresetGroup(newGroupName); setNewGroupName(''); }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') { e.preventDefault(); handleAddPresetGroup(newGroupName); setNewGroupName(''); }
-                                                    if (e.key === 'Escape') { setIsCreatingGroup(false); setNewGroupName(''); }
-                                                }}
-                                            />
-                                        ) : (
-                                            <div style={{ display: 'flex', gap: '0.25rem' }}>
-                                                <button className="icon-btn" title="添加新分组" onClick={() => setIsCreatingGroup(true)}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                        <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    className={`icon-btn ${isDeletingPresetGroup ? 'destructive-active' : ''}`}
-                                                    onClick={() => setIsDeletingPresetGroup(!isDeletingPresetGroup)}
-                                                    title="删除模式"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <p className="preset-prompts-help">点击插入到当前输入框。</p>
-                                    <div className="preset-prompts-list">
-                                        {filteredPrompts.map(p => (
-                                            <div key={p.id} className="preset-prompt-item" onClick={() => handlePresetClick(p.text)} title="点击插入">
-                                                <span className="preset-prompt-text">{p.text}</span>
-                                                <div className="preset-prompt-actions">
-                                                    <button title="编辑" onClick={(e) => { e.stopPropagation(); handleStartEditPreset(p, e); }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V12h2.293z" /></svg>
-                                                    </button>
-                                                    <button title="删除" className="delete-preset-btn" onClick={(e) => { e.stopPropagation(); handleDeletePresetPrompt(p.id); }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {filteredPrompts.length === 0 && <div className="no-presets-message">暂无预设。</div>}
-                                    </div>
-                                </div>
+
                             </>
                         )}
 
