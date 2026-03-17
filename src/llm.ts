@@ -64,7 +64,14 @@ export async function* streamGenerateContent(
         const bodyPayload: any = {
             model: modelId,
             messages: openAIMessages,
-            stream: true
+            stream: true,
+            max_tokens: 16000,
+            // Adaptive thinking: Claude 4.6+ will automatically determine
+            // how much reasoning to apply based on task complexity.
+            reasoning: { enabled: true },
+            // Prompt caching (5-min TTL): automatically caches conversation
+            // history to reduce cost and latency on repeated content.
+            cache_control: { type: 'ephemeral' }
         };
 
         // Web search is currently disabled for openai-compatible providers (Doubao/Claude)
