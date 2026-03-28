@@ -103,7 +103,7 @@ export const handleSaveEditAtom = atom(null, (get, set) => {
             }
 
             newMessages[index] = { ...newMessages[index], parts: newParts };
-            return { ...chat, messages: newMessages };
+            return { ...chat, messages: newMessages, updatedAt: Date.now() };
         }
         return chat;
     }));
@@ -121,7 +121,7 @@ export const handleDeleteMessageAtom = atom(null, (get, set, index: number) => {
 
     set(chatsAtom, prev => prev.map(chat =>
         chat.id === id
-            ? { ...chat, messages: chat.messages.filter((_: Message, i: number) => i !== index) }
+            ? { ...chat, messages: chat.messages.filter((_: Message, i: number) => i !== index), updatedAt: Date.now() }
             : chat
     ));
 });
@@ -154,7 +154,7 @@ export const handleSendUserMessageOnlyAtom = atom(null, (get, set, messageText?:
 
     set(chatsAtom, prev => prev.map((chat) =>
         chat.id === currentChatId
-            ? { ...chat, messages: [...chat.messages, userMessage] }
+            ? { ...chat, messages: [...chat.messages, userMessage], updatedAt: Date.now() }
             : chat
     ));
 
@@ -210,6 +210,7 @@ export const handleSendMessageAtom = atom(null, async (get, set) => {
                 ...c,
                 messages: messagesForState,
                 actionLog: newLogEntry ? [...(c.actionLog || []), newLogEntry] : c.actionLog,
+                updatedAt: Date.now(),
             };
         }
         return c;
@@ -284,7 +285,8 @@ export const handleSaveAndRegenerateAtom = atom(null, async (get, set) => {
             return {
                 ...c,
                 messages: messagesForState,
-                actionLog: [...(c.actionLog || []), newLogEntry]
+                actionLog: [...(c.actionLog || []), newLogEntry],
+                updatedAt: Date.now(),
             };
         }
         return c;
@@ -346,6 +348,7 @@ export const handleRegenerateResponseAtom = atom(null, async (get, set, index: n
                 ...c,
                 messages: messagesForState,
                 actionLog: [...(c.actionLog || []), newLogEntry],
+                updatedAt: Date.now(),
             };
         }
         return c;

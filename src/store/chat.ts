@@ -121,9 +121,17 @@ export const currentChatAtom = atom(get => {
 export const sortedChatsAtom = atom(get => {
     const chats = get(chatsAtom);
     const nonTrashedChats = chats.filter(chat => !chat.deletedTimestamp);
+    
+    // Sort all non-trashed chats by updatedAt first (fallback to creation time from ID)
+    const sorted = [...nonTrashedChats].sort((a, b) => {
+        const timeA = a.updatedAt || parseInt(a.id.split('-')[1]) || 0;
+        const timeB = b.updatedAt || parseInt(b.id.split('-')[1]) || 0;
+        return timeB - timeA;
+    });
+
     const pinned: Chat[] = [];
     const unpinned: Chat[] = [];
-    for (const chat of nonTrashedChats) {
+    for (const chat of sorted) {
         if (chat.isPinned) {
             pinned.push(chat);
         } else {
@@ -139,7 +147,7 @@ export const trashedChatsAtom = atom(get =>
 
 // --- ACTIONS ---
 
-export const handleNewChatAtom = atom(null, (get, set, title = 'New Chat') => {
+export const handleNewChatAtom = atom(null, (get, set, title: string = 'New Chat') => {
     const allModels = get(allModelsAtom);
     const defaultModel = (get(modelAtom) || (allModels.length > 0 ? allModels[0].id : '')) as string;
 
@@ -155,6 +163,7 @@ export const handleNewChatAtom = atom(null, (get, set, title = 'New Chat') => {
         },
         actionLog: [],
         autoTitled: false,
+        updatedAt: Date.now(),
     };
     set(chatsAtom, prev => [newChat, ...prev]);
     set(currentChatIdAtom, newChat.id);
@@ -232,6 +241,7 @@ export const initChatHistoryAtom = atom(
                     actionLog: [],
                     autoTitled: chat.autoTitled || (chat.title !== 'New Chat'),
                     deletedTimestamp: chat.deletedTimestamp,
+                    updatedAt: chat.updatedAt || parseInt(chat.id!.split('-')[1]) || Date.now(),
                 };
             });
 
@@ -381,7 +391,7 @@ export const handleTitleUpdateAtom = atom(null, (get, set, chatId: string, newTi
     }
     set(logActionAtom, 'rename_chat', { from: oldTitle, to: newTitle.trim() });
     set(chatsAtom, prev => prev.map(chat =>
-        chat.id === chatId ? { ...chat, title: newTitle.trim() } : chat
+        chat.id === chatId ? { ...chat, title: newTitle.trim(), updatedAt: Date.now() } : chat
     ));
     set(editingChatIdAtom, null);
 });
@@ -513,6 +523,7 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
                         config: config,
                         actionLog: chat.actionLog || [],
                         autoTitled: chat.autoTitled ?? (chat.title !== 'New Chat'),
+                        updatedAt: chat.updatedAt || Date.now(),
                     };
                 });
                 await Promise.all(resolvedChats.map(chat => saveMessages(chat.id, chat.messages || [], chat.actionLog || [])));

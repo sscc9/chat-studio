@@ -41,7 +41,9 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
             set(chatsAtom, prevChats => prevChats.map(c =>
                 c.id === chat.id
                     ? {
-                        ...c, messages: c.messages.map((msg: Message, idx: number) =>
+                        ...c,
+                        updatedAt: Date.now(),
+                        messages: c.messages.map((msg: Message, idx: number) =>
                             idx === targetIndex ? { ...msg, parts: [{ text: "" }], groundingChunks: [] } : msg
                         )
                     } : c
@@ -75,7 +77,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                         messageToUpdate.parts = [{ text: text }];
                         messageToUpdate.groundingChunks = allGroundingChunks;
                         newMessages[targetIndex] = messageToUpdate;
-                        return { ...c, messages: newMessages };
+                        return { ...c, messages: newMessages, updatedAt: Date.now() };
                     }
                     return c;
                 }));
@@ -101,7 +103,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                     if (c.id === chat.id) {
                         const newMessages = [...c.messages];
                         newMessages[targetIndex] = { ...newMessages[targetIndex], parts: [{ text: `**错误:** ${error.message}` }] };
-                        return { ...c, messages: newMessages };
+                        return { ...c, messages: newMessages, updatedAt: Date.now() };
                     }
                     return c;
                 }));

@@ -101,4 +101,5 @@ export interface Chat {
     actionLog: ActionLogEntry[];
     autoTitled?: boolean;
     deletedTimestamp?: number;
+    updatedAt: number;
 }
