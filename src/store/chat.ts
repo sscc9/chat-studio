@@ -627,3 +627,47 @@ export const handleAutoRenameChatAtom = atom(null, async (get, set, chatId: stri
         // Do not revert autoTitled flag. Treat this as a single attempt.
     }
 });
+
+export const handleImportFromStudioAtom = atom(null, async (get, set, messages: Message[], title?: string) => {
+    if (messages.length === 0) {
+        set(showToastAtom, "没有可导入的消息。");
+        return;
+    }
+
+    const allModels = get(allModelsAtom);
+    const defaultModel = (get(modelAtom) || (allModels.length > 0 ? allModels[0].id : '')) as string;
+
+    const chatTitle = title?.trim() || (() => {
+        const firstUserMsg = messages.find(m => m.role === 'user');
+        const text = firstUserMsg?.parts.find(p => p.text)?.text || '';
+        return text.substring(0, 30).trim() || 'AI Studio 导入';
+    })();
+
+    const newChat: Chat = {
+        id: `chat-${Date.now()}`,
+        title: chatTitle,
+        messages: messages,
+        isPinned: false,
+        config: {
+            systemInstruction: '',
+            useGoogleSearch: get(useGoogleSearchAtom),
+            model: defaultModel,
+        },
+        actionLog: [],
+        autoTitled: true,
+        updatedAt: Date.now(),
+    };
+
+    await saveMessages(newChat.id, newChat.messages, newChat.actionLog);
+
+    set(chatsAtom, prev => [{ ...newChat, messages: [], actionLog: [] }, ...prev]);
+    set(currentChatIdAtom, newChat.id);
+
+    // Load messages into state for the current chat
+    set(chatsAtom, prev => prev.map(c =>
+        c.id === newChat.id ? { ...c, messages: newChat.messages, actionLog: newChat.actionLog } : c
+    ));
+    set(syncConfigWithChatAtom, newChat);
+
+    set(showToastAtom, `已导入 ${messages.length} 条消息。`);
+});

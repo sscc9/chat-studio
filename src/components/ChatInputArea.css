@@ -61,9 +61,9 @@
   align-items: stretch;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
-  padding: 0.5rem 0.5rem 0.25rem;
+  padding: 0.75rem 0.5rem 0.25rem;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background-color: var(--background-primary);
+  background-color: var(--message-hover-bg);
 }
 
 .input-controls {
@@ -162,7 +162,7 @@
 }
 
 .chat-input-area button:not(.stop-generating-btn):not(.attach-btn):disabled {
-  background-color: var(--background-secondary);
+  background-color: var(--message-hover-bg);
   color: #999;
   cursor: not-allowed;
   border-color: var(--border-color);

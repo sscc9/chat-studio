@@ -22,7 +22,6 @@
 .chat-message:not(.is-editing):hover .message-bubble,
 .chat-message.is-editing .message-bubble {
   border-color: var(--border-color);
-  background-color: var(--message-hover-bg);
 }
 
 .message-header {
@@ -128,7 +127,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: var(--background-secondary);
+  background-color: var(--message-hover-bg);
   border-radius: var(--radius-sm);
   margin-top: 8px;
   font-size: 0.9rem;

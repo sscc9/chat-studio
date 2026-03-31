@@ -17,7 +17,7 @@
 }
 
 .settings-modal {
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: var(--radius-lg);
     box-shadow: 0 12px 40px var(--shadow-color-strong);
     width: 65vw;
@@ -78,7 +78,7 @@
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
 }
 
 .settings-sidebar-list {
@@ -125,7 +125,7 @@
 .add-provider-btn {
     width: 100%;
     padding: 0.5rem;
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     color: var(--text-primary);
@@ -386,7 +386,7 @@
 .quick-add-tag {
     padding: 4px 10px;
     border-radius: var(--radius-lg);
-    background-color: var(--background-secondary);
+    background-color: var(--message-hover-bg);
     border: 1px solid var(--border-color);
     font-size: 0.75rem;
     color: var(--text-secondary);

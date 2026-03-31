@@ -46,6 +46,7 @@ import {
     creatingInputRefAtom,
     documentFileInputRefAtom,
     isSettingsModalOpenAtom,
+    isImportStudioModalOpenAtom,
     allModelsAtom,
 
     // System Presets
@@ -69,6 +70,7 @@ import {
 } from '../store';
 import { SettingsModal } from './SettingsModal';
 import { SystemPresetEditorModal } from './SystemPresetEditorModal';
+import { ImportStudioModal } from './ImportStudioModal';
 
 
 export const ConfigPanel = () => {
@@ -123,6 +125,7 @@ export const ConfigPanel = () => {
     const handleStartEditPreset = useSetAtom(handleStartEditPresetAtom);
     const handleDeletePresetPrompt = useSetAtom(handleDeletePresetPromptAtom);
     const setIsSettingsModalOpen = useSetAtom(isSettingsModalOpenAtom);
+    const setIsImportStudioModalOpen = useSetAtom(isImportStudioModalOpenAtom);
 
     // Write-Only Functions (System Presets)
     const handleAddSystemPresetGroup = useSetAtom(handleAddSystemPresetGroupAtom);
@@ -325,6 +328,21 @@ export const ConfigPanel = () => {
                                     </label>
                                 </div>
 
+                                <div className="config-item">
+                                    <label>导入对话</label>
+                                    <button
+                                        className="import-studio-upload-btn"
+                                        onClick={() => setIsImportStudioModalOpen(true)}
+                                        style={{ width: '100%', justifyContent: 'center', padding: '0.6rem 1rem' }}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z" />
+                                            <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
+                                        </svg>
+                                        从 AI Studio 导入对话
+                                    </button>
+                                </div>
+
                                 <div className="config-item preset-prompts-manager">
                                     <div className="preset-prompts-header">
                                         <label>管理系统提示词</label>
@@ -462,6 +480,7 @@ export const ConfigPanel = () => {
             </aside>
             <SettingsModal />
             <SystemPresetEditorModal />
+            <ImportStudioModal />
         </>
     );
 };

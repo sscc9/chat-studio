@@ -78,8 +78,7 @@
 }
 
 .message-list-item {
-  padding: 0 1.5rem;
-  padding-top: 1rem;
+  padding: 1rem 1rem 0 1.5rem;
 }
 
 /* The last item doesn't need top padding because the parent has a gap. */
@@ -120,8 +119,7 @@
 
 @media (max-width: 768px) {
   .message-list-item {
-    padding: 0 1rem;
-    padding-top: 1rem;
+    padding: 1rem 0.5rem 0 1rem;
   }
 
   .message-list-item:first-child {

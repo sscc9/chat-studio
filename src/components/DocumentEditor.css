@@ -25,11 +25,12 @@
   bottom: 0;
   width: 50vw;
   max-width: 700px;
-  background-color: var(--background-secondary);
+  background-color: var(--background-primary);
   z-index: 1002;
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 15px var(--shadow-color-medium);
+  border-left: 1px solid var(--border-color);
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
 }

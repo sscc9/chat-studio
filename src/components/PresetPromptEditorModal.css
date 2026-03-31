@@ -20,7 +20,7 @@
 .preset-prompt-editor {
     pointer-events: auto;
     position: fixed;
-    background-color: var(--background-secondary);
+    background-color: var(--background-primary);
     border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px var(--shadow-color-medium);
     width: 320px;
@@ -29,6 +29,7 @@
     max-width: 90vw;
     display: flex;
     flex-direction: column;
+    border: 1px solid var(--border-color);
     transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 

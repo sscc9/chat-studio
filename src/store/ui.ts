@@ -70,6 +70,7 @@ export const setIsModelDropdownOpenAtom = atom(
 );
 export const isActionLogViewerOpenAtom = atom(false);
 export const isTrashModalOpenAtom = atom(false);
+export const isImportStudioModalOpenAtom = atom(false);
 export const activeConfigTabAtom = atom('configuration');
 
 // --- Theme & Mobile ---
