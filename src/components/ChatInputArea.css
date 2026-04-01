@@ -67,9 +67,6 @@
   box-shadow: 0 2px 6px var(--shadow-color-light);
 }
 
-.input-row:hover {
-  box-shadow: 0 4px 12px var(--shadow-color-light);
-}
 
 .input-controls {
   display: flex;

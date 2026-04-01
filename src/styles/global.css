@@ -117,7 +117,7 @@ body,
 }
 
 .prose pre {
-  background-color: var(--prose-pre-bg);
+  background-color: transparent;
   border: 1px solid var(--border-color);
   padding: 1rem;
   border-radius: var(--radius-md);
