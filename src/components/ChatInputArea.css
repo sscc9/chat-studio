@@ -62,8 +62,13 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: 0.75rem 0.5rem 0.25rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.25s ease;
   background-color: var(--message-hover-bg);
+  box-shadow: 0 1px 4px var(--shadow-color-light);
+}
+
+.input-row:hover {
+  box-shadow: 0 2px 10px var(--shadow-color-light);
 }
 
 .input-controls {
