@@ -338,11 +338,6 @@
 }
 
 .preset-group-tag.is-active {
-    background-color: #E3E3E3;
-    color: #1c1e21;
-}
-
-html[data-theme='dark'] .preset-group-tag.is-active {
     background-color: var(--background-tertiary);
     color: var(--text-primary);
 }

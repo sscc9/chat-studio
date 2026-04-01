@@ -74,12 +74,6 @@
 }
 
 .new-chat-btn:hover {
-  background-color: #E3E3E3;
-  border-color: #E3E3E3;
-  color: #1c1e21;
-}
-
-html[data-theme='dark'] .new-chat-btn:hover {
   background-color: var(--background-tertiary);
   border-color: var(--background-tertiary);
   color: var(--text-primary);
@@ -90,6 +84,7 @@ html[data-theme='dark'] .new-chat-btn:hover {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  gap: 2px;
   padding: 1rem;
 }
 
@@ -118,11 +113,6 @@ html[data-theme='dark'] .new-chat-btn:hover {
 }
 
 .history-item.active {
-  background-color: #E3E3E3;
-  color: #1c1e21;
-}
-
-html[data-theme='dark'] .history-item.active {
   background-color: var(--background-tertiary);
   color: var(--text-primary);
 }
@@ -217,6 +207,6 @@ html[data-theme='dark'] .history-item.active {
 .history-item.active .delete-btn svg,
 .history-item.active .pin-btn svg,
 .history-item.active .pin-btn.pinned svg {
-  fill: #1c1e21;
+  fill: var(--text-primary);
 }
 
