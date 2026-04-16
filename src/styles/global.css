@@ -27,8 +27,18 @@
   --shadow-color-light: rgba(0, 0, 0, 0.1);
   --shadow-color-medium: rgba(0, 0, 0, 0.15);
   --shadow-color-strong: rgba(0, 0, 0, 0.2);
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Courier New', Courier, monospace;
+  /* HLJS Token Colors (Light) */
+  --hljs-base: #24292e;
+  --hljs-bg: transparent;
+  --hljs-keyword: #d73a49;
+  --hljs-title: #6f42c1;
+  --hljs-string: #032f62;
+  --hljs-comment: #6a737d;
+  --hljs-number: #005cc5;
+  --hljs-literal: #005cc5;
+  --hljs-tag: #22863a;
 
   /* Border Radius System */
   --radius-sm: 6px;
@@ -61,6 +71,16 @@ html[data-theme='dark'] {
   --shadow-color-light: rgba(0, 0, 0, 0.3);
   --shadow-color-medium: rgba(0, 0, 0, 0.4);
   --shadow-color-strong: rgba(0, 0, 0, 0.5);
+
+  /* HLJS Token Colors (Dark) */
+  --hljs-base: #e1e4e8;
+  --hljs-keyword: #f97583;
+  --hljs-title: #b392f0;
+  --hljs-string: #9ecbff;
+  --hljs-comment: #6a737d;
+  --hljs-number: #79b8ff;
+  --hljs-literal: #79b8ff;
+  --hljs-tag: #85e89d;
 }
 
 
@@ -114,15 +134,19 @@ body,
 /* Markdown "prose" styles */
 .prose {
   word-break: break-word;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
 }
 
 .prose pre {
-  background-color: transparent;
+  background-color: var(--prose-pre-bg);
   border: 1px solid var(--border-color);
   padding: 1rem;
   border-radius: var(--radius-md);
   overflow-x: auto;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-family-mono);
+  font-size: 0.85em;
+  box-shadow: inset 0 0 0 1px var(--shadow-color-light);
 }
 
 .code-block-wrapper {
@@ -166,10 +190,12 @@ body,
 }
 
 .prose code {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-family-mono);
   background-color: var(--background-tertiary);
-  padding: 0.1em 0.3em;
+  color: var(--accent-secondary);
+  padding: 0.15em 0.35em;
   border-radius: var(--radius-sm);
+  font-size: 0.9em;
 }
 
 .prose pre code {
@@ -244,12 +270,14 @@ body,
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--border-color);
-  padding-left: 1rem;
+  border-left: 4px solid var(--accent-primary);
+  padding: 0.75rem 1rem;
   color: var(--text-secondary);
+  background-color: var(--background-secondary);
   margin-left: 0;
   margin-right: 0;
   font-style: italic;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 .prose hr {
@@ -414,4 +442,26 @@ html[data-theme='dark'] input:checked+.slider:before {
 
 *::-webkit-scrollbar-thumb:hover {
   background-color: var(--text-secondary);
+}
+
+/* Highlight.js Dynamic Theme Styles */
+.hljs {
+  color: var(--hljs-base);
+  background: var(--hljs-bg);
+}
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-name, .hljs-tag {
+  color: var(--hljs-keyword);
+}
+.hljs-title, .hljs-section, .hljs-attribute, .hljs-class .hljs-title, .hljs-title.class_, .hljs-title.function_ {
+  color: var(--hljs-title);
+}
+.hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition, .hljs-regexp {
+  color: var(--hljs-string);
+}
+.hljs-comment, .hljs-quote, .hljs-deletion, .hljs-meta {
+  color: var(--hljs-comment);
+  font-style: italic;
+}
+.hljs-number, .hljs-literal, .hljs-type, .hljs-template-variable, .hljs-variable, .hljs-link {
+  color: var(--hljs-number);
 }

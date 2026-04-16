@@ -73,6 +73,16 @@ export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => 
 
       wrapper.appendChild(button);
       wrapper.appendChild(pre);
+
+      // Apply syntax highlighting if highlight.js is available
+      const code = pre.querySelector('code');
+      if (code && (window as any).hljs) {
+        try {
+          (window as any).hljs.highlightElement(code);
+        } catch (e) {
+          console.error('Highlighting failed', e);
+        }
+      }
     });
   }, [parts]);
 
