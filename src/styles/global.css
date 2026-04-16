@@ -261,23 +261,23 @@ body,
 }
 
 .prose th {
-  background-color: var(--background-tertiary);
+  background-color: transparent;
   font-weight: 600;
 }
 
 .prose tr:nth-child(even) {
-  background-color: var(--message-hover-bg);
+  background-color: transparent;
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--accent-primary);
-  padding: 0.75rem 1rem;
-  color: var(--text-secondary);
-  background-color: var(--background-secondary);
+  border-left: none;
+  padding-left: 2rem;
+  color: var(--text-primary);
+  background-color: transparent;
   margin-left: 0;
   margin-right: 0;
-  font-style: italic;
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: normal;
+  border-radius: 0;
 }
 
 .prose hr {
