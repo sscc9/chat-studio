@@ -16,6 +16,7 @@ export const SettingsModal = () => {
     const [titleModelId, setTitleModelId] = useAtom(titleModelIdAtom);
     const [selectedProviderId, setSelectedProviderId] = useState<string | 'general' | null>(null);
     const [isAddingProvider, setIsAddingProvider] = useState(false);
+    const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
 
     // Form states
     const [newModelId, setNewModelId] = useState('');
@@ -45,6 +46,12 @@ export const SettingsModal = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setTimeout(() => setMobileView('list'), 300);
+        }
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -122,29 +129,59 @@ export const SettingsModal = () => {
         <div className="settings-modal-overlay" onClick={() => setIsOpen(false)}>
             <div className="settings-modal" onClick={e => e.stopPropagation()}>
                 <div className="settings-modal-header">
-                    <h3>设置</h3>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {mobileView === 'detail' ? (
+                            <button 
+                                className="icon-btn mobile-only"
+                                onClick={() => setMobileView('list')}
+                                title="返回"
+                                style={{ padding: 0, marginRight: '0.25rem', color: 'var(--text-primary)' }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                                </svg>
+                            </button>
+                        ) : (
+                            <div 
+                                className="mobile-only"
+                                style={{ display: 'flex', alignItems: 'center', padding: 0, marginRight: '0.4rem', color: 'var(--text-secondary)' }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-10h-6v10H5a2 2 0 0 1-2-2z"></path>
+                                </svg>
+                            </div>
+                        )}
+                        <h3 className="modal-title-desktop">设置</h3>
+                        <h3 className="modal-title-mobile">
+                            {mobileView === 'list' ? '设置' : 
+                                (isAddingProvider ? '添加模型商' : selectedProviderId === 'general' ? '通用配置' : selectedProvider?.name || '设置')}
+                        </h3>
+                    </div>
                     <button className="settings-modal-close-btn" onClick={() => setIsOpen(false)} title="关闭">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
                         </svg>
                     </button>
                 </div>
-                <div className="settings-modal-body">
+                <div className={`settings-modal-body ${mobileView === 'detail' ? 'show-detail' : ''}`}>
                     <div className="settings-sidebar">
                         <div className="settings-sidebar-list">
                             <div
                                 className={`settings-provider-item ${selectedProviderId === 'general' ? 'active' : ''}`}
-                                onClick={() => { setSelectedProviderId('general'); setIsAddingProvider(false); }}
+                                onClick={() => { setSelectedProviderId('general'); setIsAddingProvider(false); setMobileView('detail'); }}
                             >
                                 <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.13,5.91,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.85,9.48l2.03,1.58C4.84,11.36,4.81,11.69,4.81,12c0,0.31,0.02,0.65,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" /></svg>
                                 <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>通用配置</span>
+                                <svg className="provider-item-chevron mobile-only" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                    <path d="M9.29 15.88L13.17 12 9.29 8.12a.996.996 0 1 1 1.41-1.41l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3a.996.996 0 0 1-1.41 0c-.38-.39-.39-1.03 0-1.42z"/>
+                                </svg>
                             </div>
                             <div className="settings-sidebar-divider"></div>
                             {providers.map(p => (
                                 <div
                                     key={p.id}
                                     className={`settings-provider-item ${selectedProviderId === p.id ? 'active' : ''}`}
-                                    onClick={() => { setSelectedProviderId(p.id); setIsAddingProvider(false); }}
+                                    onClick={() => { setSelectedProviderId(p.id); setIsAddingProvider(false); setMobileView('detail'); }}
                                 >
                                     {p.type === 'google' ? (
                                         <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" /></svg>
@@ -152,11 +189,14 @@ export const SettingsModal = () => {
                                         <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
                                     )}
                                     <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                                    <svg className="provider-item-chevron mobile-only" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                        <path d="M9.29 15.88L13.17 12 9.29 8.12a.996.996 0 1 1 1.41-1.41l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3a.996.996 0 0 1-1.41 0c-.38-.39-.39-1.03 0-1.42z"/>
+                                    </svg>
                                 </div>
                             ))}
                         </div>
                         <div className="settings-sidebar-footer">
-                            <button className="add-provider-btn" onClick={() => { setIsAddingProvider(true); setSelectedProviderId(null); }}>
+                            <button className="add-provider-btn" onClick={() => { setIsAddingProvider(true); setSelectedProviderId(null); setMobileView('detail'); }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
                                 </svg>
