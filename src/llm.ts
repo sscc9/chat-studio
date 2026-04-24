@@ -61,18 +61,26 @@ export async function* streamGenerateContent(
             openAIMessages.push({ role, content });
         }
 
+        const isDeepSeekV4 = modelId.startsWith('deepseek-v4');
         const bodyPayload: any = {
             model: modelId,
             messages: openAIMessages,
             stream: true,
             max_tokens: 16000,
+        };
+
+        if (isDeepSeekV4) {
+            // DeepSeek V4 reasoning parameters
+            bodyPayload.thinking = { type: 'enabled' };
+            bodyPayload.reasoning_effort = 'high';
+        } else {
             // Adaptive thinking: Claude 4.6+ will automatically determine
             // how much reasoning to apply based on task complexity.
-            reasoning: { enabled: true },
+            bodyPayload.reasoning = { enabled: true };
             // Prompt caching (5-min TTL): automatically caches conversation
             // history to reduce cost and latency on repeated content.
-            cache_control: { type: 'ephemeral' }
-        };
+            bodyPayload.cache_control = { type: 'ephemeral' };
+        }
 
         // Web search is currently disabled for openai-compatible providers (Doubao/Claude)
         // because standard endpoints do not support server-side search directly.

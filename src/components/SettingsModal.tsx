@@ -368,6 +368,8 @@ export const SettingsModal = () => {
                                         )}
                                         {!editingModelId && selectedProvider.type === 'openai-compatible' && (
                                             <div className="quick-add-models">
+                                                <span className="quick-add-tag" onClick={() => { setNewModelId('deepseek-v4-pro'); setNewModelName('DeepSeek V4 Pro'); }}>+ DeepSeek V4 Pro</span>
+                                                <span className="quick-add-tag" onClick={() => { setNewModelId('deepseek-v4-flash'); setNewModelName('DeepSeek V4 Flash'); }}>+ DeepSeek V4 Flash</span>
                                                 <span className="quick-add-tag" onClick={() => { setNewModelId('gpt-4o'); setNewModelName('GPT-4o'); }}>+ GPT-4o</span>
                                                 <span className="quick-add-tag" onClick={() => { setNewModelId('gpt-4-turbo'); setNewModelName('GPT-4 Turbo'); }}>+ GPT-4 Turbo</span>
                                                 <span className="quick-add-tag" onClick={() => { setNewModelId('claude-3-5-sonnet-latest'); setNewModelName('Claude 3.5 Sonnet'); }}>+ Claude 3.5 Sonnet</span>
