@@ -63,12 +63,12 @@ export const handleStartEditMessageAtom = atom(null, (get, set, index: number) =
     const currentChat = get(currentChatAtom);
     if (!currentChat) return;
     const textPart = currentChat.messages[index].parts.find((p: MessagePart) => 'text' in p);
-    set(editingMessageIndexAtom, index as number | null);
+    set(editingMessageIndexAtom, index);
     set(editingMessageContentAtom, textPart?.text || "");
 });
 
 export const handleCancelEditAtom = atom(null, (get, set) => {
-    set(editingMessageIndexAtom, null as number | null);
+    set(editingMessageIndexAtom, null);
     set(editingMessageContentAtom, '');
 });
 
@@ -218,7 +218,7 @@ export const handleSendMessageAtom = atom(null, async (get, set) => {
 
     const updatedCurrentChat = get(currentChatAtom)!;
     const targetIndex = updatedCurrentChat.messages.length - 1;
-    set(regeneratingIndexAtom, targetIndex as number | null);
+    set(regeneratingIndexAtom, targetIndex);
 
     set(userInputAtom, "");
     set(attachedFilesAtom, []);
@@ -293,7 +293,7 @@ export const handleSaveAndRegenerateAtom = atom(null, async (get, set) => {
     }));
 
     const updatedChat = get(currentChatAtom)!;
-    set(regeneratingIndexAtom, targetIndex as number | null);
+    set(regeneratingIndexAtom, targetIndex);
 
     try {
         await set(streamAndGetResponseAtom, { chat: updatedChat, contents, targetIndex, requestId });
@@ -355,7 +355,7 @@ export const handleRegenerateResponseAtom = atom(null, async (get, set, index: n
     }));
 
     const updatedChat = get(currentChatAtom)!;
-    set(regeneratingIndexAtom, targetIndex as number | null);
+    set(regeneratingIndexAtom, targetIndex);
 
     try {
         await set(streamAndGetResponseAtom, { chat: updatedChat, contents, targetIndex, requestId });

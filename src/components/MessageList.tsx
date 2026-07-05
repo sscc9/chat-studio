@@ -14,9 +14,6 @@ import {
     updateTokenCountAtom,
     chatMessagesRefAtom,
 } from '../store';
-
-declare const marked: any;
-
 export const MessageList = () => {
     const currentChat = useAtomValue(currentChatAtom);
     const isLoading = useAtomValue(isLoadingAtom);
@@ -100,13 +97,6 @@ export const MessageList = () => {
     useEffect(() => {
         updateTokenCount();
     }, [currentChat?.messages, updateTokenCount]);
-
-    useEffect(() => {
-        if (typeof marked !== 'undefined') {
-            marked.setOptions({ breaks: true, gfm: true });
-        }
-    }, []);
-
     return (
         <div className="chat-messages" ref={chatMessagesRef}>
             <div className="scroll-fog top-scroll-fog"></div>

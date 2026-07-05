@@ -125,7 +125,7 @@ export const handleAddPresetGroupAtom = atom(null, (get, set, name: string) => {
 });
 
 export const handleStartRenameGroupAtom = atom(null, (get, set, group: PresetGroup) => {
-    set(editingGroupIdAtom, group.id as string | null);
+    set(editingGroupIdAtom, group.id);
     set(editingGroupNameAtom, group.name);
 });
 
@@ -133,11 +133,11 @@ export const handleUpdateGroupNameAtom = atom(null, (get, set) => {
     const name = get(editingGroupNameAtom);
     const id = get(editingGroupIdAtom);
     if (!name.trim() || !id) {
-        set(editingGroupIdAtom, null as string | null);
+        set(editingGroupIdAtom, null);
         return;
     }
     set(presetGroupsAtom, prev => prev.map(g => g.id === id ? { ...g, name: name.trim() } : g));
-    set(editingGroupIdAtom, null as string | null);
+    set(editingGroupIdAtom, null);
     set(editingGroupNameAtom, '');
 });
 
@@ -151,25 +151,25 @@ export const handleDeletePresetGroupAtom = atom(null, (get, set, groupId: string
 
 export const handleStartAddPresetAtom = atom(null, (get, set, e: React.MouseEvent) => {
     set(presetEditorPositionAtom, { top: e.clientY, left: e.clientX });
-    set(editingPresetIdAtom, 'new' as string | null);
+    set(editingPresetIdAtom, 'new');
     set(editingPresetTextAtom, '');
     const activeId = get(activePresetGroupIdAtom);
-    set(editingPresetGroupIdAtom, (activeId === 'all' || activeId === 'ungrouped' ? null : activeId) as string | null);
+    set(editingPresetGroupIdAtom, (activeId === 'all' || activeId === 'ungrouped' ? null : activeId));
     set(isPresetEditorOpenAtom, true);
 });
 
 export const handleStartEditPresetAtom = atom(null, (get, set, prompt: PresetPrompt, e: React.MouseEvent) => {
     set(presetEditorPositionAtom, { top: e.clientY, left: e.clientX });
-    set(editingPresetIdAtom, prompt.id as string | null);
+    set(editingPresetIdAtom, prompt.id);
     set(editingPresetTextAtom, prompt.text);
-    set(editingPresetGroupIdAtom, (prompt.groupId || null) as string | null);
+    set(editingPresetGroupIdAtom, (prompt.groupId || null));
     set(isPresetEditorOpenAtom, true);
 });
 
 export const handleCancelPresetAtom = atom(null, (get, set) => {
-    set(editingPresetIdAtom, null as string | null);
+    set(editingPresetIdAtom, null);
     set(editingPresetTextAtom, '');
-    set(editingPresetGroupIdAtom, null as string | null);
+    set(editingPresetGroupIdAtom, null);
     set(isPresetEditorOpenAtom, false);
 });
 

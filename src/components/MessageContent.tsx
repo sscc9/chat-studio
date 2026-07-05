@@ -8,7 +8,9 @@ import type { MessagePart } from '../types';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
+
+// Configure marked options
+marked.setOptions({ breaks: true, gfm: true });
 
 export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => {
   const containerRef = useRef<HTMLDivElement>(null);

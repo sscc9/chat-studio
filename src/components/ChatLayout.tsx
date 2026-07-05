@@ -14,6 +14,7 @@ import { TrashModal } from "./TrashModal";
 import './ChatLayout.css';
 
 import { saveMessages } from '../db';
+import type { Message } from '../types';
 import {
     isInitializedAtom,
     chatsAtom,
@@ -45,6 +46,45 @@ const PersistState = () => {
     const lastSavedActionLogRef = useRef<Record<string, any[]>>({});
     const timerRef = useRef<number | null>(null);
 
+    const flushSave = () => {
+        if (!isInitialized) return;
+        if (timerRef.current !== null) {
+            window.clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+
+        // 1. Persist chat metadata (title, config, etc.) to localStorage if changed
+        const chatsMetadata = chats.map(({ messages, actionLog, ...meta }) => meta);
+        const metadataStr = JSON.stringify(chatsMetadata);
+        if (metadataStr !== lastSavedMetadataRef.current) {
+            try {
+                localStorage.setItem('ai-chat-history', metadataStr);
+                lastSavedMetadataRef.current = metadataStr;
+            } catch (error) {
+                console.error('Failed to save chat history to local storage', error);
+            }
+        }
+
+        // 2. Persist changed chat messages/actionLog to IndexedDB (even background streaming ones)
+        chats.forEach((chat) => {
+            const prevMessages = lastSavedMessagesRef.current[chat.id];
+            const prevActionLog = lastSavedActionLogRef.current[chat.id];
+
+            if (prevMessages !== chat.messages || prevActionLog !== chat.actionLog) {
+                saveMessages(
+                    chat.id,
+                    chat.messages,
+                    chat.actionLog || []
+                ).then(() => {
+                    lastSavedMessagesRef.current[chat.id] = chat.messages;
+                    lastSavedActionLogRef.current[chat.id] = chat.actionLog || [];
+                }).catch(err => {
+                    console.error(`Failed to save messages to DB for chat ${chat.id}`, err);
+                });
+            }
+        });
+    };
+
     // When chats are loaded for the first time, populate the refs so we don't write them again
     useEffect(() => {
         if (isInitialized && Object.keys(lastSavedMessagesRef.current).length === 0) {
@@ -66,42 +106,27 @@ const PersistState = () => {
         }
 
         timerRef.current = window.setTimeout(() => {
-            // 1. Persist chat metadata (title, config, etc.) to localStorage if changed
-            const chatsMetadata = chats.map(({ messages, actionLog, ...meta }) => meta);
-            const metadataStr = JSON.stringify(chatsMetadata);
-            if (metadataStr !== lastSavedMetadataRef.current) {
-                try {
-                    localStorage.setItem('ai-chat-history', metadataStr);
-                    lastSavedMetadataRef.current = metadataStr;
-                } catch (error) {
-                    console.error('Failed to save chat history to local storage', error);
-                }
-            }
-
-            // 2. Persist changed chat messages/actionLog to IndexedDB (even background streaming ones)
-            chats.forEach((chat) => {
-                const prevMessages = lastSavedMessagesRef.current[chat.id];
-                const prevActionLog = lastSavedActionLogRef.current[chat.id];
-
-                if (prevMessages !== chat.messages || prevActionLog !== chat.actionLog) {
-                    saveMessages(
-                        chat.id,
-                        chat.messages,
-                        chat.actionLog || []
-                    ).then(() => {
-                        lastSavedMessagesRef.current[chat.id] = chat.messages;
-                        lastSavedActionLogRef.current[chat.id] = chat.actionLog || [];
-                    }).catch(err => {
-                        console.error(`Failed to save messages to DB for chat ${chat.id}`, err);
-                    });
-                }
-            });
+            flushSave();
         }, 1000);
 
         return () => {
             if (timerRef.current !== null) {
                 window.clearTimeout(timerRef.current);
             }
+        };
+    }, [isInitialized, chats]);
+
+    // Flush immediately when tab goes to background, is closed or refreshed
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                flushSave();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            flushSave(); // Flush on unmount too
         };
     }, [isInitialized, chats]);
 

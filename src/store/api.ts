@@ -33,7 +33,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
 
         if (!provider) {
             set(isLoadingAtom, false);
-            set(regeneratingIndexAtom, null as number | null);
+            set(regeneratingIndexAtom, null);
             return reject(new Error("此模型未配置供应商。请检查设置。"));
         }
 
@@ -133,9 +133,9 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
         } finally {
             if (activeRequestRef.current === requestId) {
                 set(isLoadingAtom, false);
-                set(regeneratingIndexAtom, null as number | null);
+                set(regeneratingIndexAtom, null);
                 activeRequestRef.current = null;
-                set(activeAbortControllerAtom, null as AbortController | null);
+                set(activeAbortControllerAtom, null);
             }
         }
     });
@@ -145,12 +145,12 @@ export const handleStopGenerationAtom = atom(null, (get, set) => {
     const activeRequestRef = get(activeRequestRefAtom);
     activeRequestRef.current = null;
     set(isLoadingAtom, false);
-    set(regeneratingIndexAtom, null as number | null);
+    set(regeneratingIndexAtom, null);
 
     const controller = get(activeAbortControllerAtom);
     if (controller) {
         controller.abort();
-        set(activeAbortControllerAtom, null as AbortController | null);
+        set(activeAbortControllerAtom, null);
     }
 });
 

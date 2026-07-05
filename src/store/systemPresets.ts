@@ -54,7 +54,7 @@ export const handleAddSystemPresetGroupAtom = atom(null, (get, set, name: string
 });
 
 export const handleStartRenameSystemGroupAtom = atom(null, (get, set, group: PresetGroup) => {
-    set(editingSystemGroupIdAtom, group.id as string | null);
+    set(editingSystemGroupIdAtom, group.id);
     set(editingSystemGroupNameAtom, group.name);
 });
 
@@ -62,11 +62,11 @@ export const handleUpdateSystemGroupNameAtom = atom(null, (get, set) => {
     const name = get(editingSystemGroupNameAtom);
     const id = get(editingSystemGroupIdAtom);
     if (!name.trim() || !id) {
-        set(editingSystemGroupIdAtom, null as string | null);
+        set(editingSystemGroupIdAtom, null);
         return;
     }
     set(systemPresetGroupsAtom, prev => prev.map(g => g.id === id ? { ...g, name: name.trim() } : g));
-    set(editingSystemGroupIdAtom, null as string | null);
+    set(editingSystemGroupIdAtom, null);
     set(editingSystemGroupNameAtom, '');
 });
 
@@ -80,25 +80,25 @@ export const handleDeleteSystemPresetGroupAtom = atom(null, (get, set, groupId: 
 
 export const handleStartAddSystemPresetAtom = atom(null, (get, set, e: React.MouseEvent) => {
     set(systemPresetEditorPositionAtom, { top: e.clientY, left: e.clientX });
-    set(editingSystemPresetIdAtom, 'new' as string | null);
+    set(editingSystemPresetIdAtom, 'new');
     set(editingSystemPresetTextAtom, '');
     const activeId = get(activeSystemPresetGroupIdAtom);
-    set(editingSystemPresetGroupIdAtom, (activeId === 'all' || activeId === 'ungrouped' ? null : activeId) as string | null);
+    set(editingSystemPresetGroupIdAtom, (activeId === 'all' || activeId === 'ungrouped' ? null : activeId));
     set(isSystemPresetEditorOpenAtom, true);
 });
 
 export const handleStartEditSystemPresetAtom = atom(null, (get, set, prompt: PresetPrompt, e: React.MouseEvent) => {
     set(systemPresetEditorPositionAtom, { top: e.clientY, left: e.clientX });
-    set(editingSystemPresetIdAtom, prompt.id as string | null);
+    set(editingSystemPresetIdAtom, prompt.id);
     set(editingSystemPresetTextAtom, prompt.text);
-    set(editingSystemPresetGroupIdAtom, (prompt.groupId || null) as string | null);
+    set(editingSystemPresetGroupIdAtom, (prompt.groupId || null));
     set(isSystemPresetEditorOpenAtom, true);
 });
 
 export const handleCancelSystemPresetAtom = atom(null, (get, set) => {
-    set(editingSystemPresetIdAtom, null as string | null);
+    set(editingSystemPresetIdAtom, null);
     set(editingSystemPresetTextAtom, '');
-    set(editingSystemPresetGroupIdAtom, null as string | null);
+    set(editingSystemPresetGroupIdAtom, null);
     set(isSystemPresetEditorOpenAtom, false);
 });
 

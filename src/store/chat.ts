@@ -177,8 +177,7 @@ export const initChatHistoryAtom = atom(
     async (get, set) => {
         try {
             const savedChatsJSON = localStorage.getItem('ai-chat-history');
-            // FIX: Add type assertion to resolve potential `unknown` type from `atomWithStorage`.
-            const savedCurrentId = get(currentChatIdAtom) as string | null;
+            const savedCurrentId = get(currentChatIdAtom);
 
             if (!savedChatsJSON) {
                 set(handleNewChatAtom);
@@ -291,7 +290,7 @@ export const handleSelectChatAtom = atom(
         const updatedChat = get(chatsAtom).find(c => c.id === id);
         set(syncConfigWithChatAtom, updatedChat);
 
-        set(editingMessageIndexAtom, null as number | null);
+        set(editingMessageIndexAtom, null);
         set(isHistoryPanelOpenAtom, false);
     }
 );
@@ -379,21 +378,21 @@ export const handleTogglePinAtom = atom(null, (get, set, id: string) => {
 });
 
 export const handleStartEditingAtom = atom(null, (get, set, chat: Chat) => {
-    set(editingChatIdAtom, chat.id as string | null);
+    set(editingChatIdAtom, chat.id);
     set(editingTitleAtom, chat.title);
 });
 
 export const handleTitleUpdateAtom = atom(null, (get, set, chatId: string, newTitle: string) => {
     const oldTitle = get(chatsAtom).find(c => c.id === chatId)?.title || '';
     if (!newTitle.trim() || newTitle.trim() === oldTitle) {
-        set(editingChatIdAtom, null as string | null);
+        set(editingChatIdAtom, null);
         return;
     }
     set(logActionAtom, 'rename_chat', { from: oldTitle, to: newTitle.trim() });
     set(chatsAtom, prev => prev.map(chat =>
         chat.id === chatId ? { ...chat, title: newTitle.trim(), updatedAt: Date.now() } : chat
     ));
-    set(editingChatIdAtom, null as string | null);
+    set(editingChatIdAtom, null);
 });
 
 
