@@ -4,26 +4,38 @@
  */
 
 .chat-app {
-    display: grid;
-    grid-template-columns: 300px 1fr 300px;
+    display: flex;
     height: 100%;
-    transition: grid-template-columns 0.3s ease-in-out;
+    overflow: hidden;
 }
 
-.chat-app.history-collapsed {
-    grid-template-columns: 0 1fr 300px;
+.history-panel {
+    width: 300px;
+    flex-shrink: 0;
+    transition: margin-left 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: translateX(0);
 }
 
-.chat-app.config-collapsed {
-    grid-template-columns: 300px 1fr 0;
+.chat-app.history-collapsed .history-panel {
+    margin-left: -300px;
+    transform: translateX(-100%);
 }
 
-.chat-app.history-collapsed.config-collapsed {
-    grid-template-columns: 0 1fr 0;
+.config-panel {
+    width: 300px;
+    flex-shrink: 0;
+    transition: margin-right 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: translateX(0);
+}
+
+.chat-app.config-collapsed .config-panel {
+    margin-right: -300px;
+    transform: translateX(100%);
 }
 
 /* Chat Panel */
 .chat-panel {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -65,20 +77,12 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .chat-app {
-        grid-template-columns: 220px 1fr;
+    .history-panel {
+        width: 220px;
     }
 
-    .chat-app.history-collapsed {
-        grid-template-columns: 0 1fr;
-    }
-
-    .chat-app.config-collapsed {
-        grid-template-columns: 220px 1fr;
-    }
-
-    .chat-app.history-collapsed.config-collapsed {
-        grid-template-columns: 0 1fr;
+    .chat-app.history-collapsed .history-panel {
+        margin-left: -220px;
     }
 
     .config-panel {
@@ -122,12 +126,7 @@
 
 @media (max-width: 768px) {
 
-    .chat-app,
-    .chat-app.history-collapsed,
-    .chat-app.config-collapsed,
-    .chat-app.history-collapsed.config-collapsed {
-        grid-template-columns: 1fr;
-    }
+
 
     .history-panel {
         position: fixed;
