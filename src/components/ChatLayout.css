@@ -12,25 +12,29 @@
 .history-panel {
     width: 300px;
     flex-shrink: 0;
-    transition: margin-left 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: margin-left 0.3s ease-in-out, transform 0.3s ease-in-out, border-right-width 0.3s ease-in-out;
     transform: translateX(0);
+    will-change: margin-left, transform;
 }
 
 .chat-app.history-collapsed .history-panel {
     margin-left: -300px;
     transform: translateX(-100%);
+    border-right-width: 0;
 }
 
 .config-panel {
     width: 300px;
     flex-shrink: 0;
-    transition: margin-right 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: margin-right 0.3s ease-in-out, transform 0.3s ease-in-out, border-left-width 0.3s ease-in-out;
     transform: translateX(0);
+    will-change: margin-right, transform;
 }
 
 .chat-app.config-collapsed .config-panel {
     margin-right: -300px;
     transform: translateX(100%);
+    border-left-width: 0;
 }
 
 /* Chat Panel */
