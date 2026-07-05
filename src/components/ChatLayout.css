@@ -116,6 +116,8 @@
         transform: translateX(100%);
         transition: transform 0.3s ease-in-out;
         box-shadow: -2px 0 8px var(--shadow-color-light);
+        will-change: transform;
+        backface-visibility: hidden;
     }
 
     .config-panel.mobile-open {
@@ -144,6 +146,8 @@
         transition: transform 0.3s ease-in-out;
         box-shadow: 2px 0 8px var(--shadow-color-light);
         overflow-y: auto;
+        will-change: transform;
+        backface-visibility: hidden;
     }
 
     .history-panel.mobile-open {
