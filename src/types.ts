@@ -71,6 +71,7 @@ export interface ProviderConfig {
     apiKey: string;
     baseUrl?: string;
     models: ModelConfig[];
+    customBodyParams?: string;
 }
 
 export type ActionLogEntryType =

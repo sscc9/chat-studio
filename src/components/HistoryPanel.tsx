@@ -8,12 +8,12 @@ import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import './HistoryPanel.css';
 import {
     // State Atoms
-    chatsAtom, currentChatIdAtom, editingChatIdAtom, editingTitleAtom, isHistoryPanelVisibleAtom,
+    currentChatIdAtom, editingChatIdAtom, editingTitleAtom, isHistoryPanelVisibleAtom,
     isHistoryPanelOpenAtom, setIsHistoryPanelOpenAtom, isTrashModalOpenAtom,
 
     // Action Atoms
     handleNewChatAtom, handleImportFileAtom, handleImportClickAtom, handleExportChatsAtom,
-    handleSelectChatAtom, handleDragStartAtom, handleDropAtom, handleDragEndAtom,
+    handleSelectChatAtom,
     handleStartEditingAtom, handleTogglePinAtom, handleDeleteChatAtom, handleTitleUpdateAtom,
 
     // Derived Atoms
@@ -43,9 +43,6 @@ export const HistoryPanel = () => {
     const handleImportClick = useSetAtom(handleImportClickAtom);
     const handleExportChats = useSetAtom(handleExportChatsAtom);
     const handleSelectChat = useSetAtom(handleSelectChatAtom);
-    const handleDragStart = useSetAtom(handleDragStartAtom);
-    const handleDrop = useSetAtom(handleDropAtom);
-    const handleDragEnd = useSetAtom(handleDragEndAtom);
     const handleStartEditing = useSetAtom(handleStartEditingAtom);
     const handleTogglePin = useSetAtom(handleTogglePinAtom);
     const handleDeleteChat = useSetAtom(handleDeleteChatAtom);
@@ -108,10 +105,6 @@ export const HistoryPanel = () => {
                             className={`history-item ${chat.id === currentChatId ? "active" : ""}`}
                             onClick={() => editingChatId !== chat.id && handleSelectChat(chat.id)}
                             aria-current={chat.id === currentChatId}
-                            draggable={editingChatId !== chat.id}
-                            onDragStart={(e) => handleDragStart(e, chat)}
-                            onDrop={() => handleDrop(chat)}
-                            onDragEnd={handleDragEnd}
                         >
                             {editingChatId === chat.id ? (
                                 <input

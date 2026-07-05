@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { atom } from 'jotai';
+import { atom, PrimitiveAtom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { getMessages, saveMessages, deleteMessages } from '../db';
 import type { Chat, ChatConfig, Message, ActionLogEntry, ActionLogEntryType, SystemPrompt } from '../types';
@@ -25,7 +25,7 @@ export const logActionAtom = atom(
         if (!targetChatId) return;
 
         const newLogEntry: ActionLogEntry = {
-            id: `log-${Date.now()}`,
+            id: `log-${crypto.randomUUID()}`,
             timestamp: Date.now(),
             type,
             payload,
@@ -101,15 +101,15 @@ export const handleConfigChangeAtom = atom(null, (get, set, newConfig: Partial<C
 // CHAT HISTORY ATOMS
 // =================================================================
 
+// import { atom, PrimitiveAtom } from 'jotai' (will update at top if needed, or already there)
 export const chatsAtom = atom<Chat[]>([]);
 export const currentChatIdAtom = atomWithStorage<string | null>('ai-chat-current-id', null);
-export const editingChatIdAtom = atom<string | null>(null);
-export const editingTitleAtom = atom('');
-export const draggedChatRefAtom = atom(React.createRef<Chat | null>());
+export const editingChatIdAtom: PrimitiveAtom<string | null> = atom<string | null>(null);
+export const editingTitleAtom: PrimitiveAtom<string> = atom('');
 
 // Message editing state, moved here to break circular dependency with message.ts
-export const editingMessageIndexAtom = atom<number | null>(null);
-export const editingMessageContentAtom = atom('');
+export const editingMessageIndexAtom: PrimitiveAtom<number | null> = atom<number | null>(null);
+export const editingMessageContentAtom: PrimitiveAtom<string> = atom('');
 
 // --- DERIVED ---
 export const currentChatAtom = atom(get => {
@@ -152,7 +152,7 @@ export const handleNewChatAtom = atom(null, (get, set, title: string = 'New Chat
     const defaultModel = (get(modelAtom) || (allModels.length > 0 ? allModels[0].id : '')) as string;
 
     const newChat: Chat = {
-        id: `chat-${Date.now()}`,
+        id: `chat-${crypto.randomUUID()}`,
         title: title,
         messages: [],
         isPinned: false,
@@ -291,7 +291,7 @@ export const handleSelectChatAtom = atom(
         const updatedChat = get(chatsAtom).find(c => c.id === id);
         set(syncConfigWithChatAtom, updatedChat);
 
-        set(editingMessageIndexAtom, null);
+        set(editingMessageIndexAtom, null as number | null);
         set(isHistoryPanelOpenAtom, false);
     }
 );
@@ -357,7 +357,7 @@ export const handleForkChatAtom = atom(null, async (get, set, index: number) => 
 
     const newChat: Chat = {
         ...originalChat,
-        id: `chat-${Date.now()}`,
+        id: `chat-${crypto.randomUUID()}`,
         title: `${originalChat.title} 的分支`,
         messages: forkedMessages,
         isPinned: false,
@@ -379,53 +379,22 @@ export const handleTogglePinAtom = atom(null, (get, set, id: string) => {
 });
 
 export const handleStartEditingAtom = atom(null, (get, set, chat: Chat) => {
-    set(editingChatIdAtom, chat.id);
+    set(editingChatIdAtom, chat.id as string | null);
     set(editingTitleAtom, chat.title);
 });
 
 export const handleTitleUpdateAtom = atom(null, (get, set, chatId: string, newTitle: string) => {
     const oldTitle = get(chatsAtom).find(c => c.id === chatId)?.title || '';
     if (!newTitle.trim() || newTitle.trim() === oldTitle) {
-        set(editingChatIdAtom, null);
+        set(editingChatIdAtom, null as string | null);
         return;
     }
     set(logActionAtom, 'rename_chat', { from: oldTitle, to: newTitle.trim() });
     set(chatsAtom, prev => prev.map(chat =>
         chat.id === chatId ? { ...chat, title: newTitle.trim(), updatedAt: Date.now() } : chat
     ));
-    set(editingChatIdAtom, null);
+    set(editingChatIdAtom, null as string | null);
 });
-
-
-export const handleDragStartAtom = atom(null, (get, set, e: React.DragEvent, chat: Chat) => {
-    const ref = get(draggedChatRefAtom);
-    if (ref.current) ref.current = chat;
-});
-
-export const handleDropAtom = atom(null, (get, set, droppedOnChat: Chat) => {
-    const ref = get(draggedChatRefAtom);
-    const draggedChat = ref.current;
-    if (!draggedChat || draggedChat.id === droppedOnChat.id || draggedChat.isPinned !== droppedOnChat.isPinned) {
-        return;
-    }
-
-    set(chatsAtom, prevChats => {
-        const updatedChats = [...prevChats];
-        const draggedIndex = updatedChats.findIndex(c => c.id === draggedChat.id);
-        const droppedOnIndex = updatedChats.findIndex(c => c.id === droppedOnChat.id);
-
-        const [removed] = updatedChats.splice(draggedIndex, 1);
-        updatedChats.splice(droppedOnIndex, 0, removed);
-
-        return updatedChats;
-    });
-});
-
-export const handleDragEndAtom = atom(null, (get, set) => {
-    const ref = get(draggedChatRefAtom);
-    if (ref.current) ref.current = null;
-});
-
 
 
 export const handleExportChatsAtom = atom(null, async (get, set) => {
@@ -516,7 +485,7 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
                     };
 
                     return {
-                        id: existingChatIds.has(chat.id!) ? `chat-${Date.now()}-${i}` : chat.id!,
+                        id: existingChatIds.has(chat.id!) ? `chat-${crypto.randomUUID()}-${i}` : chat.id!,
                         title: existingChatIds.has(chat.id!) ? `${chat.title} (已导入)` : chat.title!,
                         messages: chat.messages || [],
                         isPinned: chat.isPinned || false,
@@ -644,7 +613,7 @@ export const handleImportFromStudioAtom = atom(null, async (get, set, messages: 
     })();
 
     const newChat: Chat = {
-        id: `chat-${Date.now()}`,
+        id: `chat-${crypto.randomUUID()}`,
         title: chatTitle,
         messages: messages,
         isPinned: false,

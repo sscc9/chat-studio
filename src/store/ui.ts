@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { atom } from 'jotai';
+import { atom, PrimitiveAtom, SetStateAction } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
 // =================================================================
@@ -12,16 +12,15 @@ import { atomWithStorage } from 'jotai/utils';
 // =================================================================
 
 // --- Global UI State (used by API atoms) ---
-export const isLoadingAtom = atom(false);
-export const regeneratingIndexAtom = atom<number | null>(null);
-export const tokenCountAtom = atom(0);
+export const isLoadingAtom: PrimitiveAtom<boolean> = atom(false);
+export const regeneratingIndexAtom: PrimitiveAtom<number | null> = atom<number | null>(null);
+export const tokenCountAtom: PrimitiveAtom<number> = atom(0);
 
 // --- Toast ---
-export const toastAtom = atom({ show: false, message: "" });
+export const toastAtom: PrimitiveAtom<{ show: boolean; message: string }> = atom<{ show: boolean; message: string }>({ show: false, message: "" });
 export const setToastAtom = atom(
     (get) => get(toastAtom),
-    // FIX: Removed explicit type on `newToast` to allow updater functions.
-    (_get, set, newToast) => {
+    (_get, set, newToast: SetStateAction<{ show: boolean; message: string }>) => {
         set(toastAtom, newToast)
     }
 );
@@ -33,45 +32,45 @@ export const showToastAtom = atom(
 );
 
 // --- Panels & Modals ---
-export const isHistoryPanelOpenAtom = atom(false);
+export const isHistoryPanelOpenAtom: PrimitiveAtom<boolean> = atom(false);
 export const setIsHistoryPanelOpenAtom = atom(
     (get) => get(isHistoryPanelOpenAtom),
     (_get, set, value: boolean) => set(isHistoryPanelOpenAtom, value)
 );
-export const isConfigPanelOpenAtom = atom(false);
+export const isConfigPanelOpenAtom: PrimitiveAtom<boolean> = atom(false);
 export const setIsConfigPanelOpenAtom = atom(
     (get) => get(isConfigPanelOpenAtom),
     (_get, set, value: boolean) => set(isConfigPanelOpenAtom, value)
 );
-export const isHistoryPanelVisibleAtom = atom(true);
+export const isHistoryPanelVisibleAtom: PrimitiveAtom<boolean> = atom(true);
 export const setIsHistoryPanelVisibleAtom = atom(
     (get) => get(isHistoryPanelVisibleAtom),
     (_get, set, value: boolean) => set(isHistoryPanelVisibleAtom, value)
 );
-export const isConfigPanelVisibleAtom = atom(true);
+export const isConfigPanelVisibleAtom: PrimitiveAtom<boolean> = atom(true);
 export const setIsConfigPanelVisibleAtom = atom(
     (get) => get(isConfigPanelVisibleAtom),
     (_get, set, value: boolean) => set(isConfigPanelVisibleAtom, value)
 );
-export const isSystemPromptEditorOpenAtom = atom(false);
+export const isSystemPromptEditorOpenAtom: PrimitiveAtom<boolean> = atom(false);
 export const setIsSystemPromptEditorOpenAtom = atom(
     (get) => get(isSystemPromptEditorOpenAtom),
     (_get, set, value: boolean) => set(isSystemPromptEditorOpenAtom, value)
 );
-export const isDocumentEditorOpenAtom = atom(false);
+export const isDocumentEditorOpenAtom: PrimitiveAtom<boolean> = atom(false);
 export const setIsDocumentEditorOpenAtom = atom(
     (get) => get(isDocumentEditorOpenAtom),
     (_get, set, value: boolean) => set(isDocumentEditorOpenAtom, value)
 );
-export const isModelDropdownOpenAtom = atom(false);
+export const isModelDropdownOpenAtom: PrimitiveAtom<boolean> = atom(false);
 export const setIsModelDropdownOpenAtom = atom(
     (get) => get(isModelDropdownOpenAtom),
     (_get, set, value: boolean) => set(isModelDropdownOpenAtom, value)
 );
-export const isActionLogViewerOpenAtom = atom(false);
-export const isTrashModalOpenAtom = atom(false);
-export const isImportStudioModalOpenAtom = atom(false);
-export const activeConfigTabAtom = atom('configuration');
+export const isActionLogViewerOpenAtom: PrimitiveAtom<boolean> = atom(false);
+export const isTrashModalOpenAtom: PrimitiveAtom<boolean> = atom(false);
+export const isImportStudioModalOpenAtom: PrimitiveAtom<boolean> = atom(false);
+export const activeConfigTabAtom: PrimitiveAtom<string> = atom('configuration');
 
 // --- Theme & Mobile ---
 export const themeAtom = atomWithStorage('ai-chat-theme', 'system');
@@ -79,7 +78,7 @@ export const setThemeAtom = atom(
     (get) => get(themeAtom),
     (_get, set, newTheme: string) => set(themeAtom, newTheme)
 );
-export const isMobileAtom = atom(window.innerWidth <= 768);
+export const isMobileAtom: PrimitiveAtom<boolean> = atom(window.innerWidth <= 768);
 export const setIsMobileAtom = atom(
     (get) => get(isMobileAtom),
     (_get, set, value: boolean) => set(isMobileAtom, value)

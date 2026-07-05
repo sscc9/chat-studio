@@ -1,9 +1,4 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 
 import { ChatInputArea } from "./ChatInputArea";
@@ -43,32 +38,72 @@ import {
 const PersistState = () => {
     const isInitialized = useAtomValue(isInitializedAtom);
     const chats = useAtomValue(chatsAtom);
-    const currentChat = useAtomValue(currentChatAtom);
 
-    // Persist chat metadata (title, config, etc.) to localStorage
+    // Keep track of what we have successfully persisted to prevent redundant writes
+    const lastSavedMetadataRef = useRef<string>('');
+    const lastSavedMessagesRef = useRef<Record<string, Message[]>>({});
+    const lastSavedActionLogRef = useRef<Record<string, any[]>>({});
+    const timerRef = useRef<number | null>(null);
+
+    // When chats are loaded for the first time, populate the refs so we don't write them again
     useEffect(() => {
-        if (!isInitialized) return;
-        const chatsMetadata = chats.map(({ messages, actionLog, ...meta }) => meta);
-        try {
-            localStorage.setItem('ai-chat-history', JSON.stringify(chatsMetadata));
-        } catch (error) {
-            console.error('Failed to save chat history to local storage', error);
+        if (isInitialized && Object.keys(lastSavedMessagesRef.current).length === 0) {
+            chats.forEach((chat) => {
+                lastSavedMessagesRef.current[chat.id] = chat.messages;
+                lastSavedActionLogRef.current[chat.id] = chat.actionLog || [];
+            });
+            const chatsMetadata = chats.map(({ messages, actionLog, ...meta }) => meta);
+            lastSavedMetadataRef.current = JSON.stringify(chatsMetadata);
         }
     }, [isInitialized, chats]);
 
-    // Persist the current chat's messages to IndexedDB
+    // Persist changes with 1-second debounce
     useEffect(() => {
         if (!isInitialized) return;
-        if (currentChat?.id && currentChat.messages) {
-            saveMessages(
-                currentChat.id,
-                currentChat.messages,
-                currentChat.actionLog || []
-            ).catch(err => {
-                console.error("Failed to save messages to DB", err);
-            });
+
+        if (timerRef.current !== null) {
+            window.clearTimeout(timerRef.current);
         }
-    }, [isInitialized, currentChat?.id, currentChat?.messages, currentChat?.actionLog]);
+
+        timerRef.current = window.setTimeout(() => {
+            // 1. Persist chat metadata (title, config, etc.) to localStorage if changed
+            const chatsMetadata = chats.map(({ messages, actionLog, ...meta }) => meta);
+            const metadataStr = JSON.stringify(chatsMetadata);
+            if (metadataStr !== lastSavedMetadataRef.current) {
+                try {
+                    localStorage.setItem('ai-chat-history', metadataStr);
+                    lastSavedMetadataRef.current = metadataStr;
+                } catch (error) {
+                    console.error('Failed to save chat history to local storage', error);
+                }
+            }
+
+            // 2. Persist changed chat messages/actionLog to IndexedDB (even background streaming ones)
+            chats.forEach((chat) => {
+                const prevMessages = lastSavedMessagesRef.current[chat.id];
+                const prevActionLog = lastSavedActionLogRef.current[chat.id];
+
+                if (prevMessages !== chat.messages || prevActionLog !== chat.actionLog) {
+                    saveMessages(
+                        chat.id,
+                        chat.messages,
+                        chat.actionLog || []
+                    ).then(() => {
+                        lastSavedMessagesRef.current[chat.id] = chat.messages;
+                        lastSavedActionLogRef.current[chat.id] = chat.actionLog || [];
+                    }).catch(err => {
+                        console.error(`Failed to save messages to DB for chat ${chat.id}`, err);
+                    });
+                }
+            });
+        }, 1000);
+
+        return () => {
+            if (timerRef.current !== null) {
+                window.clearTimeout(timerRef.current);
+            }
+        };
+    }, [isInitialized, chats]);
 
     return null;
 };

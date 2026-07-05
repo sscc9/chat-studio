@@ -4,18 +4,18 @@
  */
 
 import React from 'react';
-import { atom } from 'jotai';
-import { aiAtom } from './core';
+import { atom, PrimitiveAtom } from 'jotai';
 import { providersAtom } from './settings';
 import { streamGenerateContent, countTokens } from '../llm';
 import type { Message, Chat } from '../types';
 import { chatsAtom, currentChatAtom, handleAutoRenameChatAtom } from './chat';
-import { isLoadingAtom, regeneratingIndexAtom, tokenCountAtom } from './ui';
+import { isLoadingAtom, regeneratingIndexAtom, tokenCountAtom, showToastAtom } from './ui';
 
 // =================================================================
 // API ATOMS
 // =================================================================
 export const activeRequestRefAtom = atom(React.createRef<number | null>());
+export const activeAbortControllerAtom: PrimitiveAtom<AbortController | null> = atom<AbortController | null>(null);
 
 export const isAIReadyAtom = atom((get) => {
     const providers = get(providersAtom);
@@ -33,9 +33,23 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
 
         if (!provider) {
             set(isLoadingAtom, false);
-            set(regeneratingIndexAtom, null);
+            set(regeneratingIndexAtom, null as number | null);
             return reject(new Error("此模型未配置供应商。请检查设置。"));
         }
+
+        // Check if OpenAI compatible provider is receiving non-image attachments
+        if (provider.type === 'openai-compatible') {
+            const hasNonImageAttachment = contents.some(msg => 
+                msg.parts.some(p => p.inlineData && !p.inlineData.mimeType.startsWith('image/'))
+            );
+            if (hasNonImageAttachment) {
+                set(showToastAtom, "OpenAI 兼容模型目前仅支持图片附件，其他格式文件已被忽略。");
+            }
+        }
+
+        // Initialize a new AbortController
+        const controller = new AbortController();
+        set(activeAbortControllerAtom, controller);
 
         try {
             set(chatsAtom, prevChats => prevChats.map(c =>
@@ -49,7 +63,14 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                     } : c
             ));
 
-            const stream = streamGenerateContent(provider, modelId, contents, chat.config.systemInstruction, chat.config.useGoogleSearch);
+            const stream = streamGenerateContent(
+                provider, 
+                modelId, 
+                contents, 
+                chat.config.systemInstruction, 
+                chat.config.useGoogleSearch,
+                controller.signal
+            );
 
             if (activeRequestRef.current !== requestId) return reject(new Error('Request cancelled'));
 
@@ -112,8 +133,9 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
         } finally {
             if (activeRequestRef.current === requestId) {
                 set(isLoadingAtom, false);
-                set(regeneratingIndexAtom, null);
+                set(regeneratingIndexAtom, null as number | null);
                 activeRequestRef.current = null;
+                set(activeAbortControllerAtom, null as AbortController | null);
             }
         }
     });
@@ -123,7 +145,13 @@ export const handleStopGenerationAtom = atom(null, (get, set) => {
     const activeRequestRef = get(activeRequestRefAtom);
     activeRequestRef.current = null;
     set(isLoadingAtom, false);
-    set(regeneratingIndexAtom, null);
+    set(regeneratingIndexAtom, null as number | null);
+
+    const controller = get(activeAbortControllerAtom);
+    if (controller) {
+        controller.abort();
+        set(activeAbortControllerAtom, null as AbortController | null);
+    }
 });
 
 export const updateTokenCountAtom = atom(null, async (get, set) => {

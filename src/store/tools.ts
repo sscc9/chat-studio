@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { atom } from 'jotai';
+import { atom, PrimitiveAtom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import type { PresetPrompt, PresetGroup, DocumentChapter } from '../types';
 import { lastActiveInputRefAtom, isDocumentEditorOpenAtom, documentFileInputRefAtom } from './ui';
@@ -17,19 +17,19 @@ import { lastActiveInputRefAtom, isDocumentEditorOpenAtom, documentFileInputRefA
 export const presetPromptsAtom = atomWithStorage<PresetPrompt[]>('ai-chat-preset-prompts', []);
 export const presetGroupsAtom = atomWithStorage<PresetGroup[]>('ai-chat-preset-groups', []);
 export const documentContentAtom = atomWithStorage('ai-chat-document-content', '');
-export const activePresetGroupIdAtom = atom<string>('all');
-export const editingGroupIdAtom = atom<string | null>(null);
-export const editingGroupNameAtom = atom('');
-export const isCreatingGroupAtom = atom(false);
-export const newGroupNameAtom = atom('');
+export const activePresetGroupIdAtom: PrimitiveAtom<string> = atom<string>('all');
+export const editingGroupIdAtom: PrimitiveAtom<string | null> = atom<string | null>(null);
+export const editingGroupNameAtom: PrimitiveAtom<string> = atom('');
+export const isCreatingGroupAtom: PrimitiveAtom<boolean> = atom(false);
+export const newGroupNameAtom: PrimitiveAtom<string> = atom('');
 export const renamingInputRefAtom = atom(React.createRef<HTMLInputElement>());
 export const creatingInputRefAtom = atom(React.createRef<HTMLInputElement>());
 
 // --- Preset Editor Modal State ---
-export const isPresetEditorOpenAtom = atom(false);
-export const editingPresetIdAtom = atom<string | null>(null);
-export const editingPresetTextAtom = atom('');
-export const editingPresetGroupIdAtom = atom<string | null>(null);
+export const isPresetEditorOpenAtom: PrimitiveAtom<boolean> = atom(false);
+export const editingPresetIdAtom: PrimitiveAtom<string | null> = atom<string | null>(null);
+export const editingPresetTextAtom: PrimitiveAtom<string> = atom('');
+export const editingPresetGroupIdAtom: PrimitiveAtom<string | null> = atom<string | null>(null);
 export const presetEditorPositionAtom = atom({ top: 0, left: 0 });
 
 
@@ -118,14 +118,14 @@ export const handleAddPresetGroupAtom = atom(null, (get, set, name: string) => {
         set(isCreatingGroupAtom, false);
         return;
     }
-    const newGroup: PresetGroup = { id: `group-${Date.now()}`, name: name.trim() };
+    const newGroup: PresetGroup = { id: `group-${crypto.randomUUID()}`, name: name.trim() };
     set(presetGroupsAtom, prev => [...prev, newGroup]);
     set(isCreatingGroupAtom, false);
     set(activePresetGroupIdAtom, newGroup.id);
 });
 
 export const handleStartRenameGroupAtom = atom(null, (get, set, group: PresetGroup) => {
-    set(editingGroupIdAtom, group.id);
+    set(editingGroupIdAtom, group.id as string | null);
     set(editingGroupNameAtom, group.name);
 });
 
@@ -133,11 +133,11 @@ export const handleUpdateGroupNameAtom = atom(null, (get, set) => {
     const name = get(editingGroupNameAtom);
     const id = get(editingGroupIdAtom);
     if (!name.trim() || !id) {
-        set(editingGroupIdAtom, null);
+        set(editingGroupIdAtom, null as string | null);
         return;
     }
     set(presetGroupsAtom, prev => prev.map(g => g.id === id ? { ...g, name: name.trim() } : g));
-    set(editingGroupIdAtom, null);
+    set(editingGroupIdAtom, null as string | null);
     set(editingGroupNameAtom, '');
 });
 
@@ -151,25 +151,25 @@ export const handleDeletePresetGroupAtom = atom(null, (get, set, groupId: string
 
 export const handleStartAddPresetAtom = atom(null, (get, set, e: React.MouseEvent) => {
     set(presetEditorPositionAtom, { top: e.clientY, left: e.clientX });
-    set(editingPresetIdAtom, 'new');
+    set(editingPresetIdAtom, 'new' as string | null);
     set(editingPresetTextAtom, '');
     const activeId = get(activePresetGroupIdAtom);
-    set(editingPresetGroupIdAtom, activeId === 'all' || activeId === 'ungrouped' ? null : activeId);
+    set(editingPresetGroupIdAtom, (activeId === 'all' || activeId === 'ungrouped' ? null : activeId) as string | null);
     set(isPresetEditorOpenAtom, true);
 });
 
 export const handleStartEditPresetAtom = atom(null, (get, set, prompt: PresetPrompt, e: React.MouseEvent) => {
     set(presetEditorPositionAtom, { top: e.clientY, left: e.clientX });
-    set(editingPresetIdAtom, prompt.id);
+    set(editingPresetIdAtom, prompt.id as string | null);
     set(editingPresetTextAtom, prompt.text);
-    set(editingPresetGroupIdAtom, prompt.groupId || null);
+    set(editingPresetGroupIdAtom, (prompt.groupId || null) as string | null);
     set(isPresetEditorOpenAtom, true);
 });
 
 export const handleCancelPresetAtom = atom(null, (get, set) => {
-    set(editingPresetIdAtom, null);
+    set(editingPresetIdAtom, null as string | null);
     set(editingPresetTextAtom, '');
-    set(editingPresetGroupIdAtom, null);
+    set(editingPresetGroupIdAtom, null as string | null);
     set(isPresetEditorOpenAtom, false);
 });
 
@@ -180,7 +180,7 @@ export const handleSavePresetAtom = atom(null, (get, set) => {
 
     if (id === 'new') {
         const newPrompt: PresetPrompt = {
-            id: `prompt-${Date.now()}`,
+            id: `prompt-${crypto.randomUUID()}`,
             text: text,
             groupId: get(editingPresetGroupIdAtom) || undefined,
         };

@@ -5,8 +5,10 @@
 
 import React, { useEffect, useRef } from "react";
 import type { MessagePart } from '../types';
-
-declare const marked: any;
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 
 export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,11 +76,11 @@ export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => 
       wrapper.appendChild(button);
       wrapper.appendChild(pre);
 
-      // Apply syntax highlighting if highlight.js is available
+      // Apply syntax highlighting
       const code = pre.querySelector('code');
-      if (code && (window as any).hljs) {
+      if (code) {
         try {
-          (window as any).hljs.highlightElement(code);
+          hljs.highlightElement(code);
         } catch (e) {
           console.error('Highlighting failed', e);
         }
@@ -90,7 +92,9 @@ export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => 
     <div ref={containerRef}>
       {parts.map((part, partIndex) => {
         if (part.text) {
-          return <div key={partIndex} className="prose" dangerouslySetInnerHTML={{ __html: marked.parse(part.text) }} />;
+          const rawHtml = marked.parse(part.text) as string;
+          const cleanHtml = DOMPurify.sanitize(rawHtml);
+          return <div key={partIndex} className="prose" dangerouslySetInnerHTML={{ __html: cleanHtml }} />;
         }
         if (part.inlineData) {
           const src = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;

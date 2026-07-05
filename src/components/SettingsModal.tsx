@@ -57,7 +57,7 @@ export const SettingsModal = () => {
 
     const handleAddProvider = (type: 'google' | 'openai-compatible') => {
         const newProvider: ProviderConfig = {
-            id: `${type}-${Date.now()}`,
+            id: `${type}-${crypto.randomUUID()}`,
             name: type === 'google' ? 'Google Gemini' : 'OpenAI Compatible',
             type,
             apiKey: '',
@@ -107,7 +107,7 @@ export const SettingsModal = () => {
     const startEditModel = (model: ModelConfig) => {
         setEditingModelId(model.id);
         setNewModelId(model.id);
-        setNewModelName(model.name);
+        setNewModelName(model.name || '');
     };
 
     const cancelEditModel = () => {
@@ -283,16 +283,29 @@ export const SettingsModal = () => {
                                     />
                                 </div>
                                 {selectedProvider.type === 'openai-compatible' && (
-                                    <div className="settings-form-group">
-                                        <label>接口地址 (选填)</label>
-                                        <input
-                                            type="text"
-                                            className="settings-input"
-                                            value={selectedProvider.baseUrl || ''}
-                                            onChange={(e) => updateProvider(selectedProvider.id, { baseUrl: e.target.value })}
-                                            placeholder="https://api.openai.com/v1"
-                                        />
-                                    </div>
+                                    <>
+                                        <div className="settings-form-group">
+                                            <label>接口地址 (选填)</label>
+                                            <input
+                                                type="text"
+                                                className="settings-input"
+                                                value={selectedProvider.baseUrl || ''}
+                                                onChange={(e) => updateProvider(selectedProvider.id, { baseUrl: e.target.value })}
+                                                placeholder="https://api.openai.com/v1"
+                                            />
+                                        </div>
+                                        <div className="settings-form-group">
+                                            <label>自定义请求参数 (JSON 格式, 选填)</label>
+                                            <textarea
+                                                className="settings-input"
+                                                style={{ fontFamily: 'var(--font-family-mono)', fontSize: '0.85rem', resize: 'vertical' }}
+                                                value={selectedProvider.customBodyParams || ''}
+                                                onChange={(e) => updateProvider(selectedProvider.id, { customBodyParams: e.target.value })}
+                                                placeholder='例如: {"thinking": {"type": "enabled"}, "max_tokens": 8000}'
+                                                rows={3}
+                                            />
+                                        </div>
+                                    </>
                                 )}
                                 <div className="settings-form-group">
                                     <label>模型列表</label>
