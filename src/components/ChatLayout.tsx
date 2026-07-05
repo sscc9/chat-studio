@@ -116,19 +116,22 @@ const PersistState = () => {
         };
     }, [isInitialized, chats]);
 
+    const flushSaveRef = useRef(flushSave);
+    flushSaveRef.current = flushSave;
+
     // Flush immediately when tab goes to background, is closed or refreshed
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden') {
-                flushSave();
+                flushSaveRef.current();
             }
         };
         document.addEventListener('visibilitychange', handleVisibilityChange);
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            flushSave(); // Flush on unmount too
+            flushSaveRef.current(); // 这样只在真正卸载时执行
         };
-    }, [isInitialized, chats]);
+    }, []); // 空依赖，只注册一次
 
     return null;
 };
