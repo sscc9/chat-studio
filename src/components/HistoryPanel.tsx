@@ -58,6 +58,14 @@ export const HistoryPanel = () => {
             <div className="panel-content-wrapper">
                 <div className="history-panel-header">
                     <div className="history-header-left">
+                        <button
+                            className="panel-toggle-btn"
+                            onClick={() => setIsHistoryPanelVisible(false)}
+                            aria-label="隐藏历史面板"
+                            title="隐藏历史面板"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708 .708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" /></svg>
+                        </button>
                         <button className="new-chat-btn" onClick={() => handleNewChat()}>
                             <PlusIcon width={16} height={16} style={{ marginRight: '6px' }} />
                             新建对话
@@ -78,14 +86,6 @@ export const HistoryPanel = () => {
                         </button>
                     </div>
                     <div className="history-header-right">
-                        <button
-                            className="panel-toggle-btn"
-                            onClick={() => setIsHistoryPanelVisible(false)}
-                            aria-label="隐藏历史面板"
-                            title="隐藏历史面板"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708 .708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" /></svg>
-                        </button>
                         <button
                             className="mobile-close-btn"
                             onClick={() => setIsHistoryPanelOpen(false)}
