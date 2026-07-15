@@ -66,6 +66,16 @@ export const HistoryPanel = () => {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708 .708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" /></svg>
                         </button>
+                        <button
+                            className="mobile-close-btn"
+                            onClick={() => setIsHistoryPanelOpen(false)}
+                            aria-label="关闭历史面板"
+                            title="关闭"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                            </svg>
+                        </button>
                         <button className="new-chat-btn" onClick={() => handleNewChat()}>
                             <PlusIcon width={16} height={16} style={{ marginRight: '6px' }} />
                             新建对话
@@ -83,18 +93,6 @@ export const HistoryPanel = () => {
                             onClick={() => setIsTrashModalOpen(true)}
                         >
                             <TrashIcon width={16} height={16} />
-                        </button>
-                    </div>
-                    <div className="history-header-right">
-                        <button
-                            className="mobile-close-btn"
-                            onClick={() => setIsHistoryPanelOpen(false)}
-                            aria-label="关闭历史面板"
-                            title="关闭"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                            </svg>
                         </button>
                     </div>
                 </div>
