@@ -9,6 +9,7 @@ import './ConfigPanel.css';
 import {
     isConfigPanelVisibleAtom,
     isConfigPanelOpenAtom,
+    isMobileAtom,
     activeConfigTabAtom,
     themeAtom,
     modelAtom,
@@ -77,6 +78,7 @@ export const ConfigPanel = () => {
     // Read/Write State
     const [isConfigPanelVisible, setIsConfigPanelVisible] = useAtom(isConfigPanelVisibleAtom);
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useAtom(isConfigPanelOpenAtom);
+    const isMobile = useAtomValue(isMobileAtom);
     const [activeConfigTab, setActiveConfigTab] = useAtom(activeConfigTabAtom);
     const [theme, setTheme] = useAtom(themeAtom);
     const [isModelDropdownOpen, setIsModelDropdownOpen] = useAtom(isModelDropdownOpenAtom);
@@ -199,16 +201,9 @@ export const ConfigPanel = () => {
                         <div className="config-panel-header-actions">
                             <button
                                 className="panel-toggle-btn"
-                                onClick={() => setIsConfigPanelVisible(false)}
+                                onClick={() => isMobile ? setIsConfigPanelOpen(false) : setIsConfigPanelVisible(false)}
                                 aria-label="隐藏配置面板"
                                 title="隐藏配置面板"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" /></svg>
-                            </button>
-                            <button
-                                className="mobile-close-btn"
-                                onClick={() => setIsConfigPanelOpen(false)}
-                                aria-label="关闭配置面板"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" /></svg>
                             </button>

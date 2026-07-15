@@ -172,10 +172,6 @@
         display: none !important;
     }
 
-    .history-panel .panel-toggle-btn,
-    .config-panel .panel-toggle-btn {
-        display: none;
-    }
 
     .action-log-viewer {
         width: 90vw;
