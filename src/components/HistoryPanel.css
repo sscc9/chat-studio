@@ -35,6 +35,7 @@
 
 .history-panel-header .history-header-left {
   padding-left: 0;
+  flex-grow: 1;
 }
 
 .history-header-left,
