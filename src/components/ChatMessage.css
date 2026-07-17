@@ -45,8 +45,6 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  opacity: 0;
-  pointer-events: none;
   transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out;
   margin-left: 1rem;
   margin-right: -0.25rem;
@@ -55,11 +53,31 @@
   margin-top: calc(-15px - 0.75rem);
 }
 
-.chat-message:not(.is-editing):hover .message-actions,
-.chat-message.is-editing .message-actions {
-  opacity: 1;
-  pointer-events: auto;
-  background-color: var(--message-actions-bg);
+/* Devices with a real pointer (mouse/trackpad): hide by default, reveal on hover */
+@media (hover: hover) {
+  .message-actions {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .chat-message:not(.is-editing):hover .message-actions,
+  .chat-message.is-editing .message-actions {
+    opacity: 1;
+    pointer-events: auto;
+    background-color: var(--message-actions-bg);
+  }
+}
+
+/* Touch-only devices: always show actions at reduced opacity */
+@media (hover: none) {
+  .message-actions {
+    opacity: 0.6;
+  }
+
+  .chat-message.is-editing .message-actions {
+    opacity: 1;
+    background-color: var(--message-actions-bg);
+  }
 }
 
 .message-actions button {
