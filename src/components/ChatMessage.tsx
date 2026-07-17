@@ -23,6 +23,7 @@ import {
     handleForkChatAtom,
     isAIReadyAtom,
     trackActiveInputAtom,
+    isMobileAtom,
     isMac
 } from '../store';
 
@@ -40,6 +41,7 @@ export const ChatMessage = React.memo(({
     const [isLoading] = useAtom(isLoadingAtom);
     const [regeneratingIndex] = useAtom(regeneratingIndexAtom);
     const isAIReady = useAtomValue(isAIReadyAtom);
+    const isMobile = useAtomValue(isMobileAtom);
 
     const handleStartEditMessage = useSetAtom(handleStartEditMessageAtom);
     const handleCancelEdit = useSetAtom(handleCancelEditAtom);
@@ -56,9 +58,31 @@ export const ChatMessage = React.memo(({
     const isAnyMessageEditing = editingMessageIndex !== null;
 
     const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [showMobileActions, setShowMobileActions] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLDivElement>(null);
     const scrollRestoreRef = useRef<{ scrollTop: number } | null>(null);
+
+    useEffect(() => {
+        if (!showMobileActions) return;
+        const handleOutsideClick = (e: MouseEvent) => {
+            if (messageRef.current && !messageRef.current.contains(e.target as Node)) {
+                setShowMobileActions(false);
+            }
+        };
+        document.addEventListener('click', handleOutsideClick);
+        return () => document.removeEventListener('click', handleOutsideClick);
+    }, [showMobileActions]);
+
+    const handleBubbleClick = (e: React.MouseEvent) => {
+        if (isMobile) {
+            const target = e.target as HTMLElement;
+            if (target.closest('.message-actions') || target.closest('.message-editor-textarea')) {
+                return;
+            }
+            setShowMobileActions(prev => !prev);
+        }
+    };
 
     const hasTextContent = useMemo(() => msg.parts.some(p => p.text?.trim()), [msg.parts]);
     const canRegenerate = (msg.role === 'model' && index > 0) || (msg.role === 'user');
@@ -125,9 +149,9 @@ export const ChatMessage = React.memo(({
             className={`chat-message role-${msg.role}${isEditing ? ' is-editing' : ''}`}
             onMouseLeave={() => setConfirmingDelete(false)}
         >
-            <div className="message-bubble">
+            <div className="message-bubble" onClick={handleBubbleClick}>
                 {!isRegenerating && (
-                    <div className="message-actions">
+                    <div className={`message-actions${showMobileActions ? ' mobile-visible' : ''}`}>
                         {isEditing ? (
                             <>
                                 <button title="保存" onClick={() => handleSaveEdit()} disabled={!editingMessageContent.trim()}>
@@ -144,23 +168,23 @@ export const ChatMessage = React.memo(({
                             </>
                         ) : (
                             <>
-                                <button title="编辑" onClick={startEditAndCaptureScroll} disabled={!hasEditableText || isLoading || disableActions}>
+                                <button title="编辑" onClick={startEditAndCaptureScroll} disabled={!hasEditableText || isLoading || disableActions || (isMobile && !showMobileActions)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>
                                 </button>
-                                <button title="复制" onClick={() => handleCopyMessage(msg.parts)} disabled={!hasTextContent || isLoading || disableActions}>
+                                <button title="复制" onClick={() => handleCopyMessage(msg.parts)} disabled={!hasTextContent || isLoading || disableActions || (isMobile && !showMobileActions)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z" /></svg>
                                 </button>
-                                <button title="重新生成" onClick={() => handleRegenerateResponse(index)} disabled={!canRegenerate || isLoading || disableActions || !isAIReady}>
+                                <button title="重新生成" onClick={() => handleRegenerateResponse(index)} disabled={!canRegenerate || isLoading || disableActions || !isAIReady || (isMobile && !showMobileActions)}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" /></svg>
                                 </button>
-                                <button title="从此处派生对话" onClick={() => handleForkChat(index)} disabled={isLoading || disableActions}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M6,2A3,3 0 0,1 9,5C9,6.28 8.19,7.38 7.06,7.81C7.15,8.27 7.39,8.83 8,9.63C9,10.92 11,12.83 12,14.17C13,12.83 15,10.92 16,9.63C16.61,8.83 16.85,8.27 16.94,7.81C15.81,7.38 15,6.28 15,5A3,3 0 0,1 18,2A3,3 0 0,1 21,5C21,6.32 20.14,7.45 18.95,7.85C18.87,8.37 18.64,9 18,9.83C17,11.17 15,13.08 14,14.38C13.39,15.17 13.15,15.73 13.06,16.19C14.19,16.62 15,17.72 15,19A3,3 0 0,1 12,22A3,3 0 0,1 9,19C9,17.72 9.81,16.62 10.94,16.19C10.85,15.73 10.61,15.17 10,14.38C9,13.08 7,11.17 6,9.83C5.36,9 5.13,8.37 5.05,7.85C3.86,7.45 3,6.32 3,5A3,3 0 0,1 6,2M6,4A1,1 0 0,0 5,5A1,1 0 0,0 6,6A1,1 0 0,0 7,5A1,1 0 0,0 6,4M18,4A1,1 0 0,0 17,5A1,1 0 0,0 18,6A1,1 0 0,0 19,5A1,1 0 0,0 18,4M12,18A1,1 0 0,0 11,19A1,1 0 0,0 12,20A1,1 0 0,0 13,19A1,1 0 0,0 12,18Z" /></svg>
+                                <button title="从此处派生对话" onClick={() => handleForkChat(index)} disabled={isLoading || disableActions || (isMobile && !showMobileActions)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M6,2A3,3 0 0,1 9,5C9,6.28 8.19,7.38 7.06,7.81C7.15,8.27 7.39,8.83 8,9.63C9,10.92 11,12.83 12,14.17C13,12.83 15,10.92 16,9.63C16.61,8.83 16.85,8.27 16.94,7.81C15.81,7.38 15,6.28 15,5A3,3 0 0,1 18,2A3,3 0 0,1 21,5C21,6.32 20.14,7.45 18.95,7.85C18.87,8.37 18.64,9 18,9.83C17,11.17 15,13.08 14,14.38C13.39,15.17 13.15,15.73(isMobile && !showMobileActions) 13.06,16.19C14.19,16.62 15,17.72 15,19A3,3 0 0,1 12,22A3,3 0 0,1 9,19C9,17.72 9.81,16.62 10.94,16.19C10.85,15.73 10.61,15.17 10,14.38C9,13.08 7,11.17 6,9.83C5.36,9 5.13,8.37 5.05,7.85C3.86,7.45 3,6.32 3,5A3,3 0 0,1 6,2M6,4A1,1 0 0,0 5,5A1,1 0 0,0 6,6A1,1 0 0,0 7,5A1,1 0 0,0 6,4M18,4A1,1 0 0,0 17,5A1,1 0 0,0 18,6A1,1 0 0,0 19,5A1,1 0 0,0 18,4M12,18A1,1 0 0,0 11,19A1,1 0 0,0 12,20A1,1 0 0,0 13,19A1,1 0 0,0 12,18Z" /></svg>
                                 </button>
                                 <button
                                     title={confirmingDelete ? "确认删除" : "删除"}
                                     onClick={() => confirmingDelete ? handleDeleteMessage(index) : setConfirmingDelete(true)}
                                     className={confirmingDelete ? 'confirm-delete' : ''}
-                                    disabled={isLoading || disableActions}
+                                    disabled={isLoading || disableActions || (isMobile && !showMobileActions)}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" /></svg>
                                 </button>

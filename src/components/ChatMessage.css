@@ -56,12 +56,26 @@
   margin-top: calc(-15px - 0.75rem);
 }
 
-.chat-message:not(.is-editing):hover .message-actions,
-.chat-message.is-editing .message-actions {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  background-color: var(--message-actions-bg);
+/* Desktop: reveal on hover, or when editing */
+@media (min-width: 769px) {
+  .chat-message:not(.is-editing):hover .message-actions,
+  .chat-message.is-editing .message-actions {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    background-color: var(--message-actions-bg);
+  }
+}
+
+/* Mobile/Tablet: only reveal when toggled (.mobile-visible) or when editing */
+@media (max-width: 768px) {
+  .message-actions.mobile-visible,
+  .chat-message.is-editing .message-actions {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    background-color: var(--message-actions-bg);
+  }
 }
 
 .message-actions button {
