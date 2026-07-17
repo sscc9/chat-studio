@@ -46,6 +46,7 @@
   align-items: center;
   gap: 4px;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out;
   margin-left: 1rem;
   margin-right: -0.25rem;
@@ -57,6 +58,7 @@
 .chat-message:not(.is-editing):hover .message-actions,
 .chat-message.is-editing .message-actions {
   opacity: 1;
+  pointer-events: auto;
   background-color: var(--message-actions-bg);
 }
 
