@@ -56,9 +56,31 @@ export const ChatMessage = React.memo(({
     const isAnyMessageEditing = editingMessageIndex !== null;
 
     const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [showMobileActions, setShowMobileActions] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLDivElement>(null);
     const scrollRestoreRef = useRef<{ scrollTop: number } | null>(null);
+
+    useEffect(() => {
+        if (!showMobileActions) return;
+        const handleOutsideClick = (e: MouseEvent) => {
+            if (messageRef.current && !messageRef.current.contains(e.target as Node)) {
+                setShowMobileActions(false);
+            }
+        };
+        document.addEventListener('click', handleOutsideClick);
+        return () => document.removeEventListener('click', handleOutsideClick);
+    }, [showMobileActions]);
+
+    const handleBubbleClick = (e: React.MouseEvent) => {
+        if (window.innerWidth <= 768) {
+            const target = e.target as HTMLElement;
+            if (target.closest('.message-actions') || target.closest('.message-editor-textarea')) {
+                return;
+            }
+            setShowMobileActions(prev => !prev);
+        }
+    };
 
     const hasTextContent = useMemo(() => msg.parts.some(p => p.text?.trim()), [msg.parts]);
     const canRegenerate = (msg.role === 'model' && index > 0) || (msg.role === 'user');
@@ -125,9 +147,9 @@ export const ChatMessage = React.memo(({
             className={`chat-message role-${msg.role}${isEditing ? ' is-editing' : ''}`}
             onMouseLeave={() => setConfirmingDelete(false)}
         >
-            <div className="message-bubble">
+            <div className="message-bubble" onClick={handleBubbleClick}>
                 {!isRegenerating && (
-                    <div className="message-actions">
+                    <div className={`message-actions${showMobileActions ? ' mobile-visible' : ''}`}>
                         {isEditing ? (
                             <>
                                 <button title="保存" onClick={() => handleSaveEdit()} disabled={!editingMessageContent.trim()}>
