@@ -71,6 +71,14 @@ const PersistState = () => {
             const prevActionLog = lastSavedActionLogRef.current[chat.id];
 
             if (prevMessages !== chat.messages || prevActionLog !== chat.actionLog) {
+                // SAFETY: If chat was not previously tracked in ref (prevMessages === undefined)
+                // and chat.messages is empty [], do not overwrite IndexedDB directly.
+                if (prevMessages === undefined && chat.messages.length === 0) {
+                    lastSavedMessagesRef.current[chat.id] = chat.messages;
+                    lastSavedActionLogRef.current[chat.id] = chat.actionLog || [];
+                    return;
+                }
+
                 saveMessages(
                     chat.id,
                     chat.messages,

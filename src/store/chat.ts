@@ -459,16 +459,58 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
             set(showToastAtom, "正在导入，请稍候...");
             const importedJson = JSON.parse(text);
 
-            let chatsToImport = (importedJson && Array.isArray(importedJson.chats)) ? importedJson.chats : Array.isArray(importedJson) ? importedJson : [];
+            let chatsToImport: any[] = [];
+            if (importedJson && Array.isArray(importedJson.chats)) {
+                chatsToImport = importedJson.chats;
+            } else if (Array.isArray(importedJson)) {
+                chatsToImport = importedJson;
+            } else if (importedJson && typeof importedJson === 'object' && (importedJson.messages || importedJson.title)) {
+                chatsToImport = [importedJson];
+            }
             const writingDataToImport = importedJson?.writingModeData;
 
-            const validChats: Partial<Chat>[] = chatsToImport.filter((c: Partial<Chat>) => c?.id && c.title);
+            const validChats: Partial<Chat>[] = chatsToImport.filter((c: Partial<Chat>) => c && (c.id || c.title || Array.isArray(c.messages)));
 
             if (validChats.length > 0) {
                 const allModels = get(allModelsAtom);
                 const availableModelIds = allModels.map(m => m.id);
                 const fallbackModel = availableModelIds.length > 0 ? availableModelIds[0] : '';
                 const existingChatIds = new Set(get(chatsAtom).map(c => c.id));
+
+                const normalizeMessage = (msg: any): Message => {
+                    if (!msg || typeof msg !== 'object') {
+                        return { role: 'user', parts: [{ text: '' }] };
+                    }
+                    let role = msg.role === 'assistant' ? 'model' : (msg.role || 'user');
+                    let parts: any[] = [];
+
+                    if (Array.isArray(msg.parts)) {
+                        parts = msg.parts.map((p: any) => {
+                            if (typeof p === 'string') return { text: p };
+                            if (p && typeof p === 'object') return p;
+                            return { text: String(p || '') };
+                        });
+                    } else if (typeof msg.content === 'string') {
+                        parts = [{ text: msg.content }];
+                    } else if (Array.isArray(msg.content)) {
+                        parts = msg.content.map((c: any) => {
+                            if (typeof c === 'string') return { text: c };
+                            if (c?.type === 'text' && c?.text) return { text: c.text };
+                            if (c?.text) return { text: c.text };
+                            return { text: typeof c === 'object' ? JSON.stringify(c) : String(c) };
+                        });
+                    } else if (typeof msg.text === 'string') {
+                        parts = [{ text: msg.text }];
+                    } else {
+                        parts = [{ text: '' }];
+                    }
+
+                    return {
+                        role: role as 'user' | 'model' | 'tool',
+                        parts,
+                        groundingChunks: msg.groundingChunks || undefined,
+                    };
+                };
 
                 const resolvedChats: Chat[] = validChats.map((chat, i) => {
                     const newChatDefaults: ChatConfig = {
@@ -483,23 +525,36 @@ export const handleImportFileAtom = atom(null, (get, set, event: React.ChangeEve
                         model: (existingModel && availableModelIds.includes(existingModel)) ? existingModel : fallbackModel,
                     };
 
+                    const originalId = chat.id || `chat-${crypto.randomUUID()}-${i}`;
+                    const isDuplicateId = existingChatIds.has(originalId);
+                    const finalId = isDuplicateId ? `chat-${crypto.randomUUID()}-${i}` : originalId;
+                    const chatTitle = chat.title || '导入的对话';
+                    const rawMessages = Array.isArray(chat.messages) ? chat.messages : [];
+                    const normalizedMessages = rawMessages.map(normalizeMessage);
+
                     return {
-                        id: existingChatIds.has(chat.id!) ? `chat-${crypto.randomUUID()}-${i}` : chat.id!,
-                        title: existingChatIds.has(chat.id!) ? `${chat.title} (已导入)` : chat.title!,
-                        messages: chat.messages || [],
+                        id: finalId,
+                        title: isDuplicateId ? `${chatTitle} (已导入)` : chatTitle,
+                        messages: normalizedMessages,
                         isPinned: chat.isPinned || false,
                         config: config,
-                        actionLog: chat.actionLog || [],
-                        autoTitled: chat.autoTitled ?? (chat.title !== 'New Chat'),
+                        actionLog: Array.isArray(chat.actionLog) ? chat.actionLog : [],
+                        autoTitled: chat.autoTitled ?? (chatTitle !== 'New Chat'),
                         updatedAt: chat.updatedAt || Date.now(),
                     };
                 });
+
                 await Promise.all(resolvedChats.map(chat => saveMessages(chat.id, chat.messages || [], chat.actionLog || [])));
+
                 set(chatsAtom, prevChats => {
                     const chatMap = new Map(prevChats.map(c => [c.id, c]));
-                    resolvedChats.forEach(importedChat => chatMap.set(importedChat.id, { ...importedChat, messages: [], actionLog: [] }));
+                    resolvedChats.forEach(importedChat => chatMap.set(importedChat.id, importedChat));
                     return Array.from(chatMap.values());
                 });
+
+                if (resolvedChats.length > 0) {
+                    set(handleSelectChatAtom, resolvedChats[0].id);
+                }
             }
 
             if (writingDataToImport) {
