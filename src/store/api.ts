@@ -6,8 +6,8 @@
 import React from 'react';
 import { atom, PrimitiveAtom } from 'jotai';
 import { providersAtom } from './settings';
-import { streamGenerateContent, countTokens } from '../llm';
-import type { Message, Chat } from '../types';
+import { streamGenerateContent } from '../llm';
+import type { Message, Chat, TokenUsage } from '../types';
 import { chatsAtom, currentChatAtom, handleAutoRenameChatAtom } from './chat';
 import { isLoadingAtom, regeneratingIndexAtom, tokenCountAtom, showToastAtom } from './ui';
 
@@ -76,6 +76,7 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
 
             let text = "";
             let allGroundingChunks: any[] = [];
+            let lastUsage: TokenUsage | undefined;
             let renameTriggered = false;
             for await (const chunk of stream) {
                 if (activeRequestRef.current !== requestId) break;
@@ -89,6 +90,11 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                             allGroundingChunks.push(newChunk);
                         }
                     });
+                }
+
+                // Track the latest usage data (typically arrives on the last chunk)
+                if (chunk.usage) {
+                    lastUsage = chunk.usage;
                 }
 
                 set(chatsAtom, (prevChats) => prevChats.map((c) => {
@@ -110,6 +116,18 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                 }
             }
             if (activeRequestRef.current === requestId) {
+                // Save usage data to the model message
+                if (lastUsage) {
+                    set(chatsAtom, (prevChats) => prevChats.map((c) => {
+                        if (c.id === chat.id) {
+                            const newMessages = [...c.messages];
+                            newMessages[targetIndex] = { ...newMessages[targetIndex], usage: lastUsage };
+                            return { ...c, messages: newMessages };
+                        }
+                        return c;
+                    }));
+                    set(tokenCountAtom, lastUsage.totalTokens);
+                }
                 // The original call remains as a fallback for empty streams etc.
                 // handleAutoRenameChatAtom has its own guards so this is safe.
                 set(handleAutoRenameChatAtom, chat.id);
@@ -154,34 +172,24 @@ export const handleStopGenerationAtom = atom(null, (get, set) => {
     }
 });
 
-export const updateTokenCountAtom = atom(null, async (get, set) => {
-    const isLoading = get(isLoadingAtom);
+// Reads token count from the last model message's stored usage data.
+// This is called when switching chats to restore the displayed token count.
+export const updateTokenCountAtom = atom(null, (get, set) => {
     const currentChat = get(currentChatAtom);
 
-    if (!currentChat || currentChat.messages.length === 0 || isLoading) {
+    if (!currentChat || currentChat.messages.length === 0) {
         set(tokenCountAtom, 0);
         return;
     }
-    try {
-        const messagesToCount = currentChat.messages.filter((msg: Message) => msg.parts.some(p => p.text?.trim() || p.inlineData));
-        if (messagesToCount.length === 0) {
-            set(tokenCountAtom, 0);
+
+    // Find the last model message with usage data
+    for (let i = currentChat.messages.length - 1; i >= 0; i--) {
+        const msg = currentChat.messages[i];
+        if (msg.role === 'model' && msg.usage) {
+            set(tokenCountAtom, msg.usage.totalTokens);
             return;
         }
-
-        const providers = get(providersAtom);
-        const modelId = currentChat.config.model;
-        let provider = providers.find(p => p.models.some(m => m.id === modelId));
-
-        if (!provider) {
-            set(tokenCountAtom, 0);
-            return;
-        }
-
-        const totalTokens = await countTokens(provider, modelId, messagesToCount);
-        set(tokenCountAtom, totalTokens);
-    } catch (error) {
-        console.error("Error counting tokens:", error);
-        set(tokenCountAtom, 0);
     }
+
+    set(tokenCountAtom, 0);
 });

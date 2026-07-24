@@ -4,11 +4,12 @@
  */
 
 import { GoogleGenAI } from "@google/genai";
-import { Message, ProviderConfig } from "./types";
+import { Message, ProviderConfig, TokenUsage } from "./types";
 
 export interface GenerationChunk {
     text: string;
     groundingChunks?: any[];
+    usage?: TokenUsage;
 }
 
 export async function* streamGenerateContent(
@@ -43,7 +44,17 @@ export async function* streamGenerateContent(
         for await (const chunk of stream) {
             const text = chunk.text || '';
             const groundingChunks = chunk.candidates?.[0]?.groundingMetadata?.groundingChunks;
-            yield { text, groundingChunks };
+            const chunkResult: GenerationChunk = { text, groundingChunks };
+            // Extract usage metadata from Google GenAI stream (typically on the last chunk)
+            const meta = chunk.usageMetadata as any;
+            if (meta) {
+                chunkResult.usage = {
+                    promptTokens: meta.promptTokenCount || 0,
+                    completionTokens: meta.candidatesTokenCount || 0,
+                    totalTokens: meta.totalTokenCount || 0,
+                };
+            }
+            yield chunkResult;
         }
     } else if (provider.type === 'openai-compatible') {
         const baseUrl = provider.baseUrl || 'https://api.openai.com/v1';
@@ -90,6 +101,7 @@ export async function* streamGenerateContent(
             model: modelId,
             messages: openAIMessages,
             stream: true,
+            stream_options: { include_usage: true },
         };
 
         // Merge custom body parameters from provider settings if present
@@ -154,7 +166,16 @@ export async function* streamGenerateContent(
                         try {
                             const json = JSON.parse(data);
                             const content = json.choices?.[0]?.delta?.content || '';
-                            if (content) yield { text: content };
+                            const chunkResult: GenerationChunk = { text: content };
+                            // Extract usage from the final SSE chunk (OpenAI stream_options.include_usage)
+                            if (json.usage) {
+                                chunkResult.usage = {
+                                    promptTokens: json.usage.prompt_tokens || 0,
+                                    completionTokens: json.usage.completion_tokens || 0,
+                                    totalTokens: json.usage.total_tokens || 0,
+                                };
+                            }
+                            if (content || chunkResult.usage) yield chunkResult;
                         } catch (e) {
                             console.error("Error parsing SSE:", e);
                         }
@@ -171,18 +192,3 @@ export async function* streamGenerateContent(
     }
 }
 
-export async function countTokens(
-    provider: ProviderConfig,
-    modelId: string,
-    messages: Message[]
-): Promise<number> {
-    if (provider.type === 'google') {
-        const ai = new GoogleGenAI({ apiKey: provider.apiKey });
-        const { totalTokens } = await ai.models.countTokens({
-            model: modelId,
-            contents: messages as any
-        });
-        return totalTokens || 0;
-    }
-    return 0;
-}

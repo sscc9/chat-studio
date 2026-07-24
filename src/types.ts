@@ -23,11 +23,18 @@ export interface MessagePart {
     };
 }
 
+export interface TokenUsage {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+}
+
 export interface Message {
     // FIX: Add 'tool' to the role to support function call responses.
     role: 'user' | 'model' | 'tool';
     parts: MessagePart[];
     groundingChunks?: any[];
+    usage?: TokenUsage;
 }
 
 export interface PresetPrompt {
