@@ -176,7 +176,11 @@ export const ChatLayout = () => {
     useEffect(() => {
         const applyTheme = (t: string) => {
             const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.setAttribute('data-theme', t === 'system' ? (isSystemDark ? 'dark' : 'light') : t);
+            const resolved = t === 'system' ? (isSystemDark ? 'dark' : 'light') : t;
+            document.documentElement.setAttribute('data-theme', resolved);
+            // Sync browser theme-color with current theme
+            const color = resolved === 'dark' ? '#18191a' : '#ffffff';
+            document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', color));
         };
         applyTheme(theme);
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
