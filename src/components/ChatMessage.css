@@ -19,13 +19,9 @@
   /* Fix for flexbox overflow */
 }
 
-.chat-message:not(.is-editing):hover .message-bubble {
-  border-color: var(--border-color);
-}
-
+.chat-message:not(.is-editing):hover .message-bubble,
 .chat-message.is-editing .message-bubble {
-  border-color: var(--edit-border-color);
-  box-shadow: 0 0 0 1px var(--edit-border-color), 0 4px 12px var(--shadow-color-light);
+  border-color: var(--border-color);
 }
 
 .message-header {
