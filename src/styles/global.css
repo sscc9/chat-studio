@@ -261,14 +261,15 @@ body,
 
 .prose table {
   border-collapse: collapse;
-  width: 100%;
-  min-width: 400px;
+  width: max-content;
+  min-width: 100%;
 }
 
 .prose th,
 .prose td {
   border: 1px solid var(--border-color);
   padding: 0.5rem 0.75rem;
+  white-space: nowrap;
 }
 
 .prose th {
