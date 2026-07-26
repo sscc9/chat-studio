@@ -180,6 +180,13 @@ body,
   opacity: 1;
 }
 
+/* Mobile: always show copy button since there's no hover */
+@media (max-width: 768px) {
+  .copy-code-btn {
+    opacity: 0.6;
+  }
+}
+
 .copy-code-btn:hover {
   color: var(--text-primary);
   background-color: var(--message-actions-button-hover-bg);
@@ -246,12 +253,16 @@ body,
   margin-bottom: 0;
 }
 
+.table-scroll-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
 .prose table {
   border-collapse: collapse;
   width: 100%;
-  margin-bottom: 1rem;
-  overflow-x: auto;
-  display: block;
+  min-width: 400px;
 }
 
 .prose th,

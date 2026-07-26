@@ -88,6 +88,16 @@ export const MessageContent = React.memo(({ parts }: {parts: MessagePart[]}) => 
         }
       }
     });
+
+    // Wrap tables in a scroll container for mobile horizontal scrolling
+    const tables = containerRef.current.querySelectorAll('table');
+    tables.forEach((table) => {
+      if (table.parentElement?.classList.contains('table-scroll-wrapper')) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'table-scroll-wrapper';
+      table.parentNode?.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    });
   }, [parts]);
 
   return (
