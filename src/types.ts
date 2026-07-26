@@ -79,6 +79,7 @@ export interface ProviderConfig {
     baseUrl?: string;
     models: ModelConfig[];
     customBodyParams?: string;
+    useProxy?: boolean;
 }
 
 export type ActionLogEntryType =

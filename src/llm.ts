@@ -114,12 +114,28 @@ export async function* streamGenerateContent(
             }
         }
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
+        // When useProxy is enabled, route through /api/proxy to avoid CORS
+        let fetchUrl: string;
+        let fetchHeaders: Record<string, string>;
+
+        if (provider.useProxy) {
+            fetchUrl = '/api/proxy';
+            fetchHeaders = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${provider.apiKey}`
-            },
+                'x-target-url': url,
+                'x-api-key': provider.apiKey,
+            };
+        } else {
+            fetchUrl = url;
+            fetchHeaders = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${provider.apiKey}`,
+            };
+        }
+
+        const response = await fetch(fetchUrl, {
+            method: 'POST',
+            headers: fetchHeaders,
             body: JSON.stringify(bodyPayload),
             signal
         });

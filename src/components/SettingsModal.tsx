@@ -305,6 +305,19 @@ export const SettingsModal = () => {
                                                 rows={3}
                                             />
                                         </div>
+                                        <div className="settings-form-group">
+                                            <label className="toggle-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedProvider.useProxy || false}
+                                                    onChange={(e) => updateProvider(selectedProvider.id, { useProxy: e.target.checked })}
+                                                />
+                                                使用代理转发请求
+                                            </label>
+                                            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                                                若 API 因跨域 (CORS) 无法直连，可开启此选项通过服务端代理转发
+                                            </p>
+                                        </div>
                                     </>
                                 )}
                                 <div className="settings-form-group">
