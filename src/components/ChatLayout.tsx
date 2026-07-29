@@ -179,7 +179,7 @@ export const ChatLayout = () => {
             const resolved = t === 'system' ? (isSystemDark ? 'dark' : 'light') : t;
             document.documentElement.setAttribute('data-theme', resolved);
             // Sync browser theme-color with current theme
-            const color = resolved === 'dark' ? '#18191a' : '#ffffff';
+            const color = resolved === 'dark' ? '#1a1a18' : '#fafaf8';
             document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', color));
         };
         applyTheme(theme);

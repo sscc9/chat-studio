@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat Studio</title>
     <meta name="description" content="多模型 AI 对话工具" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#18191a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a18" media="(prefers-color-scheme: dark)" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Chat Studio" />
@@ -26,7 +26,7 @@
           }
           document.documentElement.setAttribute('data-theme', resolved);
           // Sync theme-color meta tag with resolved theme
-          var color = resolved === 'dark' ? '#18191a' : '#ffffff';
+          var color = resolved === 'dark' ? '#1a1a18' : '#fafaf8';
           var metas = document.querySelectorAll('meta[name="theme-color"]');
           metas.forEach(function(m) { m.setAttribute('content', color); });
         } catch (e) {

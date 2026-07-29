@@ -4,41 +4,41 @@
  */
 
 :root {
-  --background-primary: #ffffff;
-  --background-secondary: #f7f7f8;
-  --background-tertiary: #e9e9eb;
-  --text-primary: #1c1e21;
-  --text-secondary: #606770;
-  --accent-primary: #4a4a4a;
-  --accent-secondary: #303030;
-  --border-color: #dddfe2;
-  --text-on-accent: #ffffff;
+  --background-primary: #fafaf8;
+  --background-secondary: #f4f3f0;
+  --background-tertiary: #e8e6e1;
+  --text-primary: #1a1a18;
+  --text-secondary: #65635e;
+  --accent-primary: #4a4a48;
+  --accent-secondary: #333330;
+  --border-color: #dbd8d2;
+  --text-on-accent: #fafaf8;
   --slider-thumb-bg: #ffffff;
-  --prose-pre-bg: #f5f5f5;
-  --message-hover-bg: #fcfcfc;
-  --message-actions-bg: #f2f2f2;
-  --message-actions-button-hover-bg: rgba(0, 0, 0, 0.08);
+  --prose-pre-bg: #f4f3f0;
+  --message-hover-bg: #f8f7f5;
+  --message-actions-bg: #f0eee9;
+  --message-actions-button-hover-bg: rgba(0, 0, 0, 0.07);
   --delete-confirm-bg: #ffe4e4;
   --delete-confirm-color: #d9534f;
   --stop-generating-hover-bg: var(--background-tertiary);
   --toast-bg: var(--background-secondary);
   --toast-color: var(--text-primary);
-  --backdrop-bg: rgba(0, 0, 0, 0.4);
-  --shadow-color-light: rgba(0, 0, 0, 0.1);
-  --shadow-color-medium: rgba(0, 0, 0, 0.15);
-  --shadow-color-strong: rgba(0, 0, 0, 0.2);
+  --backdrop-bg: rgba(0, 0, 0, 0.35);
+  --shadow-color-light: rgba(0, 0, 0, 0.08);
+  --shadow-color-medium: rgba(0, 0, 0, 0.12);
+  --shadow-color-strong: rgba(0, 0, 0, 0.18);
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Courier New', Courier, monospace;
   /* HLJS Token Colors (Light) */
   --hljs-base: #24292e;
   --hljs-bg: transparent;
-  --hljs-keyword: #d73a49;
-  --hljs-title: #6f42c1;
-  --hljs-string: #032f62;
-  --hljs-comment: #6a737d;
-  --hljs-number: #005cc5;
-  --hljs-literal: #005cc5;
-  --hljs-tag: #22863a;
+  --hljs-keyword: #cf222e;
+  --hljs-title: #6639ba;
+  --hljs-string: #0a3069;
+  --hljs-comment: #6e7781;
+  --hljs-number: #0550ae;
+  --hljs-literal: #0550ae;
+  --hljs-tag: #1a7f37;
 
   /* Border Radius System */
   --radius-sm: 6px;
@@ -48,39 +48,39 @@
 }
 
 html[data-theme='dark'] {
-  --background-primary: #18191a;
-  --background-secondary: #242526;
-  --background-tertiary: #3a3b3c;
-  --text-primary: #e4e6eb;
-  --text-secondary: #b0b3b8;
-  --accent-primary: #a0a0a0;
-  --accent-secondary: #c0c0c0;
-  --border-color: #3e4042;
-  --text-on-accent: #18191a;
-  --slider-thumb-bg: #ffffff;
-  --prose-pre-bg: #242526;
-  --message-hover-bg: #202122;
-  --message-actions-bg: #2d2e2f;
-  --message-actions-button-hover-bg: rgba(255, 255, 255, 0.1);
+  --background-primary: #1a1a18;
+  --background-secondary: #262624;
+  --background-tertiary: #3a3a38;
+  --text-primary: #e8e4dc;
+  --text-secondary: #a8a49c;
+  --accent-primary: #9c9a94;
+  --accent-secondary: #bbb8b0;
+  --border-color: #3e3e3a;
+  --text-on-accent: #1a1a18;
+  --slider-thumb-bg: #e8e4dc;
+  --prose-pre-bg: #262624;
+  --message-hover-bg: #222220;
+  --message-actions-bg: #2e2e2c;
+  --message-actions-button-hover-bg: rgba(255, 255, 255, 0.08);
   --delete-confirm-bg: #5a2a2a;
   --delete-confirm-color: #e66360;
   --stop-generating-hover-bg: var(--background-tertiary);
   --toast-bg: var(--background-secondary);
   --toast-color: var(--text-primary);
-  --backdrop-bg: rgba(0, 0, 0, 0.6);
-  --shadow-color-light: rgba(0, 0, 0, 0.3);
-  --shadow-color-medium: rgba(0, 0, 0, 0.4);
-  --shadow-color-strong: rgba(0, 0, 0, 0.5);
+  --backdrop-bg: rgba(0, 0, 0, 0.55);
+  --shadow-color-light: rgba(0, 0, 0, 0.25);
+  --shadow-color-medium: rgba(0, 0, 0, 0.35);
+  --shadow-color-strong: rgba(0, 0, 0, 0.45);
 
-  /* HLJS Token Colors (Dark) */
-  --hljs-base: #e1e4e8;
-  --hljs-keyword: #f97583;
-  --hljs-title: #b392f0;
-  --hljs-string: #9ecbff;
-  --hljs-comment: #6a737d;
-  --hljs-number: #79b8ff;
-  --hljs-literal: #79b8ff;
-  --hljs-tag: #85e89d;
+  /* HLJS Token Colors (Dark - warm tones) */
+  --hljs-base: #e0ddd6;
+  --hljs-keyword: #f47067;
+  --hljs-title: #d2a8ff;
+  --hljs-string: #a5d6ff;
+  --hljs-comment: #768390;
+  --hljs-number: #6cb6ff;
+  --hljs-literal: #6cb6ff;
+  --hljs-tag: #7ee787;
 }
 
 
