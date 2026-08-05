@@ -35,17 +35,12 @@ export const MessageList = () => {
         lastScrollTop.current = el.scrollTop;
     }, [chatMessagesRef]);
 
-    // Memoized scroll event handler to detect user scrolls.
     const handleScroll = useCallback(() => {
         const el = chatMessagesRef.current;
         if (!el) return;
 
         const currentScrollTop = el.scrollTop;
         const isScrollingUp = currentScrollTop < lastScrollTop.current;
-
-        // Add a class for styling the scrollbar thumb during user scroll.
-        el.classList.add('is-scrolling');
-        const timer = setTimeout(() => el.classList.remove('is-scrolling'), 1500);
 
         // Logic: 
         // 1. If user scrolls UP, disable auto-scroll.
@@ -59,7 +54,6 @@ export const MessageList = () => {
         }
 
         lastScrollTop.current = currentScrollTop;
-        return () => clearTimeout(timer);
     }, [chatMessagesRef]);
 
     // Effect to attach and clean up the scroll event listener.

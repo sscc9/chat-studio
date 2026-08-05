@@ -12,10 +12,9 @@
   position: relative;
   /* For welcome container positioning */
   overflow-y: auto;
-  /* --- Auto-hiding Scrollbar --- */
+  /* --- Always-visible Elegant Scrollbar --- */
   scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.3s;
+  scrollbar-color: var(--border-color) transparent;
 
   display: flex;
   flex-direction: column;
@@ -45,12 +44,8 @@
   margin-top: -40px;
 }
 
-.chat-messages.is-scrolling {
-  scrollbar-color: var(--border-color) transparent;
-}
-
 .chat-messages::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .chat-messages::-webkit-scrollbar-track {
@@ -58,14 +53,9 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 10px;
-  transition: background-color 0.3s;
-  z-index: 10;
-}
-
-.chat-messages.is-scrolling::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
+  border-radius: 10px;
+  z-index: 10;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
