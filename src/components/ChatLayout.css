@@ -85,16 +85,7 @@
     transition: opacity 0.25s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
-    .history-panel {
-        width: 220px;
-    }
-
-    .chat-app.history-collapsed .history-panel {
-        margin-left: -220px;
-    }
-
     .mobile-config-btn {
         display: flex;
         align-items: center;
