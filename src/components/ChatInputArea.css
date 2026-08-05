@@ -62,14 +62,9 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: 0.75rem 0.5rem 0.25rem;
-  transition: border-color 0.2s ease, box-shadow 0.25s ease;
+  transition: border-color 0.2s, box-shadow 0.25s ease;
   background-color: var(--message-hover-bg);
   box-shadow: 0 2px 6px var(--shadow-color-light);
-}
-
-.input-row:focus-within {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--accent-primary), 0 4px 16px var(--shadow-color-light);
 }
 
 
