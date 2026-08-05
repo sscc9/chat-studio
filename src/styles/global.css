@@ -289,14 +289,10 @@ body,
 
 .prose h1 {
   font-size: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.3rem;
 }
 
 .prose h2 {
   font-size: 1.3rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.3rem;
 }
 
 .prose h3 {
