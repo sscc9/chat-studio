@@ -16,30 +16,35 @@
    Note: On desktop, we transition margins only (no transform) to keep the sidebar 
    and main chat-panel pixel-perfectly synchronized during collapse, avoiding speed discrepancies. */
 
-.history-panel {
-    width: 260px;
-    flex-shrink: 0;
-    transition: margin-left 0.25s cubic-bezier(0.2, 0, 0, 1), border-right-width 0.25s cubic-bezier(0.2, 0, 0, 1);
-    will-change: margin-left;
+/* Desktop Sidebar Layouts — Only apply width/margins on screen sizes where they are inline */
+@media (min-width: 901px) {
+    .history-panel {
+        width: 260px;
+        flex-shrink: 0;
+        transition: margin-left 0.25s cubic-bezier(0.2, 0, 0, 1), border-right-width 0.25s cubic-bezier(0.2, 0, 0, 1);
+        will-change: margin-left;
+    }
+
+    .chat-app.history-collapsed .history-panel {
+        margin-left: -260px;
+        border-right-width: 0;
+        transition: margin-left 0.2s cubic-bezier(0.3, 0, 1, 1), border-right-width 0.2s cubic-bezier(0.3, 0, 1, 1);
+    }
 }
 
-.chat-app.history-collapsed .history-panel {
-    margin-left: -260px;
-    border-right-width: 0;
-    transition: margin-left 0.2s cubic-bezier(0.3, 0, 1, 1), border-right-width 0.2s cubic-bezier(0.3, 0, 1, 1);
-}
+@media (min-width: 1201px) {
+    .config-panel {
+        width: 300px;
+        flex-shrink: 0;
+        transition: margin-right 0.25s cubic-bezier(0.2, 0, 0, 1), border-left-width 0.25s cubic-bezier(0.2, 0, 0, 1);
+        will-change: margin-right;
+    }
 
-.config-panel {
-    width: 300px;
-    flex-shrink: 0;
-    transition: margin-right 0.25s cubic-bezier(0.2, 0, 0, 1), border-left-width 0.25s cubic-bezier(0.2, 0, 0, 1);
-    will-change: margin-right;
-}
-
-.chat-app.config-collapsed .config-panel {
-    margin-right: -300px;
-    border-left-width: 0;
-    transition: margin-right 0.2s cubic-bezier(0.3, 0, 1, 1), border-left-width 0.2s cubic-bezier(0.3, 0, 1, 1);
+    .chat-app.config-collapsed .config-panel {
+        margin-right: -300px;
+        border-left-width: 0;
+        transition: margin-right 0.2s cubic-bezier(0.3, 0, 1, 1), border-left-width 0.2s cubic-bezier(0.3, 0, 1, 1);
+    }
 }
 
 /* Chat Panel */
