@@ -501,10 +501,10 @@ html[data-theme='dark'] input:checked+.slider:before {
   scrollbar-color: var(--border-color) transparent;
 }
 
-/* Webkit (Chrome, Safari, Edge) - visible on hover */
+/* Webkit (Chrome, Safari, Edge) - always visible 6px */
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {
@@ -512,12 +512,8 @@ html[data-theme='dark'] input:checked+.slider:before {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 4px;
-}
-
-*:hover::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
+  border-radius: 10px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
