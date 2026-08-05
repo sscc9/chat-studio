@@ -52,17 +52,17 @@
   background-color: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 0 1rem;
+  padding: 0 0.75rem;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
-  text-align: center;
+  text-align: left;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   flex-grow: 1;
   /* Take available space */
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   height: 32px;
   white-space: nowrap;
 }
