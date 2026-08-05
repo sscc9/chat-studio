@@ -156,30 +156,30 @@ export const ChatMessage = React.memo(({
                         {isEditing ? (
                             <>
                                 <button title="保存" onClick={() => handleSaveEdit()} disabled={!editingMessageContent.trim()}>
-                                    <Check size={16} />
+                                    <Check size={14} strokeWidth={1.75} />
                                 </button>
                                 {msg.role === 'user' && (
                                     <button title="保存并重新生成" onClick={() => handleSaveAndRegenerate()} disabled={!editingMessageContent.trim() || isLoading || !isAIReady}>
-                                        <RotateCw size={16} />
+                                        <RotateCw size={14} strokeWidth={1.75} />
                                     </button>
                                 )}
                                 <button title="取消" onClick={() => handleCancelEdit()} className="cancel-edit-btn">
-                                    <X size={16} />
+                                    <X size={14} strokeWidth={1.75} />
                                 </button>
                             </>
                         ) : (
                             <>
                                 <button title="编辑" onClick={startEditAndCaptureScroll} disabled={!hasEditableText || isLoading || disableActions || (isMobile && !showMobileActions)}>
-                                    <Pencil size={16} />
+                                    <Pencil size={14} strokeWidth={1.75} />
                                 </button>
                                 <button title="复制" onClick={() => handleCopyMessage(msg.parts)} disabled={!hasTextContent || isLoading || disableActions || (isMobile && !showMobileActions)}>
-                                    <Copy size={16} />
+                                    <Copy size={14} strokeWidth={1.75} />
                                 </button>
                                 <button title="重新生成" onClick={() => handleRegenerateResponse(index)} disabled={!canRegenerate || isLoading || disableActions || !isAIReady || (isMobile && !showMobileActions)}>
-                                    <RotateCw size={16} />
+                                    <RotateCw size={14} strokeWidth={1.75} />
                                 </button>
                                 <button title="从此处派生对话" onClick={() => handleForkChat(index)} disabled={isLoading || disableActions || (isMobile && !showMobileActions)}>
-                                    <GitFork size={16} />
+                                    <GitFork size={14} strokeWidth={1.75} />
                                 </button>
                                 <button
                                     title={confirmingDelete ? "确认删除" : "删除"}
@@ -187,7 +187,7 @@ export const ChatMessage = React.memo(({
                                     className={confirmingDelete ? 'confirm-delete' : ''}
                                     disabled={isLoading || disableActions || (isMobile && !showMobileActions)}
                                 >
-                                    <Trash2 size={16} />
+                                    <Trash2 size={14} strokeWidth={1.75} />
                                 </button>
                             </>
                         )}
