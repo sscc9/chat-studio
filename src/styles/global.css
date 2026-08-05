@@ -228,6 +228,10 @@ body,
   border-radius: 0;
 }
 
+.prose > *:first-child {
+  margin-top: 0;
+}
+
 .prose p,
 .prose ul,
 .prose ol,
@@ -241,10 +245,23 @@ body,
   margin-bottom: 0.25rem;
 }
 
+.prose li p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .prose ul,
 .prose ol {
   padding-left: 1.5rem;
   margin-top: 0.5rem;
+}
+
+.prose ul ul,
+.prose ul ol,
+.prose ol ul,
+.prose ol ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .prose ul {
@@ -317,7 +334,7 @@ body,
   color: var(--text-secondary);
 }
 
-.prose>*:last-child {
+.prose > *:last-child {
   margin-bottom: 0;
 }
 
@@ -337,7 +354,11 @@ body,
 .prose td {
   border: 1px solid var(--border-color);
   padding: 0.5rem 0.75rem;
-  white-space: nowrap;
+  min-width: 80px;
+  max-width: 300px;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .prose th {
