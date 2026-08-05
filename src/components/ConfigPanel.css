@@ -5,7 +5,7 @@
 
 .config-panel {
     background-color: var(--background-primary);
-    border-left: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color-subtle);
     overflow: hidden;
 }
 

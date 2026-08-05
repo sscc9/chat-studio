@@ -12,6 +12,7 @@
   --accent-primary: #4a4a48;
   --accent-secondary: #333330;
   --border-color: #dbd8d2;
+  --border-color-subtle: #eae7e1;
   --text-on-accent: #fafaf8;
   --slider-thumb-bg: #ffffff;
   --prose-pre-bg: #f4f3f0;
@@ -56,6 +57,7 @@ html[data-theme='dark'] {
   --accent-primary: #9c9a94;
   --accent-secondary: #bbb8b0;
   --border-color: #3e3e3a;
+  --border-color-subtle: #2d2d2a;
   --text-on-accent: #1a1a18;
   --slider-thumb-bg: #e8e4dc;
   --prose-pre-bg: #262624;
