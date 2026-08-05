@@ -26,7 +26,7 @@ import {
     isMobileAtom,
     isMac
 } from '../store';
-import { Check, RotateCw, X, Pencil, Copy, GitFork, Trash2 } from 'lucide-react';
+import { Check, RotateCw, X, Pen, Copy, GitFork, Trash2 } from 'lucide-react';
 
 interface ChatMessageProps {
     msg: Message;
@@ -170,7 +170,7 @@ export const ChatMessage = React.memo(({
                         ) : (
                             <>
                                 <button title="编辑" onClick={startEditAndCaptureScroll} disabled={!hasEditableText || isLoading || disableActions || (isMobile && !showMobileActions)}>
-                                    <Pencil size={14} strokeWidth={1.75} />
+                                    <Pen size={14} strokeWidth={1.75} />
                                 </button>
                                 <button title="复制" onClick={() => handleCopyMessage(msg.parts)} disabled={!hasTextContent || isLoading || disableActions || (isMobile && !showMobileActions)}>
                                     <Copy size={14} strokeWidth={1.75} />
