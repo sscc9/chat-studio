@@ -78,7 +78,7 @@ export const setThemeAtom = atom(
     (get) => get(themeAtom),
     (_get, set, newTheme: string) => set(themeAtom, newTheme)
 );
-export const isMobileAtom: PrimitiveAtom<boolean> = atom(window.innerWidth <= 768);
+export const isMobileAtom: PrimitiveAtom<boolean> = atom(window.innerWidth <= 900);
 export const setIsMobileAtom = atom(
     (get) => get(isMobileAtom),
     (_get, set, value: boolean) => set(isMobileAtom, value)

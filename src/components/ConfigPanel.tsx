@@ -201,7 +201,10 @@ export const ConfigPanel = () => {
                         <div className="config-panel-header-actions">
                             <button
                                 className="panel-toggle-btn"
-                                onClick={() => isMobile ? setIsConfigPanelOpen(false) : setIsConfigPanelVisible(false)}
+                                onClick={() => {
+                                    setIsConfigPanelOpen(false);
+                                    setIsConfigPanelVisible(false);
+                                }}
                                 aria-label="隐藏配置面板"
                                 title="隐藏配置面板"
                             >

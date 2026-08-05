@@ -62,7 +62,10 @@ export const HistoryPanel = () => {
                     <div className="history-header-left">
                         <button
                             className="panel-toggle-btn"
-                            onClick={() => isMobile ? setIsHistoryPanelOpen(false) : setIsHistoryPanelVisible(false)}
+                            onClick={() => {
+                                setIsHistoryPanelOpen(false);
+                                setIsHistoryPanelVisible(false);
+                            }}
                             aria-label="隐藏历史面板"
                             title="隐藏历史面板"
                         >

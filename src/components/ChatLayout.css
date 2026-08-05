@@ -85,7 +85,7 @@
     transition: opacity 0.25s cubic-bezier(0.2, 0, 0, 1);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .mobile-config-btn {
         display: flex;
         align-items: center;
@@ -125,7 +125,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .history-panel {
         position: fixed;
         top: 0;

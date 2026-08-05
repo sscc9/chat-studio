@@ -190,7 +190,7 @@ export const ChatLayout = () => {
     }, [theme]);
 
     useEffect(() => {
-        const checkIsMobile = () => setIsMobile(window.innerWidth <= 768);
+        const checkIsMobile = () => setIsMobile(window.innerWidth <= 900);
         window.addEventListener('resize', checkIsMobile);
         checkIsMobile(); // Initial check
         return () => window.removeEventListener('resize', checkIsMobile);
