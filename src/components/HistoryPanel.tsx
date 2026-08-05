@@ -72,24 +72,26 @@ export const HistoryPanel = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708 .708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" /></svg>
                         </button>
                         <input type="file" ref={importFileRef} onChange={handleImportFile} accept=".json" style={{ display: 'none' }} />
-                        <button className="icon-btn" title="导入数据" onClick={handleImportClick}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" /></svg>
-                        </button>
-                        <button className="icon-btn" title="导出所有数据" onClick={handleExportChats}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" /></svg>
-                        </button>
-                        <button
-                            className="icon-btn trash-btn"
-                            title="回收站"
-                            onClick={() => setIsTrashModalOpen(true)}
-                        >
-                            <TrashIcon width={16} height={16} />
-                        </button>
-                        <button className="new-chat-btn" onClick={() => handleNewChat()}>
-                            <PlusIcon width={16} height={16} style={{ marginRight: '6px' }} />
-                            新建对话
-                        </button>
+                        <div className="history-header-utilities">
+                            <button className="icon-btn" title="导入数据" onClick={handleImportClick}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" /></svg>
+                            </button>
+                            <button className="icon-btn" title="导出所有数据" onClick={handleExportChats}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" /></svg>
+                            </button>
+                            <button
+                                className="icon-btn trash-btn"
+                                title="回收站"
+                                onClick={() => setIsTrashModalOpen(true)}
+                            >
+                                <TrashIcon width={16} height={16} />
+                            </button>
+                        </div>
                     </div>
+                    <button className="new-chat-btn" onClick={() => handleNewChat()}>
+                        <PlusIcon width={16} height={16} style={{ marginRight: '6px' }} />
+                        新建对话
+                    </button>
                 </div>
                 <nav onDragOver={(e) => e.preventDefault()}>
                     {sortedChats.map((chat) => (
