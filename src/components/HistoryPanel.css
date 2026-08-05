@@ -109,12 +109,18 @@
 
 
 .history-item:hover {
-  background-color: var(--background-tertiary);
+  background-color: var(--message-hover-bg);
 }
 
 .history-item.active {
-  background-color: var(--background-tertiary);
+  background-color: var(--background-secondary);
   color: var(--text-primary);
+  box-shadow: inset 4px 0 0 var(--text-primary);
+  font-weight: 500;
+}
+
+.history-item.active:hover {
+  background-color: var(--background-secondary);
 }
 
 .history-item span {

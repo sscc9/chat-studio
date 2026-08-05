@@ -20,7 +20,8 @@
 }
 
 .chat-message:not(.is-editing):hover .message-bubble {
-  border-color: var(--border-color);
+  border-color: var(--border-color-subtle);
+  background-color: var(--message-hover-bg);
 }
 
 .chat-message.is-editing .message-bubble {
