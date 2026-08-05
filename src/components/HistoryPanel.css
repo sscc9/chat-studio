@@ -49,14 +49,14 @@
 }
 
 .new-chat-btn {
-  background-color: var(--background-secondary);
+  background-color: transparent;
   border: none;
   color: var(--text-primary);
+  font-weight: 500; /* 稍微加粗，突出其作为主要操作的地位 */
   padding: 0 0.75rem;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
   text-align: left;
   transition: background-color 0.2s, color 0.2s;
   flex-grow: 1;
@@ -64,12 +64,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: 36px; /* Slightly taller to look better as a filled button */
+  height: 36px; /* 高度稍微加高一点点，手感更好 */
   white-space: nowrap;
 }
 
 .new-chat-btn:hover {
   background-color: var(--background-tertiary);
+  border-color: var(--background-tertiary);
   color: var(--text-primary);
 }
 
