@@ -17,14 +17,14 @@
    and main chat-panel pixel-perfectly synchronized during collapse, avoiding speed discrepancies. */
 
 .history-panel {
-    width: 260px;
+    width: 300px;
     flex-shrink: 0;
     transition: margin-left 0.25s cubic-bezier(0.2, 0, 0, 1), border-right-width 0.25s cubic-bezier(0.2, 0, 0, 1);
     will-change: margin-left;
 }
 
 .chat-app.history-collapsed .history-panel {
-    margin-left: -260px;
+    margin-left: -300px;
     border-right-width: 0;
     transition: margin-left 0.2s cubic-bezier(0.3, 0, 1, 1), border-right-width 0.2s cubic-bezier(0.3, 0, 1, 1);
 }
