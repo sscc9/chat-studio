@@ -16,10 +16,11 @@
 .config-panel-tabs {
     display: flex;
     flex-shrink: 0;
-    padding: 1.25rem 1rem 0 1rem;
-    align-items: flex-end;
+    padding: 1.25rem 3rem 0.75rem 1rem;
+    align-items: stretch;
     /* Ensure items are centered if they don't fill height */
     min-height: 64px;
+    height: 64px;
     /* Match others */
     box-sizing: border-box;
     position: relative;
@@ -29,12 +30,15 @@
     flex-grow: 1;
     background: none;
     border: none;
-    padding: 0 0.5rem 0.75rem 0.5rem;
+    padding: 0 0.5rem;
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--text-secondary);
     border-bottom: 2px solid transparent;
     transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .config-tab:hover {
