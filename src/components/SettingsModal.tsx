@@ -55,19 +55,12 @@ export const SettingsModal = () => {
 
     if (!isOpen) return null;
 
-    const handleAddProvider = (type: 'google' | 'openai-compatible' | 'vertex-ai') => {
-        let name = 'Google Gemini';
-        if (type === 'openai-compatible') name = 'OpenAI Compatible';
-        if (type === 'vertex-ai') name = 'Google Cloud Vertex AI';
-
+    const handleAddProvider = (type: 'google' | 'openai-compatible') => {
         const newProvider: ProviderConfig = {
             id: `${type}-${crypto.randomUUID()}`,
-            name,
+            name: type === 'google' ? 'Google Gemini' : 'OpenAI Compatible',
             type,
             apiKey: '',
-            projectId: type === 'vertex-ai' ? '' : undefined,
-            region: type === 'vertex-ai' ? 'global' : undefined,
-            useProxy: type === 'vertex-ai' ? true : false,
             models: []
         };
         setProviders([...providers, newProvider]);
@@ -192,8 +185,6 @@ export const SettingsModal = () => {
                                 >
                                     {p.type === 'google' ? (
                                         <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" /></svg>
-                                    ) : p.type === 'vertex-ai' ? (
-                                        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
                                     ) : (
                                         <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
                                     )}
@@ -221,10 +212,6 @@ export const SettingsModal = () => {
                                     <div className="provider-type-card" onClick={() => handleAddProvider('google')}>
                                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" /></svg>
                                         <span className="provider-type-name">Google Gemini</span>
-                                    </div>
-                                    <div className="provider-type-card" onClick={() => handleAddProvider('vertex-ai')}>
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-                                        <span className="provider-type-name">Google Cloud Vertex AI</span>
                                     </div>
                                     <div className="provider-type-card" onClick={() => handleAddProvider('openai-compatible')}>
                                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
@@ -286,55 +273,15 @@ export const SettingsModal = () => {
                                     />
                                 </div>
                                 <div className="settings-form-group">
-                                    <label>API Key / Access Token</label>
+                                    <label>API Key</label>
                                     <input
                                         type="password"
                                         className="settings-input"
                                         value={selectedProvider.apiKey}
                                         onChange={(e) => updateProvider(selectedProvider.id, { apiKey: e.target.value })}
-                                        placeholder="输入 API Key 或 GCP Access Token"
+                                        placeholder="输入 API Key"
                                     />
                                 </div>
-                                {selectedProvider.type === 'vertex-ai' && (
-                                    <>
-                                        <div className="settings-form-group">
-                                            <label>GCP 项目 ID (Project ID) *</label>
-                                            <input
-                                                type="text"
-                                                className="settings-input"
-                                                value={selectedProvider.projectId || ''}
-                                                onChange={(e) => updateProvider(selectedProvider.id, { projectId: e.target.value })}
-                                                placeholder="例如: my-first-project"
-                                            />
-                                            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                                                在 Google Cloud 控制台左上角获取您的项目 ID
-                                            </p>
-                                        </div>
-                                        <div className="settings-form-group">
-                                            <label>区域 (Region) *</label>
-                                            <input
-                                                type="text"
-                                                className="settings-input"
-                                                value={selectedProvider.region || ''}
-                                                onChange={(e) => updateProvider(selectedProvider.id, { region: e.target.value })}
-                                                placeholder="例如: global 或 us-east5 / us-central1 / europe-west1"
-                                            />
-                                            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                                                开通模型时选择的区域（如 global, us-east5, us-central1）
-                                            </p>
-                                        </div>
-                                        <div className="settings-form-group">
-                                            <label className="toggle-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedProvider.useProxy !== false}
-                                                    onChange={(e) => updateProvider(selectedProvider.id, { useProxy: e.target.checked })}
-                                                />
-                                                使用服务端代理转发 (避免浏览器跨域拦截)
-                                            </label>
-                                        </div>
-                                    </>
-                                )}
                                 {selectedProvider.type === 'openai-compatible' && (
                                     <>
                                         <div className="settings-form-group">
@@ -438,16 +385,7 @@ export const SettingsModal = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        {!editingModelId && selectedProvider.type === 'vertex-ai' && (
-                                            <div className="quick-add-models">
-                                                <span className="quick-add-tag" onClick={() => { setNewModelId('claude-3-7-sonnet@20250219'); setNewModelName('Claude 3.7 Sonnet'); }}>+ Claude 3.7 Sonnet</span>
-                                                <span className="quick-add-tag" onClick={() => { setNewModelId('claude-3-5-sonnet-v2@20241022'); setNewModelName('Claude 3.5 Sonnet'); }}>+ Claude 3.5 Sonnet</span>
-                                                <span className="quick-add-tag" onClick={() => { setNewModelId('claude-3-5-haiku@20241022'); setNewModelName('Claude 3.5 Haiku'); }}>+ Claude 3.5 Haiku</span>
-                                                <span className="quick-add-tag" onClick={() => { setNewModelId('claude-3-opus@20240229'); setNewModelName('Claude 3.0 Opus'); }}>+ Claude 3.0 Opus</span>
-                                                <span className="quick-add-tag" onClick={() => { setNewModelId('gemini-2.5-pro'); setNewModelName('Gemini 2.5 Pro'); }}>+ Gemini 2.5 Pro</span>
-                                                <span className="quick-add-tag" onClick={() => { setNewModelId('gemini-2.5-flash'); setNewModelName('Gemini 2.5 Flash'); }}>+ Gemini 2.5 Flash</span>
-                                            </div>
-                                        )}
+
                                         {!editingModelId && selectedProvider.type === 'google' && (
                                             <div className="quick-add-models">
                                                 <span className="quick-add-tag" onClick={() => { setNewModelId('gemini-3.1-pro-preview'); setNewModelName('Gemini 3.1 Pro'); }}>+ Gemini 3.1 Pro</span>

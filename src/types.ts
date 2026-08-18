@@ -74,10 +74,8 @@ export interface ModelConfig {
 export interface ProviderConfig {
     id: string;
     name: string;
-    type: 'google' | 'openai-compatible' | 'vertex-ai';
+    type: 'google' | 'openai-compatible';
     apiKey: string;
-    projectId?: string;
-    region?: string;
     baseUrl?: string;
     models: ModelConfig[];
     customBodyParams?: string;
