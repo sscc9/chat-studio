@@ -11,6 +11,7 @@ export default async function handler(req, res) {
 
   const targetUrl = req.headers['x-target-url'];
   const apiKey = req.headers['x-api-key'];
+  const googApiKey = req.headers['x-goog-api-key'];
 
   if (!targetUrl) {
     return res.status(400).json({ error: 'Missing x-target-url header' });
@@ -20,6 +21,9 @@ export default async function handler(req, res) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) {
       headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+    if (googApiKey) {
+      headers['x-goog-api-key'] = googApiKey;
     }
 
     const upstream = await fetch(targetUrl, {
