@@ -118,28 +118,38 @@
 }
 
 .settings-sidebar-footer {
-    padding: 1rem;
+    padding: 0.75rem;
     border-top: 1px solid var(--border-color);
 }
 
 .add-provider-btn {
     width: 100%;
-    padding: 0.5rem;
-    background-color: var(--background-primary);
-    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    background-color: transparent;
+    border: none;
     border-radius: var(--radius-md);
-    color: var(--text-primary);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: background-color 0.2s;
+    gap: 10px;
+    transition: all 0.2s ease;
 }
 
 .add-provider-btn:hover {
-    border-color: var(--text-primary);
-    background-color: transparent;
+    background-color: var(--message-hover-bg);
+    color: var(--text-primary);
+}
+
+.add-provider-btn.active {
+    background-color: var(--text-primary);
+    color: var(--background-primary);
+    font-weight: 500;
+}
+
+.add-provider-btn.active svg {
+    color: var(--background-primary) !important;
 }
 
 .settings-content {

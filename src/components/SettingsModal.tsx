@@ -196,11 +196,17 @@ export const SettingsModal = () => {
                             ))}
                         </div>
                         <div className="settings-sidebar-footer">
-                            <button className="add-provider-btn" onClick={() => { setIsAddingProvider(true); setSelectedProviderId(null); setMobileView('detail'); }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                            <button 
+                                className={`add-provider-btn ${isAddingProvider ? 'active' : ''}`} 
+                                onClick={() => { setIsAddingProvider(true); setSelectedProviderId(null); setMobileView('detail'); }}
+                            >
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                                 </svg>
-                                添加模型商
+                                <span style={{ flexGrow: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>添加模型商</span>
+                                <svg className="provider-item-chevron mobile-only" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                                    <path d="M9.29 15.88L13.17 12 9.29 8.12a.996.996 0 1 1 1.41-1.41l4.59 4.59c.39.39.39 1.02 0 1.41L10.7 17.3a.996.996 0 0 1-1.41 0c-.38-.39-.39-1.03 0-1.42z"/>
+                                </svg>
                             </button>
                         </div>
                     </div>
