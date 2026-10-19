@@ -7,7 +7,7 @@ import React from 'react';
 import { atom, PrimitiveAtom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { getMessages, saveMessages, deleteMessages } from '../db';
-import type { Chat, ChatConfig, Message, ActionLogEntry, ActionLogEntryType, SystemPrompt } from '../types';
+import type { Chat, ChatConfig, Message, ActionLogEntry, ActionLogEntryType, SystemPrompt, ThinkingLevelOption } from '../types';
 
 import { showToastAtom, isHistoryPanelOpenAtom, importFileRefAtom } from './ui';
 import { documentContentAtom, presetPromptsAtom, presetGroupsAtom } from './tools';
@@ -52,6 +52,7 @@ export const logActionAtom = atom(
 // Global Config State (also used by tools)
 export const modelAtom = atomWithStorage("ai-chat-default-model", "");
 export const useGoogleSearchAtom = atomWithStorage("ai-chat-default-search", false);
+export const thinkingLevelAtom = atomWithStorage<ThinkingLevelOption>("ai-chat-default-thinking-level", "");
 export const systemInstructionAtom = atom("");
 
 // Action to sync the global config atoms with a specific chat's config
@@ -59,11 +60,13 @@ export const syncConfigWithChatAtom = atom(null, (get, set, chat: Chat | undefin
     if (chat?.config) {
         set(systemInstructionAtom, chat.config.systemInstruction || '');
         set(useGoogleSearchAtom, chat.config.useGoogleSearch || false);
+        set(thinkingLevelAtom, chat.config.thinkingLevel || "");
         set(modelAtom, chat.config.model || "");
     } else {
         // Reset to defaults if no chat is active
         set(systemInstructionAtom, "");
         set(useGoogleSearchAtom, get(useGoogleSearchAtom)); // Keep stored default
+        set(thinkingLevelAtom, get(thinkingLevelAtom)); // Keep stored default
         set(modelAtom, get(modelAtom)); // Keep stored default
     }
 });
@@ -83,6 +86,10 @@ export const handleConfigChangeAtom = atom(null, (get, set, newConfig: Partial<C
     if (newConfig.useGoogleSearch !== undefined && newConfig.useGoogleSearch !== targetChat.config.useGoogleSearch) {
         set(logActionAtom, 'toggle_web_search', { value: newConfig.useGoogleSearch }, id);
         if (id === get(currentChatIdAtom)) set(useGoogleSearchAtom, newConfig.useGoogleSearch);
+    }
+    if (newConfig.thinkingLevel !== undefined && newConfig.thinkingLevel !== (targetChat.config.thinkingLevel || '')) {
+        set(logActionAtom, 'change_thinking_level', { from: targetChat.config.thinkingLevel || '', to: newConfig.thinkingLevel }, id);
+        if (id === get(currentChatIdAtom)) set(thinkingLevelAtom, newConfig.thinkingLevel);
     }
     if (newConfig.systemInstruction !== undefined && newConfig.systemInstruction !== targetChat.config.systemInstruction) {
         set(logActionAtom, 'change_system_prompt', { from: targetChat.config.systemInstruction, to: newConfig.systemInstruction }, id);
@@ -159,6 +166,7 @@ export const handleNewChatAtom = atom(null, (get, set, title: string = 'New Chat
         config: {
             systemInstruction: '',
             useGoogleSearch: get(useGoogleSearchAtom),
+            thinkingLevel: get(thinkingLevelAtom),
             model: defaultModel,
         },
         actionLog: [],
@@ -674,6 +682,7 @@ export const handleImportFromStudioAtom = atom(null, async (get, set, messages: 
         config: {
             systemInstruction: '',
             useGoogleSearch: get(useGoogleSearchAtom),
+            thinkingLevel: get(thinkingLevelAtom),
             model: defaultModel,
         },
         actionLog: [],

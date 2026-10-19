@@ -60,9 +60,12 @@ export interface SystemPrompt {
     text: string;
 }
 
+export type ThinkingLevelOption = '' | 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH';
+
 export interface ChatConfig {
     systemInstruction?: string;
     useGoogleSearch?: boolean;
+    thinkingLevel?: ThinkingLevelOption;
     model: string;
 }
 
@@ -92,7 +95,8 @@ export type ActionLogEntryType =
     | 'regenerate_response'
     | 'change_system_prompt'
     | 'change_model'
-    | 'toggle_web_search';
+    | 'toggle_web_search'
+    | 'change_thinking_level';
 
 export interface ActionLogEntry {
     id: string;

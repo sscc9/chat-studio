@@ -39,6 +39,10 @@ export const ActionLogViewerModal = () => {
             case 'change_system_prompt': return `修改了系统提示词`;
             case 'change_model': return `将模型切换为 <strong>${log.payload.to}</strong>`;
             case 'toggle_web_search': return `网页搜索已${log.payload.value ? '开启' : '关闭'}`;
+            case 'change_thinking_level': {
+                const levelNames: Record<string, string> = { '': '默认', 'MINIMAL': '极低', 'LOW': '低', 'MEDIUM': '中', 'HIGH': '高' };
+                return `将思考等级切换为 <strong>${levelNames[log.payload.to] || log.payload.to || '默认'}</strong>`;
+            }
             default: return `操作: ${log.type}`;
         }
     };

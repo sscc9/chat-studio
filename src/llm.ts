@@ -4,7 +4,7 @@
  */
 
 import { GoogleGenAI } from "@google/genai";
-import { Message, ProviderConfig, TokenUsage } from "./types";
+import { Message, ProviderConfig, TokenUsage, ThinkingLevelOption } from "./types";
 
 export interface GenerationChunk {
     text: string;
@@ -18,7 +18,8 @@ export async function* streamGenerateContent(
     messages: Message[],
     systemInstruction?: string,
     useWebSearch?: boolean,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    thinkingLevel?: ThinkingLevelOption
 ): AsyncGenerator<GenerationChunk, void, unknown> {
     if (provider.type === 'google') {
         const ai = new GoogleGenAI({ apiKey: provider.apiKey });
@@ -30,6 +31,9 @@ export async function* streamGenerateContent(
         if (useWebSearch) {
             // @google/genai syntax for enabling Google Search tool
             config.tools = [{ googleSearch: {} }];
+        }
+        if (thinkingLevel) {
+            config.thinkingConfig = { thinkingLevel };
         }
         if (signal) {
             config.abortSignal = signal;

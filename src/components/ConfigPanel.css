@@ -508,3 +508,40 @@
     width: 18px;
     height: 18px;
 }
+
+/* Thinking Level Toggle */
+.thinking-level-toggle {
+    display: flex;
+    background-color: var(--background-tertiary);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    gap: 2px;
+}
+
+.thinking-level-btn {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    padding: 6px 4px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.thinking-level-btn:hover {
+    color: var(--text-primary);
+}
+
+.thinking-level-btn.active {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    font-weight: 500;
+    box-shadow: 0 1px 3px var(--shadow-color-light);
+}

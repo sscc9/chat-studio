@@ -69,7 +69,8 @@ export const streamAndGetResponseAtom = atom(null, (get, set, { chat, contents, 
                 contents, 
                 chat.config.systemInstruction, 
                 chat.config.useGoogleSearch,
-                controller.signal
+                controller.signal,
+                chat.config.thinkingLevel
             );
 
             if (activeRequestRef.current !== requestId) return reject(new Error('Request cancelled'));
