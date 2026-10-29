@@ -302,28 +302,30 @@ export const ConfigPanel = () => {
                                         )}
                                     </div>
                                 </div>
-                                <div className="config-item">
-                                    <label>思考等级</label>
-                                    <div className="thinking-level-toggle">
-                                        {([
-                                            { value: '', label: '默认', title: '按模型默认策略思考' },
-                                            { value: 'MINIMAL', label: '极低', title: '极低思考量 (Minimal)' },
-                                            { value: 'LOW', label: '低', title: '低思考量 (Low)' },
-                                            { value: 'MEDIUM', label: '中', title: '中等思考量 (Medium)' },
-                                            { value: 'HIGH', label: '高', title: '深度思考 (High)' },
-                                        ] as const).map(opt => (
-                                            <button
-                                                key={opt.value}
-                                                className={`thinking-level-btn ${thinkingLevel === opt.value ? 'active' : ''}`}
-                                                onClick={() => handleConfigChange({ thinkingLevel: opt.value })}
-                                                title={opt.title}
-                                                aria-pressed={thinkingLevel === opt.value}
-                                            >
-                                                {opt.label}
-                                            </button>
-                                        ))}
+                                {allModels.find(m => m.id === model)?.providerType === 'google' && (
+                                    <div className="config-item">
+                                        <label>思考等级</label>
+                                        <div className="thinking-level-toggle">
+                                            {([
+                                                { value: '', label: '默认', title: '按模型默认策略思考' },
+                                                { value: 'MINIMAL', label: '极低', title: '极低思考量 (Minimal)' },
+                                                { value: 'LOW', label: '低', title: '低思考量 (Low)' },
+                                                { value: 'MEDIUM', label: '中', title: '中等思考量 (Medium)' },
+                                                { value: 'HIGH', label: '高', title: '深度思考 (High)' },
+                                            ] as const).map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    className={`thinking-level-btn ${thinkingLevel === opt.value ? 'active' : ''}`}
+                                                    onClick={() => handleConfigChange({ thinkingLevel: opt.value })}
+                                                    title={opt.title}
+                                                    aria-pressed={thinkingLevel === opt.value}
+                                                >
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <div className="config-item">
                                     <label htmlFor="system-instruction">系统提示词</label>
                                     <div

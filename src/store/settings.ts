@@ -13,7 +13,7 @@ export const providersAtom = atomWithStorage<ProviderConfig[]>('chat-studio-prov
 
 export const allModelsAtom = atom((get) => {
     const providers = get(providersAtom);
-    return providers.flatMap(p => p.models.map(m => ({ ...m, providerId: p.id, providerName: p.name })));
+    return providers.flatMap(p => p.models.map(m => ({ ...m, providerId: p.id, providerName: p.name, providerType: p.type })));
 });
 
 export const isSettingsModalOpenAtom = atom(false);
